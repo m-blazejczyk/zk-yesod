@@ -25,6 +25,7 @@ getHomeR = do
 postHomeR :: Handler Html
 postHomeR = do
     ((result, formWidget), formEnctype) <- runFormPost sampleForm
+    maid <- maybeAuthId
     let handlerName = "postHomeR" :: Text
         submission = case result of
             FormSuccess res -> Just res

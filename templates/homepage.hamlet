@@ -1,6 +1,6 @@
 <h1>Welcome to Yesod!
 
-<!--<p>Your current auth ID: #{show maid}-->
+<p>Your current auth ID: #{show maid}
 
 <ol>
   <li>Now that you have a working project you should use the #
