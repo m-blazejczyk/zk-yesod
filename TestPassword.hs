@@ -1,3 +1,10 @@
+-------------------------------------------------------------------------------
+-- This code has been copied - with slight modifications - from Yesod modules
+-- Yesod.Auth.Email and Yesod.PasswordStore.
+-- Its purpose is to generate and display the exact same salted passwords
+-- as Yesod internally would.
+-------------------------------------------------------------------------------
+
 {-# LANGUAGE OverloadedStrings, BangPatterns #-}
 {-# LANGUAGE CPP #-}
 
