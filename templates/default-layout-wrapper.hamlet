@@ -19,20 +19,59 @@ $newline never
     ^{pageHead pc}
 
   <body>
-    <div class="container">
+    <div id="container">
       <header>
+        <div style="height: 95px;">
+          <div id="logo-zk">
+            <a href="/">
+              <img src="ZK_logo_white.png" width="150" height="150" border="0">
+          <div id="logo-centrala" style="align: right;">
+            <a href="http://centrala.org.pl/">
+              <img src="centrala_logo.png" width="110" height="35" border="0">
+            <br>
+            <a href="http://lib.amu.edu.pl/">
+              <img src="bu_logo.png" width="110" height="38" border="0">
+          <div id="nav-menu">
+            <ul>
+              <li>
+                <a href="/" title="Aktualności">
+                  aktualności
+              <li>
+                <a href="/zk" title="Magazyn">
+                  magazyn
+              <li>
+                <a href="/recenzje" title="Recenzje">
+                  recenzje
+              <li style="width: 150px;">
+                &nbsp;
+              <li>
+                <a href="skladnica" title="Składnica">
+                  składnica
+              <li>
+                <a href="/kopalnia" title="Kopalnia">
+                  kopalnia
+              <li>
+                <a href="/e_publikacje" title="E-publikacje">
+                  e-publikacje
+
       <div id="main" role="main">
         ^{pageBody pc}
-      <footer>
-        #{appCopyright $ appSettings master}
 
-    $maybe analytics <- appAnalytics $ appSettings master
-      <script>
-        if(!window.location.href.match(/localhost/)){
-          window._gaq = [['_setAccount','#{analytics}'],['_trackPageview'],['_trackPageLoadTime']];
-          (function() {
-          \  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          \  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          \  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-        }
+      <div class="last-modif">
+        Data utworzenia strony: 9 II 2011
+
+      <footer id="footer">
+        <div id="footer-slogan">
+          O komiksie. Na serio.
+        <div id="footer-copy">
+          layout © Michał Błażejczyk 2012
+          &nbsp;&nbsp;||&nbsp;&nbsp;
+          logo © #
+          <a href="mailto:dennis.wojda@gmail.com">
+            Dennis Wojda
+          \ 2011
+          <!--#{appCopyright $ appSettings master}-->
+        <div id="footer-about">
+          <a href="/o_stronie">
+            O stronie
+  
