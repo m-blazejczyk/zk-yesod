@@ -1,6 +1,12 @@
 <h1>Welcome to Yesod!
 
 <p>Your current auth ID: #{show maid}
+$maybe _ <- maid
+    <p>
+        <a href=@{AuthR LogoutR}>Logout
+$nothing
+    <p>
+        <a href=@{AuthR LoginR}>Go to the login page
 
 <ol>
   <li>Now that you have a working project you should use the #
