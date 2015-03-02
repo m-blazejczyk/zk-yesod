@@ -24,41 +24,37 @@ $newline never
         <div style="height: 95px;">
           <div id="logo-zk">
             <a href="/">
-              <img src="ZK_logo_white.png" width="150" height="150" border="0">
+              <img src=@{StaticR img_ZK_logo_white_png} width="150" height="150" border="0">
           <div id="logo-centrala" style="align: right;">
             <a href="http://centrala.org.pl/">
-              <img src="centrala_logo.png" width="110" height="35" border="0">
+              <img src=@{StaticR img_centrala_logo_png} width="110" height="35" border="0">
             <br>
             <a href="http://lib.amu.edu.pl/">
-              <img src="bu_logo.png" width="110" height="38" border="0">
-          <div id="nav-menu">
-            <ul>
-              <li>
-                <a href="/" title="Aktualności">
-                  aktualności
-              <li>
-                <a href="/zk" title="Magazyn">
-                  magazyn
-              <li>
-                <a href="/recenzje" title="Recenzje">
-                  recenzje
-              <li style="width: 150px;">
-                &nbsp;
-              <li>
-                <a href="skladnica" title="Składnica">
-                  składnica
-              <li>
-                <a href="/kopalnia" title="Kopalnia">
-                  kopalnia
-              <li>
-                <a href="/e_publikacje" title="E-publikacje">
-                  e-publikacje
+              <img src=@{StaticR img_bu_logo_png} width="110" height="38" border="0">
+        <div id="nav-menu">
+          <ul>
+            <li>
+              <a href="/" title="Aktualności">
+                aktualności
+            <li>
+              <a href="/zk" title="Magazyn">
+                magazyn
+            <li>
+              <a href="/recenzje" title="Recenzje">
+                recenzje
+            <li style="width: 150px;">
+              &nbsp;
+            <li>
+              <a href="skladnica" title="Składnica">
+                składnica
+            <li>
+              <a href="/kopalnia" title="Kopalnia">
+                kopalnia
+            <li>
+              <a href="/e_publikacje" title="E-publikacje">
+                e-publikacje
 
-      <div id="main" role="main">
-        ^{pageBody pc}
-
-      <div class="last-modif">
-        Data utworzenia strony: 9 II 2011
+      ^{pageBody pc}
 
       <footer id="footer">
         <div id="footer-slogan">
