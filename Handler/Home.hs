@@ -15,6 +15,7 @@ getHomeR :: Handler Html
 getHomeR = do
     (formWidget, formEnctype) <- generateFormPost sampleForm
     maid <- maybeAuthId
+    maybeUser <- runDB $ selectFirst [ UserEmail ==. "blazej@zeszytykomiksowe.org" ] []
     let submission = Nothing :: Maybe (FileInfo, Text)
         handlerName = "getHomeR" :: Text
     defaultLayout $ do
@@ -26,6 +27,7 @@ postHomeR :: Handler Html
 postHomeR = do
     ((result, formWidget), formEnctype) <- runFormPost sampleForm
     maid <- maybeAuthId
+    maybeUser <- runDB $ selectFirst [ UserEmail ==. "blazej@zeszytykomiksowe.org" ] []
     let handlerName = "postHomeR" :: Text
         submission = case result of
             FormSuccess res -> Just res
