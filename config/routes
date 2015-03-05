@@ -2,5 +2,6 @@
 /robots.txt RobotsR GET
 
 / HomeR GET POST
+/kopalnia KopalniaR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic

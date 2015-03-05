@@ -1,0 +1,42 @@
+<div id="article">
+
+  <h2 id="title">
+    Polska Bibliografia Wiedzy o Komiksie
+
+  <p>
+    <strong>Polska Bibliografia Wiedzy o Komiksie</strong> to katalog (baza danych),
+    zawierający informacje o publikacjach, dotyczących komiksu: artykułach, recenzjach, 
+    pracach naukowych, książkach, czasopismach itd., zarówno polskojęzycznych, jak i 
+    zagranicznych. Zarejestrowani użytkownicy mogą dopisywać komentarze i linki.
+
+  <p>
+    W chwili obecnej Bibliografia zawiera <strong>4787 publikacji</strong>.
+
+  <p align="center">
+    <a href="bibliografia_info" class="link1">
+      <button type="button" class="btn btn-default">
+        <span class="zk-glyph zk-glyph-about" aria-hidden="true">
+        <br>
+        Szczegóły
+    <a href="bibliografia_szukaj" class="link1">
+      <button type="button" class="btn btn-default">
+        <span class="zk-glyph zk-glyph-find" aria-hidden="true">
+        <br>
+        Wyszukiwanie
+    <a href="login" class="link1">
+      <button type="button" class="btn btn-default">
+        <span class="zk-glyph zk-glyph-login" aria-hidden="true">
+        <br>
+        Logowanie
+    <a href="rejestracja" class="link1">
+      <button type="button" class="btn btn-default">
+        <span class="zk-glyph zk-glyph-register" aria-hidden="true">
+        <br>
+        Rejestracja
+
+  <p>
+    Poniżej możesz przeszukać bazę danych przy pomocy uproszczonego zestawu kryteriów.
+
+  <p>
+    Aby po prostu zapoznać się z zawartością bazy danych, bez podawania żadnych
+    kryteriów, zostaw pole "Fraza" puste i kliknij w "Szukaj" na dole tej strony!

@@ -8,6 +8,14 @@
     <p>
       <a href=@{AuthR LoginR}>Go to the login page
 
+  $maybe Entity _ user <- maybeUser
+    $maybe pwd <- userPassword user
+      <p>User: #{userEmail user} #{pwd}
+    $nothing
+      <p>User: #{userEmail user} No password
+  $nothing
+    <p>Not found!
+
   <p style="background-color:#f8f0ef; border-style:solid; border-color:#d63f2b; border-width:1px; padding-top:8px; padding-bottom:8px;">
     Dziewiętnasty (wiosenny) numer <span class="franctytul">Zeszytów</span> będzie poświęcony <b>KOMIKSOWI FAKTU</b> oraz <b>SURREALIZMOWI W KOMIKSIE</b>. Wszystkie zainteresowane tym tematem osoby <a href="mailto:redakcja@zeszytykomiksowe.org">zapraszamy do współpracy</a>!
     <br>

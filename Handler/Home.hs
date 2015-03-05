@@ -1,8 +1,7 @@
 module Handler.Home where
 
 import Import
-import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3,
-                              withSmallInput)
+import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
 -- This is a handler function for the GET request method on the HomeR
 -- resource pattern. All of your resource patterns are defined in
@@ -15,25 +14,26 @@ getHomeR :: Handler Html
 getHomeR = do
     (formWidget, formEnctype) <- generateFormPost sampleForm
     maid <- maybeAuthId
+    maybeUser <- runDB $ selectFirst [ UserEmail ==. "blazej@zeszytykomiksowe.org" ] []
     let submission = Nothing :: Maybe (FileInfo, Text)
         handlerName = "getHomeR" :: Text
     defaultLayout $ do
         aDomId <- newIdent
-        setTitle "Welcome To Yesod!"
+        setTitle "Zeszyty Komiksowe - Strona główne"
         $(widgetFile "homepage")
 
 postHomeR :: Handler Html
 postHomeR = do
     ((result, formWidget), formEnctype) <- runFormPost sampleForm
     maid <- maybeAuthId
+    maybeUser <- runDB $ selectFirst [ UserEmail ==. "blazej@zeszytykomiksowe.org" ] []
     let handlerName = "postHomeR" :: Text
         submission = case result of
             FormSuccess res -> Just res
             _ -> Nothing
-
     defaultLayout $ do
         aDomId <- newIdent
-        setTitle "Welcome To Yesod!"
+        setTitle "Zeszyty Komiksowe - Strona główne"
         $(widgetFile "homepage")
 
 sampleForm :: Form (FileInfo, Text)
