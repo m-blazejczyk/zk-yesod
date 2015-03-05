@@ -3,8 +3,8 @@ module Handler.Kopalnia where
 import Import
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
-getKopalniaR :: Handler Html
-getKopalniaR = do
+getKopalniaMainR :: Handler Html
+getKopalniaMainR = do
     defaultLayout $ do
-        setTitle "Zeszyty Komiksowe - Bibliografia wiedzy o komiksie"
+        setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
