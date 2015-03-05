@@ -8,7 +8,7 @@
     <p>
       <a href=@{AuthR LoginR}>Go to the login page
 
-  $maybe Entity userId user <- maybeUser
+  $maybe Entity _ user <- maybeUser
     $maybe pwd <- userPassword user
       <p>User: #{userEmail user} #{pwd}
     $nothing
