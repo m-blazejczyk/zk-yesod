@@ -48,7 +48,7 @@ $newline never
               <a href="skladnica" title="Składnica">
                 składnica
             <li>
-              <a href=@{KopalniaR} title="Bibliografia">
+              <a href=@{KopalniaMainR} title="Bibliografia">
                 kopalnia
             <li>
               <a href="/e_publikacje" title="E-publikacje">

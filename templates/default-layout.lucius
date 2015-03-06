@@ -154,12 +154,22 @@ body a:hover {
     width: 230px;
 }
 
-#last-modif {
+.last-modif {
     clear: both;
     padding: 3px;
     border-top: 1px dashed #325565;
     text-align: right;
     font-size: 10px;
+}
+
+.biblio-footer {
+    clear: both;
+    padding: 3px;
+    font-size: 11px;
+}
+
+.biblio-footer div div.right {
+    text-align: right;
 }
 
 #komentarze {
@@ -250,6 +260,12 @@ body a:hover {
     color: #ff4b33;
 }
 
+.recka-img {
+  float: left;
+  display: inline-block;
+  margin-right: 20px;
+}
+
 .podpis-redakcja {
     text-align: left;
     font: 1.4em Georgia, Times, serif;
@@ -303,6 +319,16 @@ body a:hover {
   margin-bottom: 3px;
 }
 
+.toc-title a {
+  text-decoration: underline;
+  color: #d63f2b;
+}
+
+.toc-title a:hover {
+  text-decoration: underline;
+  color: #ff4b33;
+}
+
 .toc-author {
   display: block; 
   text-align: left; 
@@ -340,7 +366,7 @@ body a:hover {
   border-top: 1px dashed #325565;
 }
 
-/* To sÄ style do recenzji (do strony gĹĂłwnej). */
+/* Style do recenzji (do strony głównej) */
 .divider {
   border-top: 1px dashed #325565;
   clear: both;
@@ -377,7 +403,7 @@ body a:hover {
   color: #325565;
 }
 
-/* To sÄ style do stron poszczegĂłlnych recenzji. */
+/* Style do stron poszczególnych recenzji */
 .recka-autor {
   font-weight: bold;
   text-align: right;
@@ -425,6 +451,17 @@ body a:hover {
   text-align: center;
 }
 
+.image-right {
+  box-sizing: border-box;
+  display: block;
+  float: right !important;
+  margin-bottom: 0px;
+  margin-left: 15px;
+  /* margin-right: -150px; -- must be provided in a style attribute */
+  margin-top: 0px;
+  /* width: 165px; -- must be provided in a style attribute */
+}
+
 /* :first-child */
 .side-by-side figure {
   display: inline-block;
@@ -435,4 +472,73 @@ body a:hover {
 
 .side-by-side figure:first-child {
   margin-right: 80px;
+}
+
+.zk-glyph {
+  display: inline-block;
+  position: relative;
+  height: 48px;
+  width: 48px;
+  padding: 0;
+}
+
+.zk-glyph-about {
+  background: url(/static/img/about.png) no-repeat center;
+}
+
+.zk-glyph-find {
+  background: url(/static/img/pocket_lantern.png) no-repeat center;
+}
+
+.zk-glyph-login {
+  background: url(/static/img/unlock.png) no-repeat center;
+}
+
+.zk-glyph-register {
+  background: url(/static/img/add_user.png) no-repeat center;
+}
+
+.zk-glyph-add {
+  background: url(/static/img/add_list.png) no-repeat center;
+}
+
+.centered {
+  text-align: center;
+}
+
+.black-border {
+  border-style: solid;
+  border-color: black;
+  border-width: 1px;
+}
+
+.zk-info-row {
+  margin-bottom: 20px;
+}
+
+/* ------------ KOPALNIA ------------ */
+
+span.inobtrusive {
+  color: #888888;
+}
+
+p.inobtrusive {
+  color: #888888;
+  margin: 0;
+}
+
+.blockquote {
+  padding-left: 40px;
+}
+
+.kopalnia-title {
+  text-align: left;
+}
+
+.kopalnia-top-div {
+  padding: 25px;
+}
+
+.zawartosc {
+  margin-bottom: 6px;
 }

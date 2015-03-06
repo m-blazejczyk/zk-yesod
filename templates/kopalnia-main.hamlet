@@ -13,26 +13,10 @@
     W chwili obecnej Bibliografia zawiera <strong>4787 publikacji</strong>.
 
   <p align="center">
-    <a href="bibliografia_info" class="link1">
-      <button type="button" class="btn btn-default">
-        <span class="zk-glyph zk-glyph-about" aria-hidden="true">
-        <br>
-        Szczegóły
-    <a href="bibliografia_szukaj" class="link1">
-      <button type="button" class="btn btn-default">
-        <span class="zk-glyph zk-glyph-find" aria-hidden="true">
-        <br>
-        Wyszukiwanie
-    <a href="login" class="link1">
-      <button type="button" class="btn btn-default">
-        <span class="zk-glyph zk-glyph-login" aria-hidden="true">
-        <br>
-        Logowanie
-    <a href="rejestracja" class="link1">
-      <button type="button" class="btn btn-default">
-        <span class="zk-glyph zk-glyph-register" aria-hidden="true">
-        <br>
-        Rejestracja
+    <a href="bibliografia_info" class="link1"><button type="button" class="btn btn-default"><span class="zk-glyph zk-glyph-about" aria-hidden="true"></span><br>Szczegóły</button>
+    <a href="bibliografia_szukaj" class="link1"><button type="button" class="btn btn-default"><span class="zk-glyph zk-glyph-find" aria-hidden="true"></span><br>Wyszukiwanie</button>
+    <a href="login" class="link1"><button type="button" class="btn btn-default"><span class="zk-glyph zk-glyph-login" aria-hidden="true"></span><br>Logowanie</button>
+    <a href="rejestracja" class="link1"><button type="button" class="btn btn-default"><span class="zk-glyph zk-glyph-register" aria-hidden="true"></span><br>Rejestracja</button>
 
   <p>
     Poniżej możesz przeszukać bazę danych przy pomocy uproszczonego zestawu kryteriów.
