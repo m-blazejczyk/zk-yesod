@@ -7,3 +7,90 @@ User
     verified Bool
     UniqueUser email
     deriving Typeable
+
+NkPub                     -- Publikacja niekomiksowa
+    tytul Text
+    UniqueNkPub tytul
+    deriving Typeable, Show
+
+SlowoKlucz
+    slowo Text
+    UniqueSlowoKlucz slowo
+    deriving Typeable, Show
+
+HasloPrzedm
+    haslo Text
+    UniqueHasloPrzedm haslo
+    deriving Typeable, Show
+
+Autor
+    imiona Text
+    nazwisko Text
+    deriving Typeable, Show
+
+Wydawca
+    nazwa Text
+    UniqueWydawca nazwa
+    deriving Typeable, Show
+
+Kopalnia
+    rodzicId KopalniaId
+    nkRodzicId NkPubId
+    dzialId KopalniaId
+    rodzic Text
+    strony Text
+    isbn Text
+    tytul Text
+    autorzy [(Text, AutorId)]	-- Kluczami są typy autorów: autor, redaktor, tlumacz, osoba prowadząca wywiad
+    nota text
+    opis Text
+    slowaKlucz [SlowoKluczId]
+    haslaPrzedm [HasloPrzedmId]
+    pubRok Int64
+    pubMiesiac Int64
+    brakInfo Bool
+    wydawca WydawcaId
+    miejsceWyd Text
+    rodzaj Rodzaj
+    objetosc Text
+    jezyk Jezyk
+    created UTCTime default=CURRENT_TIME
+    updated UTCTime default=CURRENT_TIME
+    deriving Typeable, Show
+
+
+-- DESC Kopalnia:
+--
+-- +-----------------+---------------------------------+-----+-----+---------------------+-----------------------------+
+-- |              Id |                int(10) unsigned |  NO | PRI |                NULL |              auto_increment |
+-- |        RodzicId |                int(10) unsigned | YES |     |                NULL |                             |
+-- |         DzialId |                int(10) unsigned | YES |     |                NULL |                             |
+-- |          Rodzic |                    varchar(400) | YES |     |                NULL |                             |
+-- |            Isbn |                     varchar(15) | YES |     |                NULL |                             |
+-- |           Tytul |                    varchar(175) |  NO | MUL |                     |                             |
+-- |         Autorzy |                    varchar(300) | YES |     |                NULL |                             |
+-- |        Redaktor |                    varchar(300) | YES |     |                NULL |                             |
+-- |         Tlumacz |                    varchar(300) | YES |     |                NULL |                             |
+-- |      Wywiadowca |                    varchar(300) | YES |     |                NULL |                             |
+-- |            Nota |                            text | YES |     |                NULL |                             |
+-- |            Opis |                            text | YES |     |                NULL |                             |
+-- |   SlowaKluczowe |                            text | YES |     |                NULL |                             |
+-- |  CzyBrakujeInfo |                      tinyint(1) |  NO |     |                   0 |                             |
+-- |      PubMiesiac |             tinyint(3) unsigned | YES |     |                NULL |                             |
+-- |          PubRok |           mediumint(8) unsigned | YES |     |                NULL |                             |
+-- |         Wydawca |                    varchar(200) | YES |     |                NULL |                             |
+-- |  MiejsceWydania |                     varchar(80) | YES |     |                NULL |                             |
+-- |          Strony |                     varchar(50) | YES |     |                NULL |                             |
+-- |          Rodzaj | enum('pismo','kolekcja','numer',|  NO |     |             artykul |                             |
+-- |                 | 'portal','dzial','ksiazka',     |     |     |                     |                             |
+-- |                 | 'praca','artykul','rozdzial',   |     |     |                     |                             |
+-- |                 | 'wywiad','audiowideo','audycja',|     |     |                     |                             |
+-- |                 | 'notka','inny')                 |     |     |                     |                             |
+-- |     HasloPrzedm |                     varchar(60) | YES |     |                NULL |                             |
+-- |        Objetosc |                     varchar(60) | YES |     |                NULL |                             |
+-- |           Jezyk |                         char(2) |  NO |     |                  pl |                             |
+-- | CzyNiekomiksowa |                      tinyint(1) |  NO |     |                   0 |                             |
+-- |      KtoDopisal |                         int(11) |  NO |     |                   0 |                             |
+-- |  DataUtworzenia |                        datetime |  NO |     | 0000-00-00 00:00:00 |                             |
+-- | DataModyfikacji |                       timestamp |  NO |     |   CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
+-- +-----------------+---------------------------------+-----+-----+---------------------+-----------------------------+
