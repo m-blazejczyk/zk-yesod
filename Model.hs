@@ -3,6 +3,7 @@ module Model where
 import ClassyPrelude.Yesod
 import Database.Persist.Quasi
 import Database.Persist.MongoDB hiding (master)
+import Enums
 import Language.Haskell.TH.Syntax
 
 -- You can define all of your database entities in the entities file.

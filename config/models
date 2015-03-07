@@ -11,52 +11,52 @@ User
 NkPub                     -- Publikacja niekomiksowa
     tytul Text
     UniqueNkPub tytul
-    deriving Typeable, Show
+    deriving Typeable
 
 SlowoKlucz
     slowo Text
     UniqueSlowoKlucz slowo
-    deriving Typeable, Show
+    deriving Typeable
 
 HasloPrzedm
     haslo Text
     UniqueHasloPrzedm haslo
-    deriving Typeable, Show
+    deriving Typeable
 
 Autor
-    imiona Text
+    imiona Text Maybe
     nazwisko Text
-    deriving Typeable, Show
+    deriving Typeable
 
 Wydawca
     nazwa Text
     UniqueWydawca nazwa
-    deriving Typeable, Show
+    deriving Typeable
 
 Kopalnia
-    rodzicId KopalniaId
-    nkRodzicId NkPubId
-    dzialId KopalniaId
-    rodzic Text
-    strony Text
-    isbn Text
+    rodzicId KopalniaId Maybe
+    nkRodzicId NkPubId Maybe
+    dzialId KopalniaId Maybe
+    rodzic Text Maybe
+    strony Text Maybe
+    isbn Text Maybe
     tytul Text
-    autorzy [(Text, AutorId)]	-- Kluczami są typy autorów: autor, redaktor, tlumacz, osoba prowadząca wywiad
-    nota text
-    opis Text
+    -- autorzy [(Text, AutorId)]   -- Kluczami są typy autorów: autor, redaktor, tlumacz, osoba prowadząca wywiad
+    nota Text Maybe
+    opis Text Maybe
     slowaKlucz [SlowoKluczId]
     haslaPrzedm [HasloPrzedmId]
-    pubRok Int64
-    pubMiesiac Int64
-    brakInfo Bool
-    wydawca WydawcaId
-    miejsceWyd Text
-    rodzaj Rodzaj
-    objetosc Text
-    jezyk Jezyk
+    pubRok Int64 Maybe
+    pubMiesiac Int64 Maybe
+    brakInfo Bool default=False
+    wydawca WydawcaId Maybe
+    miejsceWyd Text Maybe
+    rodzaj Rodzaj default=Artykul
+    objetosc Text Maybe
+    jezyk Jezyk default=JezykPL
     created UTCTime default=CURRENT_TIME
     updated UTCTime default=CURRENT_TIME
-    deriving Typeable, Show
+    deriving Typeable
 
 
 -- DESC Kopalnia:

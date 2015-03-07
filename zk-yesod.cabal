@@ -17,6 +17,7 @@ library
                      Foundation
                      Import
                      Import.NoFoundation
+                     Enums
                      Model
                      Settings
                      Settings.StaticFiles
