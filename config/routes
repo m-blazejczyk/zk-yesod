@@ -2,6 +2,7 @@
 /robots.txt RobotsR GET
 
 / HomeR GET POST
-/kopalnia KopalniaMainR GET
+/bibliografia KopalniaMainR GET
+/bibliografia/#Int64 KopalniaItemR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic

@@ -8,6 +8,10 @@ User
     UniqueUser email
     deriving Typeable
 
+Nastepny
+    kopalnia Int64
+    deriving Typeable
+
 NkPub                     -- Publikacja niekomiksowa
     tytul Text
     UniqueNkPub tytul
@@ -34,6 +38,7 @@ Wydawca
     deriving Typeable
 
 Kopalnia
+    lookupId Int64
     rodzicId KopalniaId Maybe
     nkRodzicId NkPubId Maybe
     dzialId KopalniaId Maybe
@@ -41,7 +46,7 @@ Kopalnia
     strony Text Maybe
     isbn Text Maybe
     tytul Text
-    -- autorzy [(Text, AutorId)]   -- Kluczami są typy autorów: autor, redaktor, tlumacz, osoba prowadząca wywiad
+    -- autorzy (Map TypAutora AutorId)
     nota Text Maybe
     opis Text Maybe
     slowaKlucz [SlowoKluczId]
@@ -56,8 +61,8 @@ Kopalnia
     jezyk Jezyk default=JezykPL
     created UTCTime default=CURRENT_TIME
     updated UTCTime default=CURRENT_TIME
+    UniqueKopalnia lookupId
     deriving Typeable
-
 
 -- DESC Kopalnia:
 --

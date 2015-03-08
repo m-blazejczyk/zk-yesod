@@ -10,3 +10,7 @@ derivePersistField "Rodzaj"
 data Jezyk = JezykPL | JezykEN | JezykFR | JezykRU | JezykDE | JezykUA | JezykCZ | JezykSK | JezykLT | JezykSE | JezykES | JezykIT | JezykInny
     deriving (Show, Read, Eq)
 derivePersistField "Jezyk"
+
+data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
+    deriving (Show, Read, Eq)
+derivePersistField "TypAutora"
