@@ -7,6 +7,11 @@
 
     <p class="recka-title" style="text-align: left;">
       <span class="tytul">#{kopalniaTytul kopalnia}
+      <br>
+      <span class="inobtrusive">
+        <small>(#{show $ kopalniaRodzaj kopalnia})
+
+    <!-- Autorzy -->
 
     <p class="inobtrusive">
       Linki:
