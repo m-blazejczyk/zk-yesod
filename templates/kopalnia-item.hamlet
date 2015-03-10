@@ -11,7 +11,24 @@
       <span class="inobtrusive">
         <small>(#{show $ kopalniaRodzaj kopalnia})
 
-    <!-- Autorzy -->
+    $maybe strony <- kopalniaStrony kopalnia
+      <p>
+        <span class="inobtrusive">Strony:
+        #{strony}
+
+    $maybe isbn <- kopalniaIsbn kopalnia
+      <p>
+        <span class="inobtrusive">ISBN:
+        #{isbn}
+
+    $maybe objetosc <- kopalniaObjetosc kopalnia
+      <p>
+        <span class="inobtrusive">Objętość:
+        #{objetosc}
+
+    <p>
+      <span class="inobtrusive">Język:
+      #{show $ kopalniaJezyk kopalnia}
 
     <p class="inobtrusive">
       Linki:
