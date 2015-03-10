@@ -19,6 +19,7 @@ library
                      Import.NoFoundation
                      Enums
                      Model
+                     Model.Kopalnia
                      Settings
                      Settings.StaticFiles
                      Handler.Common

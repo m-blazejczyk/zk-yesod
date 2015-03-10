@@ -42,7 +42,7 @@ Kopalnia
     rodzicId KopalniaId Maybe
     nkRodzicId NkPubId Maybe
     dzialId KopalniaId Maybe
-    rodzic Text Maybe
+    rodzicOpis Text Maybe
     strony Text Maybe
     isbn Text Maybe
     tytul Text
