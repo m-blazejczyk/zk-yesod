@@ -11,6 +11,9 @@
       <span class="inobtrusive">
         <small>(#{show $ kopalniaRodzaj kopalnia})
 
+    $maybe rodzic <- mRodzicEn
+      <p>Rodzic: #{kopalniaTytul rodzic}
+
     <p>
       <span class="inobtrusive">W:
       RodzicId, RodzicOpis

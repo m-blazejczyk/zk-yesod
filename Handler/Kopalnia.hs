@@ -1,4 +1,4 @@
-module Handler.Kopalnia where
+module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR, getKopalniaRodzic) where
 
 import Import
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -22,20 +22,28 @@ getKopalniaMainR = do
         setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
 
---getMaybe :: Handler (Maybe (Key a)) -> Handler (Maybe a)
+--getMaybe :: Maybe (Key a) -> Handler (Maybe a)
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
+
+getMaybeIfRodzic (Just lookupId) (Just _) = runDB $ get lookupId
+getMaybeIfRodzic _ _ = return Nothing
+
+getMaybeIfNotRodzic (Just lookupId) Nothing = runDB $ get lookupId
+getMaybeIfNotRodzic _ _ = return Nothing
 
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
     (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
     mRodzicEn <- getMaybe $ kopalniaRodzicId kopalnia
-    mNkRodzicEn <- getMaybe $ kopalniaNkRodzicId kopalnia
-    mDzialEn <- getMaybe $ kopalniaDzialId kopalnia
+    --mNkRodzicEn <- getMaybeIfNotRodzic $ (kopalniaNkRodzicId kopalnia) mRodzicEn
+    mDzialEn <- getMaybeIfRodzic $ (kopalniaDzialId kopalnia) mRodzicEn
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
 
+-- Format:
+-- <span class="inobtrusive">W:</span> RodzicId.Tytul, RodzicOpis <span class="inobtrusive">(RodzicId.Rodzaj; dział:</span> DzialId->Tytul <span class="inobtrusive">)</span>
 -- Options: 
 -- W: RodzicId, RodzicOpis (RodzajRodzica; dział: DzialId)
 -- W: RodzicId, RodzicOpis (RodzajRodzica)
