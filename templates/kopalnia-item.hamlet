@@ -11,6 +11,22 @@
       <span class="inobtrusive">
         <small>(#{show $ kopalniaRodzaj kopalnia})
 
+    <p>
+      <span class="inobtrusive">W:
+      RodzicId, RodzicOpis
+      <span class="inobtrusive">(RodzajRodzica; dział: 
+      DzialId#
+      \<span class="inobtrusive">)
+
+    <p>
+      <span class="inobtrusive">W:
+      RodzicId
+      <span class="inobtrusive">(RodzajRodzica)
+
+    <p>
+      <span class="inobtrusive">W:
+      RodzicOpis #{preEscapedToMarkup $ getKopalniaRodzic kopalnia}
+
     $maybe strony <- kopalniaStrony kopalnia
       <p>
         <span class="inobtrusive">Strony:

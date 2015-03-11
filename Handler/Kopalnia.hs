@@ -28,3 +28,12 @@ getKopalniaItemR lookupId = do
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
+
+-- Options: 
+-- W: RodzicId, RodzicOpis (RodzajRodzica; dział: DzialId)
+-- W: RodzicId, RodzicOpis (RodzajRodzica)
+-- W: RodzicId (RodzajRodzica)
+-- W: RodzicId (RodzajRodzica; dział: DzialId)
+-- W: RodzicOpis
+getKopalniaRodzic :: Kopalnia -> Text
+getKopalniaRodzic _ = "<em>hello!</em>"
