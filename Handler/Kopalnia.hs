@@ -22,9 +22,16 @@ getKopalniaMainR = do
         setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
 
+--getMaybe :: Handler (Maybe (Key a)) -> Handler (Maybe a)
+getMaybe (Just lookupId) = runDB $ get lookupId
+getMaybe _ = return Nothing
+
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
     (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
+    mRodzicEn <- getMaybe $ kopalniaRodzicId kopalnia
+    mNkRodzicEn <- getMaybe $ kopalniaNkRodzicId kopalnia
+    mDzialEn <- getMaybe $ kopalniaDzialId kopalnia
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")

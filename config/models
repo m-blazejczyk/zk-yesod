@@ -8,13 +8,16 @@ User
     UniqueUser email
     deriving Typeable
 
-Nastepny
+Nastepny                  -- Następna dostępna wartość pola lookupId dla danej kolekcji
     kopalnia Int64
+    nkPub Int64
     deriving Typeable
 
 NkPub                     -- Publikacja niekomiksowa
+    lookupId Int64
     tytul Text
-    UniqueNkPub tytul
+    rodzaj Rodzaj default=Pismo
+    UniqueNkPub lookupId
     deriving Typeable
 
 SlowoKlucz
