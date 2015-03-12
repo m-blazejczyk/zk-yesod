@@ -9,7 +9,7 @@
       <span class="tytul">#{kopalniaTytul kopalnia}
       <br>
       <span class="inobtrusive">
-        <small>(#{show $ kopalniaRodzaj kopalnia})
+        <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
     $maybe rodzic <- mRodzicEn
       <p>Rodzic: #{kopalniaTytul rodzic}
@@ -53,7 +53,7 @@
 
     <p>
       <span class="inobtrusive">Język:
-      #{show $ kopalniaJezyk kopalnia}
+      #{showJezyk $ kopalniaJezyk kopalnia}
 
     <p class="inobtrusive">
       Linki:
