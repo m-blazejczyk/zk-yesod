@@ -22,22 +22,23 @@ getKopalniaMainR = do
         setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
 
---getMaybe :: Maybe (Key a) -> Handler (Maybe a)
+getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
+             YesodPersist site,
+             PersistEntityBackend val ~ YesodPersistBackend site) =>
+            Maybe (Key val) -> HandlerT site IO (Maybe val)
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
-
-getMaybeIfRodzic (Just lookupId) (Just _) = runDB $ get lookupId
-getMaybeIfRodzic _ _ = return Nothing
-
-getMaybeIfNotRodzic (Just lookupId) Nothing = runDB $ get lookupId
-getMaybeIfNotRodzic _ _ = return Nothing
 
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
     (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
     mRodzicEn <- getMaybe $ kopalniaRodzicId kopalnia
-    --mNkRodzicEn <- getMaybeIfNotRodzic $ (kopalniaNkRodzicId kopalnia) mRodzicEn
-    mDzialEn <- getMaybeIfRodzic $ (kopalniaDzialId kopalnia) mRodzicEn
+    mNkRodzicEn <- case mRodzicEn of
+        Just _ -> return Nothing
+        Nothing -> getMaybe $ kopalniaNkRodzicId kopalnia
+    mDzialEn <- case mRodzicEn of
+        Just _ -> return Nothing
+        Nothing -> getMaybe $ kopalniaDzialId kopalnia
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
