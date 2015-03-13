@@ -14,6 +14,8 @@
     $maybe rodzic <- mRodzic
       <p>Rodzic: #{kopalniaTytul rodzic}
 
+    ^{getKopalniaLink mRodzic}
+
     $maybe dzial <- mDzial
       <p>Dzial: #{kopalniaTytul dzial}
 
@@ -21,7 +23,6 @@
       <p>Rodzic niekomiksowy: #{nkPubTytul nkRodzic}
 
     <p>
-      ^{getKopalniaLink mRodzic}
       <span class="inobtrusive">W:
       RodzicId, RodzicOpis
       <span class="inobtrusive">(RodzajRodzica; dział: 

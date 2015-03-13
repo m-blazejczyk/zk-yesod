@@ -31,15 +31,9 @@ getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
 
-getKopalniaLinkRodzajPair (Just kopalnia) = Just (getLink kopalnia, getRodzaj kopalnia)
-    where getLink kop = formatKopalniaLink (kopalniaLookupId kop) (kopalniaTytul kop)
-          getRodzaj kop = showRodzaj $ kopalniaRodzaj kop
-          formatKopalniaLink lookupId tytul = withUrlRenderer [hamlet|<a href=@{KopalniaItemR lookupId} class="link1">#{tytul}|]
-getKopalniaLinkRodzajPair Nothing = Nothing
-
-getKopalniaLink (Just kopalnia) = Just(formatKopalniaLink (kopalniaLookupId kopalnia) (kopalniaTytul kopalnia))
-    where formatKopalniaLink lookupId title = toWidget [hamlet|<a href=@{KopalniaItemR lookupId} class="link1">#{title}|]
-getKopalniaLink _ = Nothing
+getKopalniaLink :: Maybe Kopalnia -> Widget
+getKopalniaLink (Just kopalnia) = toWidget [hamlet|<a href=@{KopalniaItemR (kopalniaLookupId kopalnia)} class="link1">#{kopalniaTytul kopalnia}|]
+getKopalniaLink _ = toWidget [hamlet|<span style="display: none;">...|]
 
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
