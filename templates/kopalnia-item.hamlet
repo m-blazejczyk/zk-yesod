@@ -11,16 +11,17 @@
       <span class="inobtrusive">
         <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
-    $maybe rodzic <- mRodzicEn
+    $maybe rodzic <- mRodzic
       <p>Rodzic: #{kopalniaTytul rodzic}
 
-    $maybe dzial <- mDzialEn
+    $maybe dzial <- mDzial
       <p>Dzial: #{kopalniaTytul dzial}
 
-    $maybe nkRodzic <- mNkRodzicEn
+    $maybe nkRodzic <- mNkRodzic
       <p>Rodzic niekomiksowy: #{nkPubTytul nkRodzic}
 
     <p>
+      ^{getKopalniaLink mRodzic}
       <span class="inobtrusive">W:
       RodzicId, RodzicOpis
       <span class="inobtrusive">(RodzajRodzica; dział: 
