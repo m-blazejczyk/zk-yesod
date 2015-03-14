@@ -26,7 +26,7 @@ getKopalniaMainR = do
 
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
-    (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
+    (Entity kopalniaId kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
     mRodzic <- getMaybe $ kopalniaRodzicId kopalnia
     mNkRodzic <- case mRodzic of
         Just _ -> return Nothing
@@ -37,22 +37,30 @@ getKopalniaItemR lookupId = do
     mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
+    kopAut <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
+    autorzy' <- mapM convertKopAut kopAut
+    autorzy <- filterM filterMAut autorzy'
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
 
-getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
+getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              YesodPersist site,
-             PersistEntityBackend val ~ YesodPersistBackend site) =>
-            Maybe (Key val) -> HandlerT site IO (Maybe val)
+             PersistEntityBackend ent ~ YesodPersistBackend site) =>
+            Maybe (Key ent) -> HandlerT site IO (Maybe ent)
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
 
 getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
-              YesodPersist site,
-              PersistEntityBackend ent ~ YesodPersistBackend site) =>
-             [Key ent] -> HandlerT site IO [(Maybe ent)]
+             YesodPersist site,
+             PersistEntityBackend ent ~ YesodPersistBackend site) =>
+            [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
+
+convertKopAut (Entity _ kopAut) = runDB $ get $ kopalniaAutorAutorId kopAut
+
+filterMAut (Just v) = return True
+filterMAut Nothing = return False
 
 getMiesiac :: Maybe Int64 -> Maybe Text
 getMiesiac (Just 1) = Just "styczeń"
