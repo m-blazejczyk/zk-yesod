@@ -60,7 +60,12 @@ Kopalnia
     strony Text Maybe
     isbn Text Maybe
     tytul Text
-    -- autorzy (Map TypAutora AutorId)
+    -- Autor records are stored in KopalniaAutor.
+    -- These four fields are for cases when inserting an Autor record is not adviseable.
+    autorzy Text Maybe
+    redaktorzy Text Maybe
+    tlumacze Text Maybe
+    wywiadowcy Text Maybe
     nota Text Maybe
     opis Text Maybe
     slowaKlucz [SlowoKluczId]
