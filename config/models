@@ -11,6 +11,8 @@ User
 Nastepny                  -- Następna dostępna wartość pola lookupId dla danej kolekcji
     kopalnia Int64
     nkPub Int64
+    autor Int64
+    wydawca Int64
     deriving Typeable
 
 NkPub                     -- Publikacja niekomiksowa
@@ -31,13 +33,22 @@ HasloPrzedm
     deriving Typeable
 
 Autor
+    lookupId Int64
     imiona Text Maybe
     nazwisko Text
+    UniqueAutor lookupId
+    deriving Typeable
+
+KopalniaAutor
+    autorId AutorId
+    kopalniaId KopalniaId
+    typ TypAutora
     deriving Typeable
 
 Wydawca
+    lookupId Int64
     nazwa Text
-    UniqueWydawca nazwa
+    UniqueWydawca lookupId
     deriving Typeable
 
 Kopalnia
