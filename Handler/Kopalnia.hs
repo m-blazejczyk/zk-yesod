@@ -36,6 +36,7 @@ getKopalniaItemR lookupId = do
         Nothing -> return Nothing
     mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
+    haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
@@ -71,6 +72,10 @@ getMiesiac _ = Nothing
 getSlowoKlucz :: Maybe SlowoKlucz -> Text
 getSlowoKlucz (Just sk) = slowoKluczSlowo sk
 getSlowoKlucz Nothing = ""
+
+getHasloPrzedm :: Maybe HasloPrzedm -> Text
+getHasloPrzedm (Just hp) = hasloPrzedmHaslo hp
+getHasloPrzedm Nothing = ""
 
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.

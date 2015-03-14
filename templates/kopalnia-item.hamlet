@@ -55,7 +55,11 @@
       <p class="inobtrusive">Opis:
       <p class="blockquote">#{opis}
 
-    <!-- Hasla przemiotowe -->
+    $if not $ null $ haslaPrzedm
+      <p class="inobtrusive">Hasła przedmiotowe:
+      <p class="blockquote">
+        $forall mHaslo <- haslaPrzedm
+          <a href="#" class="link1">#{getHasloPrzedm mHaslo}
 
     $if not $ null $ slowaKluczowe
       <p class="inobtrusive">Słowa kluczowe:
