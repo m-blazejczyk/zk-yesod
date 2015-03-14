@@ -35,6 +35,7 @@ getKopalniaItemR lookupId = do
         Just _ -> getMaybe $ kopalniaDzialId kopalnia
         Nothing -> return Nothing
     mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
+    slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
@@ -45,6 +46,12 @@ getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
             Maybe (Key val) -> HandlerT site IO (Maybe val)
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
+
+getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
+              YesodPersist site,
+              PersistEntityBackend ent ~ YesodPersistBackend site) =>
+             [Key ent] -> HandlerT site IO [(Maybe ent)]
+getListM = mapM (\key -> runDB $ get key)
 
 getMiesiac :: Maybe Int64 -> Maybe Text
 getMiesiac (Just 1) = Just "styczeń"
@@ -60,6 +67,10 @@ getMiesiac (Just 10) = Just "październik"
 getMiesiac (Just 11) = Just "listopad"
 getMiesiac (Just 12) = Just "grudzień"
 getMiesiac _ = Nothing
+
+getSlowoKlucz :: Maybe SlowoKlucz -> Text
+getSlowoKlucz (Just sk) = slowoKluczSlowo sk
+getSlowoKlucz Nothing = ""
 
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.

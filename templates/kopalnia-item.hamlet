@@ -57,7 +57,11 @@
 
     <!-- Hasla przemiotowe -->
 
-    <!-- Słowa kluczowe -->
+    $if not $ null $ slowaKluczowe
+      <p class="inobtrusive">Słowa kluczowe:
+      <p class="blockquote">
+        $forall mSlowo <- slowaKluczowe
+          <a href="#" class="link1">#{getSlowoKlucz mSlowo}
 
     <p class="inobtrusive">
       Linki:
