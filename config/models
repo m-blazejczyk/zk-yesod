@@ -57,7 +57,7 @@ Kopalnia
     pubRok Int64 Maybe
     pubMiesiac Int64 Maybe
     brakInfo Bool default=False
-    wydawca WydawcaId Maybe
+    wydawcaId WydawcaId Maybe
     miejsceWyd Text Maybe
     rodzaj Rodzaj default=Artykul
     objetosc Text Maybe

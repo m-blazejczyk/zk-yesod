@@ -24,13 +24,6 @@ getKopalniaMainR = do
         setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
 
-getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
-             YesodPersist site,
-             PersistEntityBackend val ~ YesodPersistBackend site) =>
-            Maybe (Key val) -> HandlerT site IO (Maybe val)
-getMaybe (Just lookupId) = runDB $ get lookupId
-getMaybe _ = return Nothing
-
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
     (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
@@ -41,21 +34,46 @@ getKopalniaItemR lookupId = do
     mDzial <- case mRodzic of
         Just _ -> getMaybe $ kopalniaDzialId kopalnia
         Nothing -> return Nothing
+    mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
 
+getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
+             YesodPersist site,
+             PersistEntityBackend val ~ YesodPersistBackend site) =>
+            Maybe (Key val) -> HandlerT site IO (Maybe val)
+getMaybe (Just lookupId) = runDB $ get lookupId
+getMaybe _ = return Nothing
+
+getMiesiac :: Maybe Int64 -> Maybe Text
+getMiesiac (Just 1) = Just "styczeń"
+getMiesiac (Just 2) = Just "luty"
+getMiesiac (Just 3) = Just "marzec"
+getMiesiac (Just 4) = Just "kwiecień"
+getMiesiac (Just 5) = Just "maj"
+getMiesiac (Just 6) = Just "czerwiec"
+getMiesiac (Just 7) = Just "lipiec"
+getMiesiac (Just 8) = Just "sierpień"
+getMiesiac (Just 9) = Just "wrzesień"
+getMiesiac (Just 10) = Just "październik"
+getMiesiac (Just 11) = Just "listopad"
+getMiesiac (Just 12) = Just "grudzień"
+getMiesiac _ = Nothing
+
+-- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
+-- the conditional HTML building a lot.
+
 -- Format:
--- <span class="inobtrusive">W:</span> RodzicId.Tytul, RodzicOpis <span class="inobtrusive">(RodzicId.Rodzaj; dział:</span> DzialId->Tytul <span class="inobtrusive">)</span>
+--   <span class="inobtrusive">W:</span> RodzicId.Tytul, RodzicOpis <span class="inobtrusive">(RodzicId.Rodzaj; dział:</span> DzialId->Tytul <span class="inobtrusive">)</span>
 -- Options (RodzicId can be a Kopalnia or a NkPub; NkPubs don't have Dzial): 
--- W: RodzicId, RodzicOpis (RodzajRodzica; dział: DzialId)
--- W: RodzicId, RodzicOpis (RodzajRodzica)
--- W: RodzicId (RodzajRodzica; dział: DzialId)
--- W: RodzicId (RodzajRodzica)
--- W: RodzicOpis
---
--- This approach is not DRY at all, but at the same time it simplifies the conditional HTML building a lot.
--- getRodzicW rodzicOpis rodzic dzial nkRodzic
+--   W: RodzicId, RodzicOpis (RodzajRodzica; dział: DzialId)
+--   W: RodzicId, RodzicOpis (RodzajRodzica)
+--   W: RodzicId (RodzajRodzica; dział: DzialId)
+--   W: RodzicId (RodzajRodzica)
+--   W: RodzicOpis
+-- Parameters:
+--   getRodzicW rodzicOpis rodzic dzial nkRodzic
 getRodzicW :: Maybe Text -> Maybe Kopalnia -> Maybe Kopalnia -> Maybe NkPub -> Widget
 getRodzicW (Just opis) (Just rodzic) (Just dzial) Nothing =
     toWidget [hamlet|
@@ -116,3 +134,52 @@ getRodzicW Nothing     Nothing       Nothing      Nothing =
     return ()
 getRodzicW _ _ _ _ = 
     return ()  -- This is an error condition
+
+-- Format:
+--   <b>Wydawca</b>, MiejsceWyd PubRok
+-- Opcje:
+--   Wydawca, Miejsce Rok
+--   Wydawca, Miejsce
+--   Wydawca Rok
+--   Wydawca
+--   Miejsce Rok
+--   Miejsce
+getWydawcaW :: Maybe Wydawca -> Maybe Text -> Maybe Int64 -> Widget
+getWydawcaW (Just wydawca) (Just miejsce) (Just rok) = 
+    toWidget [hamlet|
+    <p>
+        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>#
+        \, #{miejsce} #{show rok}
+    |]
+getWydawcaW (Just wydawca) (Just miejsce) Nothing = 
+    toWidget [hamlet|
+    <p>
+    <p>
+        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>#
+        \, #{miejsce}
+    |]
+getWydawcaW (Just wydawca) Nothing (Just rok) = 
+    toWidget [hamlet|
+    <p>
+    <p>
+        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>
+        #{show rok}
+    |]
+getWydawcaW (Just wydawca) Nothing Nothing = 
+    toWidget [hamlet|
+    <p>
+    <p>
+        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>
+    |]
+getWydawcaW Nothing (Just miejsce) (Just rok) = 
+    toWidget [hamlet|
+    <p>
+        #{miejsce} #{show rok}
+    |]
+getWydawcaW Nothing (Just miejsce) Nothing = 
+    toWidget [hamlet|
+    <p>
+        #{miejsce}
+    |]
+getWydawcaW _ _ _ = 
+    return ()

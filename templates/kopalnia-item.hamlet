@@ -10,17 +10,27 @@
       <br>
       <span class="inobtrusive">
         <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
+
     <!--
-    $maybe rodzic <- mRodzic
-      <p>Rodzic: #{kopalniaTytul rodzic}
-
-    $maybe dzial <- mDzial
-      <p>Dzial: #{kopalniaTytul dzial}
-
-    $maybe nkRodzic <- mNkRodzic
-      <p>Rodzic niekomiksowy: #{nkPubTytul nkRodzic}
+    Autorzy
+    Tlumacz
+    Osoba prowadząca wywiad
     -->
+
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
+
+    <!--
+    Redaktor
+    -->
+
+    ^{getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
+
+    $maybe rok <- kopalniaPubRok kopalnia
+      <p>
+        <span class="inobtrusive">Data publikacji:
+        $maybe miesiac <- getMiesiac $ kopalniaPubMiesiac kopalnia
+          #{miesiac} #
+        \#{rok}
 
     $maybe strony <- kopalniaStrony kopalnia
       <p>
@@ -40,6 +50,14 @@
     <p>
       <span class="inobtrusive">Język:
       #{showJezyk $ kopalniaJezyk kopalnia}
+
+    $maybe opis <- kopalniaOpis kopalnia
+      <p class="inobtrusive">Opis:
+      <p class="blockquote">#{opis}
+
+    <!-- Hasla przemiotowe -->
+
+    <!-- Słowa kluczowe -->
 
     <p class="inobtrusive">
       Linki:
