@@ -10,33 +10,17 @@
       <br>
       <span class="inobtrusive">
         <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
-
+    <!--
     $maybe rodzic <- mRodzic
       <p>Rodzic: #{kopalniaTytul rodzic}
-
-    ^{getKopalniaLink mRodzic}
 
     $maybe dzial <- mDzial
       <p>Dzial: #{kopalniaTytul dzial}
 
     $maybe nkRodzic <- mNkRodzic
       <p>Rodzic niekomiksowy: #{nkPubTytul nkRodzic}
-
-    <p>
-      <span class="inobtrusive">W:
-      RodzicId, RodzicOpis
-      <span class="inobtrusive">(RodzajRodzica; dział: 
-      DzialId#
-      \<span class="inobtrusive">)
-
-    <p>
-      <span class="inobtrusive">W:
-      RodzicId
-      <span class="inobtrusive">(RodzajRodzica)
-
-    <p>
-      <span class="inobtrusive">W:
-      RodzicOpis #{preEscapedToMarkup $ getKopalniaRodzic kopalnia}
+    -->
+    ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
     $maybe strony <- kopalniaStrony kopalnia
       <p>

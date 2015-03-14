@@ -1,4 +1,4 @@
-module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR, getKopalniaRodzic) where
+module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR) where
 
 import Import
 import Enums
@@ -31,10 +31,6 @@ getMaybe :: (PersistEntity val, PersistStore (YesodPersistBackend site),
 getMaybe (Just lookupId) = runDB $ get lookupId
 getMaybe _ = return Nothing
 
-getKopalniaLink :: Maybe Kopalnia -> Widget
-getKopalniaLink (Just kopalnia) = toWidget [hamlet|<a href=@{KopalniaItemR (kopalniaLookupId kopalnia)} class="link1">#{kopalniaTytul kopalnia}|]
-getKopalniaLink _ = toWidget [hamlet|<span style="display: none;">...|]
-
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR lookupId = do
     (Entity _ kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
@@ -51,11 +47,72 @@ getKopalniaItemR lookupId = do
 
 -- Format:
 -- <span class="inobtrusive">W:</span> RodzicId.Tytul, RodzicOpis <span class="inobtrusive">(RodzicId.Rodzaj; dział:</span> DzialId->Tytul <span class="inobtrusive">)</span>
--- Options: 
+-- Options (RodzicId can be a Kopalnia or a NkPub; NkPubs don't have Dzial): 
 -- W: RodzicId, RodzicOpis (RodzajRodzica; dział: DzialId)
 -- W: RodzicId, RodzicOpis (RodzajRodzica)
--- W: RodzicId (RodzajRodzica)
 -- W: RodzicId (RodzajRodzica; dział: DzialId)
+-- W: RodzicId (RodzajRodzica)
 -- W: RodzicOpis
-getKopalniaRodzic :: Kopalnia -> Text
-getKopalniaRodzic _ = "<em>hello!</em>"
+--
+-- This approach is not DRY at all, but at the same time it simplifies the conditional HTML building a lot.
+-- getRodzicW rodzicOpis rodzic dzial nkRodzic
+getRodzicW :: Maybe Text -> Maybe Kopalnia -> Maybe Kopalnia -> Maybe NkPub -> Widget
+getRodzicW (Just opis) (Just rodzic) (Just dzial) Nothing =
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href=@{KopalniaItemR (kopalniaLookupId rodzic)} class="link1">#{kopalniaTytul rodzic}#
+        \, #{opis}
+        <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj rodzic}; dział:
+        <a href=@{KopalniaItemR (kopalniaLookupId dzial)} class="link1">#{kopalniaTytul dzial}
+        <span class="inobtrusive">)
+    |]
+getRodzicW Nothing     (Just rodzic) (Just dzial) Nothing = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href=@{KopalniaItemR (kopalniaLookupId rodzic)} class="link1">#{kopalniaTytul rodzic}
+        <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj rodzic}; dział:
+        <a href=@{KopalniaItemR (kopalniaLookupId dzial)} class="link1">#{kopalniaTytul dzial}
+        <span class="inobtrusive">)
+    |]
+getRodzicW (Just opis) (Just rodzic) Nothing      Nothing = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href=@{KopalniaItemR (kopalniaLookupId rodzic)} class="link1">#{kopalniaTytul rodzic}#
+        \, #{opis}
+        <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj rodzic})
+    |]
+getRodzicW Nothing     (Just rodzic) Nothing      Nothing = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href=@{KopalniaItemR (kopalniaLookupId rodzic)} class="link1">#{kopalniaTytul rodzic}
+        <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj rodzic})
+    |]
+getRodzicW (Just opis) Nothing       Nothing      (Just nkRodzic) = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href="#" class="link1">#{nkPubTytul nkRodzic}#
+        \, #{opis}
+        <span class="inobtrusive">(#{showRodzaj $ nkPubRodzaj nkRodzic})
+    |]
+getRodzicW Nothing     Nothing       Nothing      (Just nkRodzic) = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        <a href="#" class="link1">#{nkPubTytul nkRodzic}
+        <span class="inobtrusive">(#{showRodzaj $ nkPubRodzaj nkRodzic})
+    |]
+getRodzicW (Just opis) Nothing       Nothing      Nothing = 
+    toWidget [hamlet|
+    <p>
+        <span class="inobtrusive">W:
+        #{opis}
+    |]
+getRodzicW Nothing     Nothing       Nothing      Nothing = 
+    return ()
+getRodzicW _ _ _ _ = 
+    return ()  -- This is an error condition
