@@ -1,15 +1,15 @@
 <article id="article">
 
   <h2 id="title">
-    Polska Bibliografia Wiedzy o Komiksie:<br>Fiszka publikacji
+    Polska Bibliografia Wiedzy o Komiksie
+
+  <h2 id="title">
+    #{kopalniaTytul kopalnia}
+    <br>
+    <small>
+      <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
   <div class="kopalnia-top-div">
-
-    <p class="recka-title" style="text-align: left;">
-      <span class="tytul">#{kopalniaTytul kopalnia}
-      <br>
-      <span class="inobtrusive">
-        <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
     $if length autorzy > 0
       <p>
