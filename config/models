@@ -53,6 +53,7 @@ Wydawca
 
 Kopalnia
     lookupId Int64
+    url Text Maybe
     rodzicId KopalniaId Maybe
     nkRodzicId NkPubId Maybe
     dzialId KopalniaId Maybe
@@ -68,8 +69,6 @@ Kopalnia
     wywiadowcy Text Maybe
     nota Text Maybe
     opis Text Maybe
-    slowaKlucz [SlowoKluczId]
-    haslaPrzedm [HasloPrzedmId]
     pubRok Int64 Maybe
     pubMiesiac Int64 Maybe
     brakInfo Bool default=False
@@ -78,9 +77,18 @@ Kopalnia
     rodzaj Rodzaj default=Artykul
     objetosc Text Maybe
     jezyk Jezyk default=JezykPL
+    slowaKlucz [SlowoKluczId]
+    haslaPrzedm [HasloPrzedmId]
+    linki [KopalniaLinkId]
     created UTCTime default=CURRENT_TIME
     updated UTCTime default=CURRENT_TIME
     UniqueKopalnia lookupId
+    deriving Typeable
+
+KopalniaLink
+    url Text
+    nazwa Text Maybe
+    opis Text Maybe
     deriving Typeable
 
 -- DESC Kopalnia:

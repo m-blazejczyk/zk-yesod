@@ -38,6 +38,7 @@ getKopalniaItemR lookupId = do
     mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
+    linki <- getListM $ kopalniaLinki kopalnia
     -- This call return a List of [Entity KopalniaAutor]
     kopAut <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
     -- This call returns a List of Maybe Autor

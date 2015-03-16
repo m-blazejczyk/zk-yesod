@@ -4,7 +4,11 @@
     Polska Bibliografia Wiedzy o Komiksie
 
   <h2 id="title">
-    #{kopalniaTytul kopalnia}
+    $maybe url <- kopalniaUrl kopalnia
+      <a href=#{url} class="link1" target="_blank">
+        #{kopalniaTytul kopalnia}
+    $nothing
+      #{kopalniaTytul kopalnia}
     <br>
     <small>
       <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj kopalnia})
@@ -95,6 +99,20 @@
 
     <p class="inobtrusive">
       Linki:
+
+    $if not $ null $ linki
+      <p class="blockquote">
+        $forall mLink <- linki
+          $maybe link <- mLink
+            <a href=#{kopalniaLinkUrl link} class="link1" target="_blank">
+              $maybe nazwa <- kopalniaLinkNazwa link
+                #{nazwa}
+              $nothing
+                #{kopalniaLinkUrl link}
+            $maybe opis <- kopalniaLinkOpis link
+              <br>
+              #{opis}
+            <br>
 
     <p class="blockquote">
       <a class="btn btn-default btn-xs" href="#" role="button">Dodaj link
