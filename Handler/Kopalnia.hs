@@ -2,6 +2,7 @@ module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR) where
 
 import Import
 import Enums
+import Database.MongoDB.Query (MongoContext)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
 getKopalniaMainR :: Handler Html
@@ -37,10 +38,15 @@ getKopalniaItemR lookupId = do
     mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
+    -- This call return a List of [Entity KopalniaAutor]
     kopAut <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
-    --aut <- runDB $ get testKey
-    --autorzy' <- mapM convertKopAut kopAut
-    --autorzy <- filterM filterMAut autorzy'
+    -- This call returns a List of Maybe Autor
+    allAut <- mapM (\(Entity _ kopAut) -> runDB $ get $ kopalniaAutorAutorId kopAut) kopAut
+    -- Here we walk both lists together and extract only authors of a particular type
+    autorzy <- return $ keepOnly AutorAut kopAut allAut
+    redaktorzy <- return $ keepOnly AutorRed kopAut allAut
+    tlumacze <- return $ keepOnly AutorTlum kopAut allAut
+    wywiadowcy <- return $ keepOnly AutorWyw kopAut allAut
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
@@ -58,17 +64,19 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
             [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
 
-convertKopAut (Entity _ kopAut) = runDB $ get $ kopalniaAutorAutorId kopAut
-
-filterMAut (Just v) = return True
-filterMAut Nothing = return False
-
---testtest (Entity _ ka) = kopalniaAutorAutorId ka
-
---testKey = AutorKey {unAutorKey = MongoKey {unMongoKey = 55046a72d1e929ac923744f7}}
-
---testtest (Just (Entity _ aut)) = autorNazwisko aut
---testtest _ = "Nothing"
+-- This function is sort of a combination of map, zip and filter.
+-- It walks both input lists in parallel and retains only Autor records that are not Nothing
+-- and whose corresponding KopalniaAutor have the 'typ' field equal to the first argument.
+keepOnly :: TypAutora -> [Entity KopalniaAutor] -> [Maybe Autor] -> [Autor]
+keepOnly typ' kas' auts' = keepOnly' typ' kas' auts' []
+    where
+        -- First make sure that missing authors are skipped.
+        keepOnly' typ (_:kas) (Nothing:auts) output = keepOnly' typ kas auts output
+        -- Then look inside the KopalniaAutor record to see if the types match or not.
+        keepOnly' typ ((Entity _ ka):kas) ((Just aut):auts) output
+            | typ == kopalniaAutorTyp ka = keepOnly' typ kas auts (aut:output)
+            | otherwise = keepOnly' typ kas auts output
+        keepOnly' _ _ _ output = output
 
 getMiesiac :: Maybe Int64 -> Maybe Text
 getMiesiac (Just 1) = Just "styczeń"

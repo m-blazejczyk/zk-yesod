@@ -11,17 +11,43 @@
       <span class="inobtrusive">
         <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
-    <!--
-    Autorzy
-    Tlumacz
-    Wywiadowca
-    -->
+    $if length autorzy > 0
+      <p>
+        $forall autor <- autorzy
+          <b>
+            <a href=@{AutorR (autorLookupId autor)} class="link1">
+              $maybe imiona <- autorImiona autor
+                #{imiona} #
+              #{autorNazwisko autor} #
+
+    $if length tlumacze > 0
+      <p>
+        <span class="inobtrusive">Tłumaczenie:
+        $forall tlumacz <- tlumacze
+          <a href@{AutorR (autorLookupId tlumacz)} class="link1">
+            $maybe imiona <- autorImiona tlumacz
+              #{imiona} #
+            #{autorNazwisko tlumacz} #
+
+    $if length wywiadowcy > 0
+      <p>
+        <span class="inobtrusive">Pytania zadawane przez:
+        $forall wywiadowca <- wywiadowcy
+          <a href=@{AutorR (autorLookupId wywiadowca)} class="link1">
+            $maybe imiona <- autorImiona wywiadowca
+              #{imiona} #
+            #{autorNazwisko wywiadowca} #
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
-    <!--
-    Redaktor
-    -->
+    $if length redaktorzy > 0
+      <p>
+        <span class="inobtrusive">Redakcja:
+        $forall redaktor <- redaktorzy
+          <a href=@{AutorR (autorLookupId redaktor)} class="link1">
+            $maybe imiona <- autorImiona redaktor
+              #{imiona} #
+            #{autorNazwisko redaktor} #
 
     ^{getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
 

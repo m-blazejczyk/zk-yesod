@@ -64,6 +64,7 @@ library
                  , persistent                    >= 2.0        && < 2.2
                  , persistent-mongoDB            >= 2.1.2      && < 2.2
                  , persistent-template           >= 2.0        && < 2.2
+                 , mongoDB
                  , template-haskell
                  , shakespeare                   >= 2.0        && < 2.1
                  , hjsmin                        >= 0.1        && < 0.2
