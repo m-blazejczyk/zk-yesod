@@ -11,12 +11,10 @@
       <span class="inobtrusive">
         <small>(#{showRodzaj $ kopalniaRodzaj kopalnia})
 
-    $forall Just autor <- autorzy
-      #{show $ autorNazwisko autor} #
     <!--
     Autorzy
     Tlumacz
-    Osoba prowadząca wywiad
+    Wywiadowca
     -->
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}

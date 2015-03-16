@@ -1,0 +1,8 @@
+<article id="article">
+
+  <h2 id="title">
+    Polska Bibliografia Wiedzy o Komiksie:
+  <h2 id="title">
+    $maybe imiona <- autorImiona autor
+      #{imiona} #
+    #{autorNazwisko autor}

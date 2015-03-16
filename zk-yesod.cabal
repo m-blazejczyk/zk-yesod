@@ -24,6 +24,7 @@ library
                      Handler.Common
                      Handler.Home
                      Handler.Kopalnia
+                     Handler.Autor
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

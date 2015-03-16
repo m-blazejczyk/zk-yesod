@@ -38,8 +38,9 @@ getKopalniaItemR lookupId = do
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     kopAut <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
-    autorzy' <- mapM convertKopAut kopAut
-    autorzy <- filterM filterMAut autorzy'
+    --aut <- runDB $ get testKey
+    --autorzy' <- mapM convertKopAut kopAut
+    --autorzy <- filterM filterMAut autorzy'
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
@@ -61,6 +62,13 @@ convertKopAut (Entity _ kopAut) = runDB $ get $ kopalniaAutorAutorId kopAut
 
 filterMAut (Just v) = return True
 filterMAut Nothing = return False
+
+--testtest (Entity _ ka) = kopalniaAutorAutorId ka
+
+--testKey = AutorKey {unAutorKey = MongoKey {unMongoKey = 55046a72d1e929ac923744f7}}
+
+--testtest (Just (Entity _ aut)) = autorNazwisko aut
+--testtest _ = "Nothing"
 
 getMiesiac :: Maybe Int64 -> Maybe Text
 getMiesiac (Just 1) = Just "styczeń"
