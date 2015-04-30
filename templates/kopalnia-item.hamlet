@@ -100,6 +100,7 @@
     <p class="inobtrusive">
       Linki:
 
+    <!--
     $if not $ null $ linki
       <p class="blockquote">
         $forall mLink <- linki
@@ -113,6 +114,7 @@
               <br>
               #{opis}
             <br>
+    -->
 
     <p class="blockquote">
       <a class="btn btn-default btn-xs" href="#" role="button">Dodaj link

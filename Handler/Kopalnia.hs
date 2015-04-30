@@ -7,20 +7,28 @@ import Database.MongoDB.Query (MongoContext)
 
 getKopalniaMainR :: Handler Html
 getKopalniaMainR = do
-    --autor1 <- runDB $ insert $ Autor (Just "Piotr") "Marczewski"
-    --autor2 <- runDB $ insert $ Autor (Just "Anna") "Kowalczyk"
-    --autorzy <- M.fromList [(AutorAut, autor1), (AutorTlum, autor2)]
-    --now <- liftIO $ getCurrentTime
-    --nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
-    --klucz1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
-    --klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
-    --haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
-    --haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
-    --autor1 <- runDB $ insert $ Autor (Just "Jerzy") "Szyłak"
-    --autor2 <- runDB $ insert $ Autor (Just "Michał") "Traczyk"
-    --wydawca <- runDB $ insert $ Wydawca "Timof i cisi wspólnicy"
-    --nastepny <- runDB $ insert $ Nastepny 2 2
-    --item1 <- runDB $ insert $ Kopalnia 1 Nothing (Just nk1) Nothing (Just "Opis rodzica") (Just "Strony") (Just "ISBN") "Tytul" (Just "Nota") (Just "Opis") [klucz1, klucz2] [haslo1, haslo2] (Just 2014) (Just 12) False (Just wydawca) (Just "Poznań") Numer (Just "8 str.") JezykPL now now
+    autor1 <- runDB $ insert $ Autor 1 (Just "Piotr") "Marczewski"
+    autor2 <- runDB $ insert $ Autor (Just "Jerzy") "Szyłak"
+    autor3 <- runDB $ insert $ Autor 3 (Just "Michał") "Traczyk"
+    autor4 <- runDB $ insert $ Autor 4 (Just "Tomasz") "Marciniak"
+    now <- liftIO $ getCurrentTime
+    nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
+    klucz1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
+    klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
+    haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
+    haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
+    wydawca <- runDB $ insert $ Wydawca "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
+    link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
+    link2 <- runDB $ insert $ KopalniaLink "http://www.google.com" (Just "Google") Nothing
+    link3 <- runDB $ insert $ KopalniaLink "http://www.pgx.ca" Nothing (Just "Strona PGx")
+    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing TRUE Nothing Nothing Artykul Nothing JezykPL [] [] []
+    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) FALSE (Just wydawca) (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1]
+    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) FALSE (Just wydawca) (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3]
+    kopaut1 <- runDB $ insert $ KopalniaAutor item1 autor1 AutorAut
+    kopaut2 <- runDB $ insert $ KopalniaAutor item2 autor2 AutorRed
+    kopaut3 <- runDB $ insert $ KopalniaAutor item3 autor3 AutorTlum
+    kopaut4 <- runDB $ insert $ KopalniaAutor item3 autor4 AutorWyw
+    nastepny <- runDB $ insert $ Nastepny 4 2 5 2
     defaultLayout $ do
         setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-main")
