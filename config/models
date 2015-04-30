@@ -48,6 +48,7 @@ KopalniaAutor
 Wydawca
     lookupId Int64
     nazwa Text
+    url Text Maybe
     UniqueWydawca lookupId
     deriving Typeable
 
