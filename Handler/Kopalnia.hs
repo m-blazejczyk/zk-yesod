@@ -48,14 +48,14 @@ getKopalniaItemR lookupId = do
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     linki <- getListM $ kopalniaLinki kopalnia
     -- This call return a List of [Entity KopalniaAutor]
-    kopAut <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
+    kopAuts <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
     -- This call returns a List of Maybe Autor
-    allAut <- mapM (\(Entity _ kopAut) -> runDB $ get $ kopalniaAutorAutorId kopAut) kopAut
+    allAut <- mapM (\(Entity _ kopAut) -> runDB $ get $ kopalniaAutorAutorId kopAut) kopAuts
     -- Here we walk both lists together and extract only authors of a particular type
-    autorzy <- return $ keepOnly AutorAut kopAut allAut
-    redaktorzy <- return $ keepOnly AutorRed kopAut allAut
-    tlumacze <- return $ keepOnly AutorTlum kopAut allAut
-    wywiadowcy <- return $ keepOnly AutorWyw kopAut allAut
+    autorzy <- return $ keepOnly AutorAut kopAuts allAut
+    redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
+    tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
+    wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
     defaultLayout $ do
         setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "kopalnia-item")
