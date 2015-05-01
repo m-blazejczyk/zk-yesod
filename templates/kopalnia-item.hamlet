@@ -101,18 +101,16 @@
       Linki:
 
     $if not $ null $ linki
-      <p class="blockquote">
-        $forall mLink <- linki
-          $maybe link <- mLink
+      $forall mLink <- linki
+        $maybe link <- mLink
+          <p class="blockquote">
             <a href=#{kopalniaLinkUrl link} class="link1" target="_blank">
               $maybe nazwa <- kopalniaLinkNazwa link
                 #{nazwa}
               $nothing
                 #{kopalniaLinkUrl link}
             $maybe opis <- kopalniaLinkOpis link
-              <br>
-              #{opis}
-            <br>
+              - #{opis}
 
     <p class="blockquote">
       <a class="btn btn-default btn-xs" href="#" role="button">Dodaj link
