@@ -1,7 +1,7 @@
 module Handler.Autor (getAutorR) where
 
 import Import
-import Enums
+import Enums()
 
 getAutorR :: Int64 -> Handler Html
 getAutorR lookupId = do

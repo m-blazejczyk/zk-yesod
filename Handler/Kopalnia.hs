@@ -2,7 +2,6 @@ module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR) where
 
 import Import
 import Enums
-import Database.MongoDB.Query (MongoContext)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
 getKopalniaMainR :: Handler Html
