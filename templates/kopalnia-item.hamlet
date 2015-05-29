@@ -4,14 +4,15 @@
     Polska Bibliografia Wiedzy o Komiksie
 
   <h2 id="title">
-    $maybe url <- kopalniaUrl kopalnia
-      <a href=#{url} class="link1" target="_blank">
-        #{kopalniaTytul kopalnia}
-    $nothing
-      #{kopalniaTytul kopalnia}
+    #{kopalniaTytul kopalnia}
     <br>
     <small>
-      <span class="inobtrusive">(#{showRodzaj $ kopalniaRodzaj kopalnia})
+      $maybe url <- kopalniaUrl kopalnia
+        <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia};
+        <a href=#{url} class="link1" target="_blank">
+          link do zawartości
+      $nothing
+        <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia}
 
   <div class="kopalnia-top-div">
 
