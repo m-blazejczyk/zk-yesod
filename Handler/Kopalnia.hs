@@ -114,14 +114,6 @@ getMiesiac (Just 11) = Just "listopad"
 getMiesiac (Just 12) = Just "grudzień"
 getMiesiac _ = Nothing
 
-getSlowoKlucz :: Maybe SlowoKlucz -> Text
-getSlowoKlucz (Just sk) = slowoKluczSlowo sk
-getSlowoKlucz Nothing = ""
-
-getHasloPrzedm :: Maybe HasloPrzedm -> Text
-getHasloPrzedm (Just hp) = hasloPrzedmHaslo hp
-getHasloPrzedm Nothing = ""
-
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.
 

@@ -90,13 +90,13 @@
       <p class="inobtrusive">Hasła przedmiotowe:
       <p class="blockquote">
         $forall mHaslo <- haslaPrzedm
-          <a href="#" class="link1">#{getHasloPrzedm mHaslo}
+          <a href="#" class="link1">#{maybe "" hasloPrzedmHaslo mHaslo}
 
     $if not $ null $ slowaKluczowe
       <p class="inobtrusive">Słowa kluczowe:
       <p class="blockquote">
         $forall mSlowo <- slowaKluczowe
-          <a href="#" class="link1">#{getSlowoKlucz mSlowo}
+          <a href="#" class="link1">#{maybe "" slowoKluczSlowo mSlowo}
 
     <p class="inobtrusive">
       Linki:
