@@ -236,3 +236,21 @@ getWydawcaW Nothing (Just miejsce) Nothing =
     |]
 getWydawcaW _ _ _ = 
     return ()
+
+getBiblioFooterW :: Widget
+getBiblioFooterW = toWidget [hamlet|
+    <div class="biblio-footer">
+      <div class="row">
+        <div class="col-md-2 right">
+          <a href="http://www.mkidn.gov.pl/" target="_blank"><img src=@{StaticR img_mkidn_biblio_png} width="118" height="70">
+        <div class="col-md-2">
+          <strong>Dofinansowano ze środków Ministerstwa Kultury i Dziedzictwa Narodowego.
+        <div class="col-md-2 right">
+          <a href="http://lib.amu.edu.pl/" target="_blank"><img src=@{StaticR img_bu_logo_biblio_png} width="98" height="70">
+        <div class="col-md-2">
+          Projekt wspierany przez Bibliotekę Uniwersytecką w Poznaniu.
+        <div class="col-md-2 right">
+          <a href="http://fundacja-ikp.pl/" target="_blank"><img src=@{StaticR img_ikp_logo_biblio_png} width="147" height="63">
+        <div class="col-md-2">
+          Projekt realizowany we współpracy z Fundacją Instytut Kultury Popularnej.
+    |]
