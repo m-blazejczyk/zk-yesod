@@ -4,6 +4,9 @@ import Import
 import Enums
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
+defaultTitle :: Html
+defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+
 getKopalniaMainR :: Handler Html
 getKopalniaMainR = do
     -- autor1 <- runDB $ insert $ Autor 1 (Just "Piotr") "Marczewski"
@@ -29,7 +32,7 @@ getKopalniaMainR = do
     -- kopaut4 <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
     -- nastepny <- runDB $ insert $ Nastepny 4 2 5 2
     defaultLayout $ do
-        setTitle "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+        setTitle defaultTitle
         $(widgetFile "kopalnia-main")
 
 getKopalniaItemR :: Int64 -> Handler Html
@@ -63,7 +66,7 @@ getKopalniaItemCommon isEdit lookupId = do
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
     defaultLayout $
         if isEdit then do
-            setTitle "Edycja fiszki publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+            setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
         else do
             setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
