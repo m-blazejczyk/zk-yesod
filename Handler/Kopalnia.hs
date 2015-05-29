@@ -69,7 +69,7 @@ getKopalniaItemCommon isEdit lookupId = do
             setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
         else do
-            setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+            setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
 
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
