@@ -1,4 +1,4 @@
-module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR) where
+module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR, getKopalniaItemEditR) where
 
 import Import
 import Enums
@@ -33,7 +33,13 @@ getKopalniaMainR = do
         $(widgetFile "kopalnia-main")
 
 getKopalniaItemR :: Int64 -> Handler Html
-getKopalniaItemR lookupId = do
+getKopalniaItemR = getKopalniaItemCommon False
+
+getKopalniaItemEditR :: Int64 -> Handler Html
+getKopalniaItemEditR = getKopalniaItemCommon True
+
+getKopalniaItemCommon :: Bool -> Int64 -> Handler Html
+getKopalniaItemCommon isEdit lookupId = do
     (Entity kopalniaId kopalnia) <- runDB $ getBy404 $ UniqueKopalnia lookupId
     mRodzic <- getMaybe $ kopalniaRodzicId kopalnia
     mNkRodzic <- case mRodzic of
@@ -55,9 +61,13 @@ getKopalniaItemR lookupId = do
     redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
     tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
-    defaultLayout $ do
-        setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
-        $(widgetFile "kopalnia-item")
+    defaultLayout $
+        if isEdit then do
+            setTitle "Edycja fiszki publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+            $(widgetFile "kopalnia-item")
+        else do
+            setTitle "Fiszka publikacji - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
+            $(widgetFile "kopalnia-item")
 
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              YesodPersist site,

@@ -4,6 +4,7 @@
 / HomeR GET POST
 /bibliografia KopalniaMainR GET
 /bibliografia/#Int64 KopalniaItemR GET
+/bibliografia/#Int64/edycja KopalniaItemEditR GET
 /autor/#Int64 AutorR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic
