@@ -12,11 +12,6 @@ $newline never
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css"/>
 
-    <script src=@{StaticR slimbox2_js_jquery_1_9_1_min_js}></script>
-    <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-
     ^{pageHead pc}
 
   <body>
@@ -71,4 +66,8 @@ $newline never
         <div id="footer-about">
           <a href="/o_stronie">
             O stronie
-  
+
+  <script src=@{StaticR slimbox2_js_jquery_1_9_1_min_js}></script>
+  <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
