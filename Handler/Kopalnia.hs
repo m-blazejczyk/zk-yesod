@@ -1,4 +1,9 @@
-module Handler.Kopalnia (getKopalniaMainR, getKopalniaItemR, getKopalniaItemEditR) where
+module Handler.Kopalnia (
+    getKopalniaMainR,
+    getKopalniaItemR,
+    getKopalniaItemEditR,
+    postKopalniaItemEditR
+    ) where
 
 import Import
 import Enums
@@ -72,6 +77,10 @@ getKopalniaItemCommon isEdit lookupId = do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
 
+postKopalniaItemEditR :: Int64 -> Handler Html
+postKopalniaItemEditR _ = notFound
+
+-- Helper functions
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              YesodPersist site,
              PersistEntityBackend ent ~ YesodPersistBackend site) =>
