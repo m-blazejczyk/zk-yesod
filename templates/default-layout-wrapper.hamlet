@@ -12,6 +12,7 @@ $newline never
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css"/>
 
+    <!-- JQuery has to be included here otherwise it won't be possible to use it in Julius files of inner templates -->
     <script src=@{StaticR slimbox2_js_jquery_1_9_1_min_js}></script>
 
     ^{pageHead pc}
