@@ -7,6 +7,8 @@ module Handler.Kopalnia (
 
 import Import
 import Enums
+-- import Network.HTTP.Types (status200)
+-- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
 
 defaultTitle :: Html
@@ -77,8 +79,14 @@ getKopalniaItemCommon isEdit lookupId = do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
 
-postKopalniaItemEditR :: Int64 -> Handler Html
-postKopalniaItemEditR _ = notFound
+postKopalniaItemEditR :: Int64 -> Handler Text
+postKopalniaItemEditR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+-- postKopalniaItemEditR :: Int64 -> Handler Value
+-- postKopalniaItemEditR _ = return $ object
+--     [ ("status" .= ("error" :: Text)),
+--       ("msg" .= ("This is a message!" :: Text))
+--     ]
 
 -- Helper functions
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
