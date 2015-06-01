@@ -5,7 +5,7 @@
 
   <h2 id="title">
     $if isEdit
-      <span id="tytul" data-type="text" data-pk="#{lookupId}" data-url=@{KopalniaItemEditR lookupId} data-title="Tytuł publikacji">
+      <span id="tytul" data-type="text" data-pk="#{lookupId}" data-url=@{KopalniaEditTytulR} data-title="Tytuł publikacji">
         #{kopalniaTytul kopalnia}
     $else
       #{kopalniaTytul kopalnia}

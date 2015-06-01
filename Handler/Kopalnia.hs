@@ -2,7 +2,23 @@ module Handler.Kopalnia (
     getKopalniaMainR,
     getKopalniaItemR,
     getKopalniaItemEditR,
-    postKopalniaItemEditR
+    postKopalniaEditTytulR,
+    postKopalniaEditRodzajR,
+    postKopalniaEditLinkGlR,
+    postKopalniaEditAutorR,
+    postKopalniaEditTlumR,
+    postKopalniaEditRedR,
+    postKopalniaEditWywiadR,
+    postKopalniaEditRodzicR,
+    postKopalniaEditWydawcaR,
+    postKopalniaEditDataWydR,
+    postKopalniaEditIsbnR,
+    postKopalniaEditStrR,
+    postKopalniaEditObjR,
+    postKopalniaEditJezykR,
+    postKopalniaEditOpisR,
+    postKopalniaEditHaslaR,
+    postKopalniaEditSlowaKluczR
     ) where
 
 import Import
@@ -79,14 +95,62 @@ getKopalniaItemCommon isEdit lookupId = do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
 
-postKopalniaItemEditR :: Int64 -> Handler Text
-postKopalniaItemEditR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
-
 -- postKopalniaItemEditR :: Int64 -> Handler Value
 -- postKopalniaItemEditR _ = return $ object
 --     [ ("status" .= ("error" :: Text)),
 --       ("msg" .= ("This is a message!" :: Text))
 --     ]
+
+postKopalniaEditTytulR :: Handler Text
+postKopalniaEditTytulR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditRodzajR :: Handler Text
+postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditLinkGlR :: Handler Text
+postKopalniaEditLinkGlR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditAutorR :: Handler Text
+postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditTlumR :: Handler Text
+postKopalniaEditTlumR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditRedR :: Handler Text
+postKopalniaEditRedR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditWywiadR :: Handler Text
+postKopalniaEditWywiadR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditRodzicR :: Handler Text
+postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditWydawcaR :: Handler Text
+postKopalniaEditWydawcaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditDataWydR :: Handler Text
+postKopalniaEditDataWydR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditIsbnR :: Handler Text
+postKopalniaEditIsbnR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditStrR :: Handler Text
+postKopalniaEditStrR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditObjR :: Handler Text
+postKopalniaEditObjR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditJezykR :: Handler Text
+postKopalniaEditJezykR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditOpisR :: Handler Text
+postKopalniaEditOpisR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditHaslaR :: Handler Text
+postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+
+postKopalniaEditSlowaKluczR :: Handler Text
+postKopalniaEditSlowaKluczR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 -- Helper functions
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),

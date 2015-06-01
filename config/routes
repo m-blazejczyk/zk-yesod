@@ -4,7 +4,23 @@
 / HomeR GET POST
 /bibliografia KopalniaMainR GET
 /bibliografia/#Int64 KopalniaItemR GET
-/bibliografia/#Int64/edycja KopalniaItemEditR GET POST
+/bibliografia/zmien/tytul KopalniaEditTytulR POST
+/bibliografia/zmien/rodzaj KopalniaEditRodzajR POST
+/bibliografia/zmien/link-glowny KopalniaEditLinkGlR POST
+/bibliografia/zmien/autora KopalniaEditAutorR POST
+/bibliografia/zmien/tlumacza KopalniaEditTlumR POST
+/bibliografia/zmien/redaktora KopalniaEditRedR POST
+/bibliografia/zmien/wywiadowce KopalniaEditWywiadR POST
+/bibliografia/zmien/rodzica KopalniaEditRodzicR POST
+/bibliografia/zmien/wydawce KopalniaEditWydawcaR POST
+/bibliografia/zmien/date-wydania KopalniaEditDataWydR POST
+/bibliografia/zmien/isbn KopalniaEditIsbnR POST
+/bibliografia/zmien/strony KopalniaEditStrR POST
+/bibliografia/zmien/objetosc KopalniaEditObjR POST
+/bibliografia/zmien/jezyk KopalniaEditJezykR POST
+/bibliografia/zmien/opis KopalniaEditOpisR POST
+/bibliografia/zmien/hasla-przedmiotowe KopalniaEditHaslaR POST
+/bibliografia/zmien/slowa-kluczowe KopalniaEditSlowaKluczR POST
 /autor/#Int64 AutorR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic
