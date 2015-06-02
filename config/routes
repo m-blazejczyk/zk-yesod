@@ -4,6 +4,7 @@
 / HomeR GET POST
 /bibliografia KopalniaMainR GET
 /bibliografia/#Int64 KopalniaItemR GET
+/bibliografia/#Int64/zmien KopalniaItemEditR GET
 /bibliografia/zmien/tytul KopalniaEditTytulR POST
 /bibliografia/zmien/rodzaj KopalniaEditRodzajR POST
 /bibliografia/zmien/link-glowny KopalniaEditLinkGlR POST
