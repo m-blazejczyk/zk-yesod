@@ -23,6 +23,7 @@ module Handler.Kopalnia (
 
 import Import
 import Enums
+import Text.Read (read)
 -- import Network.HTTP.Types (status200)
 -- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -111,7 +112,9 @@ postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = do
     vars <- postVars
     case vars of
-        (Just lookupId, Just value) -> sendResponseStatus badRequest400 value
+        (Just lookupId, Just value) -> do
+            runDB $ updateWhere [KopalniaLookupId ==. (read $ unpack lookupId :: Int64)] [KopalniaTytul =. value]
+            sendResponseStatus status200 ("OK" :: Text)
         _ -> sendResponseStatus badRequest400 ("Invalid POST request." :: Text)
 
 postKopalniaEditRodzajR :: Handler Text
