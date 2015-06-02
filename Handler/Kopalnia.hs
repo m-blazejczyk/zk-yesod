@@ -101,8 +101,18 @@ getKopalniaItemCommon isEdit lookupId = do
 --       ("msg" .= ("This is a message!" :: Text))
 --     ]
 
+postVars :: MonadHandler m => m (Maybe Text, Maybe Text)
+postVars = do
+    mLookupId <- lookupPostParam "pk"
+    mValue <- lookupPostParam "value"
+    return (mLookupId, mValue)
+
 postKopalniaEditTytulR :: Handler Text
-postKopalniaEditTytulR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditTytulR = do
+    vars <- postVars
+    case vars of
+        (Just lookupId, Just value) -> sendResponseStatus badRequest400 value
+        _ -> sendResponseStatus badRequest400 ("Invalid POST request." :: Text)
 
 postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
