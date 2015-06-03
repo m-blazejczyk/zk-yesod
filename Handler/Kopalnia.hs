@@ -113,9 +113,14 @@ postKopalniaEditTytulR = do
     vars <- postVars
     case vars of
         (Just lookupId, Just value) -> do
-            runDB $ updateWhere [KopalniaLookupId ==. (read $ unpack lookupId :: Int64)] [KopalniaTytul =. value]
-            sendResponseStatus status200 ("OK" :: Text)
-        _ -> sendResponseStatus badRequest400 ("Invalid POST request." :: Text)
+            let criterion = KopalniaLookupId ==. (read $ unpack lookupId :: Int64)
+            cnt <- runDB $ count [criterion]
+            case cnt of
+                1 -> do
+                    runDB $ updateWhere [criterion] [KopalniaTytul =. value]
+                    sendResponseStatus status200 ("OK" :: Text)
+                _ -> sendResponseStatus badRequest400 ("Błąd systemu: niewłaściwy identyfikator" :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST." :: Text)
 
 postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
