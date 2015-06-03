@@ -102,15 +102,15 @@ getKopalniaItemCommon isEdit lookupId = do
 --       ("msg" .= ("This is a message!" :: Text))
 --     ]
 
-postVars :: MonadHandler m => m (Maybe Text, Maybe Text)
-postVars = do
+postVars :: MonadHandler m => (Text -> a) -> m (Maybe Text, Maybe a)
+postVars vald = do
     mLookupId <- lookupPostParam "pk"
     mValue <- lookupPostParam "value"
-    return (mLookupId, mValue)
+    return (mLookupId, vald `fmap` mValue)
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = do
-    vars <- postVars
+    vars <- postVars id
     case vars of
         (Just lookupId, Just value) -> do
             let criterion = KopalniaLookupId ==. (read $ unpack lookupId :: Int64)
@@ -120,7 +120,7 @@ postKopalniaEditTytulR = do
                     runDB $ updateWhere [criterion] [KopalniaTytul =. value]
                     sendResponseStatus status200 ("OK" :: Text)
                 _ -> sendResponseStatus badRequest400 ("Błąd systemu: niewłaściwy identyfikator" :: Text)
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST." :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST" :: Text)
 
 postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
