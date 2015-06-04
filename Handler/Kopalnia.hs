@@ -102,11 +102,27 @@ getKopalniaItemCommon isEdit lookupId = do
 --       ("msg" .= ("This is a message!" :: Text))
 --     ]
 
-postVars :: MonadHandler m => (Text -> a) -> m (Maybe Text, Maybe a)
-postVars vald = do
-    mLookupId <- lookupPostParam "pk"
-    mValue <- lookupPostParam "value"
-    return (mLookupId, vald `fmap` mValue)
+-- | A safe form of read.  Borrowed from http://hackage.haskell.org/package/txt-sushi-0.6.0/src/Database/TxtSushi/ParseUtil.hs
+maybeRead :: String -> Maybe Int64
+maybeRead = fmap fst . listToMaybe . reads
+
+processXEditable :: () -> () -> Handler Text
+processXEditable vald upd = do
+    mLookupId <- return $ maybeRead `fmap` (lookupPostParam "pk")
+    case mLookupId of
+        Just lookupId -> do
+            mValue <- return $ vald `fmap` (lookupPostParam "value")
+            case mValue of
+                Just value -> do
+                    let criterion = KopalniaLookupId ==. lookupId
+                    cnt <- runDB $ count [criterion]
+                    case cnt of
+                        1 -> do
+                            runDB $ updateWhere [criterion] [KopalniaTytul =. value]
+                            sendResponseStatus status200 ("OK" :: Text)
+                        _ -> sendResponseStatus badRequest400 ("Błąd systemu: nieistniejący identyfikator" :: Text)
+                _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST" :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niewłaściwy identyfikator" :: Text)
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = do
