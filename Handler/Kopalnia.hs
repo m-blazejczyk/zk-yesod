@@ -23,7 +23,7 @@ module Handler.Kopalnia (
 
 import Import
 import Enums
-import Text.Read (read)
+import Text.Read (reads)
 -- import Network.HTTP.Types (status200)
 -- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -103,40 +103,38 @@ getKopalniaItemCommon isEdit lookupId = do
 --     ]
 
 -- | A safe form of read.  Borrowed from http://hackage.haskell.org/package/txt-sushi-0.6.0/src/Database/TxtSushi/ParseUtil.hs
-maybeRead :: String -> Maybe Int64
-maybeRead = fmap fst . listToMaybe . reads
+maybeRead :: Maybe Text -> Maybe Int64
+maybeRead (Just txt) = (fmap fst . listToMaybe . reads . unpack) txt
+maybeRead _ = Nothing
 
-processXEditable :: () -> () -> Handler Text
+processXEditable :: (Text -> Either Text a) -> (a -> Filter f -> Handler ()) -> Handler Text
 processXEditable vald upd = do
-    mLookupId <- return $ maybeRead `fmap` (lookupPostParam "pk")
-    case mLookupId of
+    mLookupId <- lookupPostParam "pk"
+    mLookupId2 <- return $ maybeRead mLookupId
+    case mLookupId2 of
         Just lookupId -> do
-            mValue <- return $ vald `fmap` (lookupPostParam "value")
-            case mValue of
-                Just value -> do
-                    let criterion = KopalniaLookupId ==. lookupId
-                    cnt <- runDB $ count [criterion]
-                    case cnt of
-                        1 -> do
-                            runDB $ updateWhere [criterion] [KopalniaTytul =. value]
-                            sendResponseStatus status200 ("OK" :: Text)
-                        _ -> sendResponseStatus badRequest400 ("Błąd systemu: nieistniejący identyfikator" :: Text)
-                _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST" :: Text)
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niewłaściwy identyfikator" :: Text)
+            mValueRaw <- lookupPostParam "value"
+            case mValueRaw of
+                Just valueRaw -> do
+                    eValue <- return $ vald valueRaw
+                    case eValue of
+                        Right value -> do
+                            let criterion = KopalniaLookupId ==. lookupId
+                            cnt <- runDB $ count [criterion]
+                            case cnt of
+                                1 -> do
+                                    -- runDB $ updateWhere [criterion] [KopalniaTytul =. value]
+                                    upd criterion value
+                                    sendResponseStatus status200 ("OK" :: Text)
+                                _ -> sendResponseStatus badRequest400 ("Błąd systemu: nieistniejący identyfikator" :: Text)
+                        Left err -> sendResponseStatus badRequest400 err
+                _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zmiennej 'value'" :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawna zmienna 'pk'" :: Text)
 
 postKopalniaEditTytulR :: Handler Text
-postKopalniaEditTytulR = do
-    vars <- postVars id
-    case vars of
-        (Just lookupId, Just value) -> do
-            let criterion = KopalniaLookupId ==. (read $ unpack lookupId :: Int64)
-            cnt <- runDB $ count [criterion]
-            case cnt of
-                1 -> do
-                    runDB $ updateWhere [criterion] [KopalniaTytul =. value]
-                    sendResponseStatus status200 ("OK" :: Text)
-                _ -> sendResponseStatus badRequest400 ("Błąd systemu: niewłaściwy identyfikator" :: Text)
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawne zmienne POST" :: Text)
+postKopalniaEditTytulR = processXEditable vald upd where
+    vald = Right
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaTytul =. value]
 
 postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
