@@ -109,6 +109,7 @@ maybeRead _ = Nothing
 
 -- This function is quite ugly at the moment, but at least it works.
 -- TODO: It should be improved by using a monad combinator such as EitherT.
+--       Example: http://stackoverflow.com/questions/13252889/elegant-haskell-case-error-handling-in-sequential-monads
 -- The first argument is a validation/conversion function that returns Either <error message> <converted value>.
 -- If everything succeeds then this value will be passed to the second argument alongside the db lookup criterion.
 processXEditable :: (Text -> Either Text a) -> (Filter Kopalnia -> a -> Handler ()) -> Handler Text
