@@ -148,7 +148,7 @@ postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 postKopalniaEditLinkGlR :: Handler Text
-postKopalniaEditLinkGlR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditLinkGlR = sendResponseStatus status200 ("OK" :: Text)
 
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

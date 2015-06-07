@@ -11,12 +11,21 @@
       #{kopalniaTytul kopalnia}
     <br>
     <small>
-      $maybe url <- kopalniaUrl kopalnia
+      $if isEdit
         <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia};
-        <a href=#{url} class="link1" target="_blank">
-          link do zawartości
-      $nothing
-        <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia}
+        $maybe url <- kopalniaUrl kopalnia
+          <span id="url" data-type="text" data-value=#{url} data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
+            link do zawartości [ustawiony]
+        $nothing
+          <span id="url" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
+            link do zawartości [brak]
+      $else
+        $maybe url <- kopalniaUrl kopalnia
+          <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia};
+          <a href=#{url} class="link1" target="_blank">
+            link do zawartości
+        $nothing
+          <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia}
 
   <div class="kopalnia-top-div">
 
