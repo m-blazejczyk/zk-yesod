@@ -25,6 +25,7 @@ import Import
 import Enums
 import qualified Data.Text as T
 import Text.Read (reads)
+import Network.URI (isURI)
 -- import Network.HTTP.Types (status200)
 -- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -144,11 +145,15 @@ postKopalniaEditTytulR = processXEditable vald upd where
            | otherwise = Left "Tytuł nie może być pusty"
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaTytul =. value]
 
-postKopalniaEditRodzajR :: Handler Text
-postKopalniaEditRodzajR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
-
 postKopalniaEditLinkGlR :: Handler Text
-postKopalniaEditLinkGlR = sendResponseStatus status200 ("OK" :: Text)
+postKopalniaEditLinkGlR = processXEditable vald upd where
+    vald v | T.length v == 0 = Right Nothing
+           | isURI $ unpack v = Right $ Just v
+           | otherwise = Left "Niepoprawny adres"
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaUrl =. value]
+
+postKopalniaEditRodzajR :: Handler Text
+postKopalniaEditRodzajR = sendResponseStatus status200 ("OK" :: Text)
 
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

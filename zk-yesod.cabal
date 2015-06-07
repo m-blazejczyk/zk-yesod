@@ -80,6 +80,7 @@ library
                  , monad-logger                  >= 0.3        && < 0.4
                  , fast-logger                   >= 2.2
                  , wai-logger                    >= 2.2        && < 2.3
+                 , network-uri                   >= 2.4.2
                  , mime-mail
                  , file-embed
                  , safe
