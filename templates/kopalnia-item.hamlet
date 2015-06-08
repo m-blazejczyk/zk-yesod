@@ -12,7 +12,8 @@
     <br>
     <small>
       $if isEdit
-        <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia};
+        <span class="inobtrusive" id="rodzaj" data-type="select" data-pk="#{lookupId}" data-url=@{KopalniaEditRodzajR} data-title="Rodzaj publikacji">
+          #{showRodzaj $ kopalniaRodzaj kopalnia};
         $maybe url <- kopalniaUrl kopalnia
           <span id="url" data-type="text" data-value=#{url} data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
             link do zawartości [ustawiony]
