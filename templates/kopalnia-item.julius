@@ -1,0 +1,19 @@
+$(document).ready(function() {
+    $('#tytul').editable();
+
+    $('#rodzaj').editable({
+      source: [{value: 'Pismo', text: 'Czasopismo'},
+               {value: 'Kolekcja', text: 'Kolekcja wydawnicza'},
+               {value: 'Numer', text: 'Numer czasopisma'}]
+    });
+
+    $('#url').editable({
+      display: function(value, response) {
+       if(value.trim()=='') {
+           $(this).html('link do zawartości [brak]');
+         } else {
+           $(this).html('link do zawartości [ustawiony]'); 
+         }
+      }
+    });
+});
