@@ -1,6 +1,10 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 import Prelude
 import Data.Text (Text, pack, append)
 import Control.Arrow ((&&&))
+import Data.Aeson (encode, object, (.=))
+import Data.Vector (fromList)
 
 data Rodzaj = Pismo | Kolekcja | Numer | Portal | Dzial | Ksiazka | Praca | Artykul | Rozdzial | Wywiad | AudioWideo | Audycja | Notka | RodzajInny
     deriving (Show, Read, Eq, Enum)
@@ -21,13 +25,12 @@ showRodzaj Audycja =    pack "Audycja RTV"
 showRodzaj Notka =      pack "Notka prasowa"
 showRodzaj RodzajInny = pack "Inny"
 
-
--- {value: 'Pismo', text: 'Czasopismo'},
--- {value: 'Kolekcja', text: 'Kolekcja wydawnicza'},
--- {value: 'Numer', text: 'Numer czasopisma'}
+-- { source: [{value: 'Pismo', text: 'Czasopismo'},
+--            {value: 'Kolekcja', text: 'Kolekcja wydawnicza'},
+--            {value: 'Numer', text: 'Numer czasopisma'}]}
 main :: IO ()
 main = do
-  let l1 = map ((pack . show) &&& showRodzaj) [Pismo ..]
-  let formatOne p = pack "{value: '" `append` fst p `append` pack "', text: '" `append` snd p `append` pack "'}"
-  print $ formatOne $ head l1
-  print $ map formatOne l1
+  let l1 = map ((pack . show) &&& showRodzaj) [Pismo ..]  -- this returns a list of tuples
+      formatOne p = object [("value" .= fst p), ("text" .= snd p)]
+      formatAll = map formatOne l1
+  print $ encode $ object ["source" .= fromList formatAll]
