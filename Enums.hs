@@ -28,6 +28,24 @@ showRodzaj Audycja =    "Audycja RTV"
 showRodzaj Notka =      "Notka prasowa"
 showRodzaj RodzajInny = "Inny"
 
+readRodzaj :: Text -> Either Text Rodzaj
+readRodzaj "Pismo" = Right Pismo
+readRodzaj "Kolekcja" = Right Kolekcja
+readRodzaj "Numer" = Right Numer
+readRodzaj "Portal" = Right Portal
+readRodzaj "Dzial" = Right Dzial
+readRodzaj "Ksiazka" = Right Ksiazka
+readRodzaj "Praca" = Right Praca
+readRodzaj "Artykul" = Right Artykul
+readRodzaj "Rozdzial" = Right Rozdzial
+readRodzaj "Wywiad" = Right Wywiad
+readRodzaj "AudioWideo" = Right AudioWideo
+readRodzaj "Audycja" = Right Audycja
+readRodzaj "Notka" = Right Notka
+readRodzaj "RodzajInny" = Right RodzajInny
+readRodzaj _ = Left "Niepoprawny rodzaj publikacji"
+
+-- To convert to Text use decodeUtf8 from Data.Text
 rodzajeToJson :: ByteString
 rodzajeToJson = let names = Prelude.map ((pack . show) &&& showRodzaj) [Pismo ..]  -- this returns a list of tuples
                     formatOne p = object [("value" .= fst p), ("text" .= snd p)]

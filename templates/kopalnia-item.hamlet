@@ -12,7 +12,7 @@
     <br>
     <small>
       $if isEdit
-        <span class="inobtrusive" id="rodzaj" data-type="select" data-pk="#{lookupId}" data-url=@{KopalniaEditRodzajR} data-title="Rodzaj publikacji">
+        <span class="inobtrusive" id="rodzaj" data-type="select" data-value=#{show $ kopalniaRodzaj kopalnia} data-pk="#{lookupId}" data-url=@{KopalniaEditRodzajR} data-title="Rodzaj publikacji">
           #{showRodzaj $ kopalniaRodzaj kopalnia};
         $maybe url <- kopalniaUrl kopalnia
           <span id="url" data-type="text" data-value=#{url} data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">

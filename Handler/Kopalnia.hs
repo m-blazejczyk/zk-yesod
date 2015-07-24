@@ -26,6 +26,7 @@ import Enums
 import qualified Data.Text as T
 import Text.Read (reads)
 import Network.URI (isURI)
+import Text.Julius (rawJS)
 -- import Network.HTTP.Types (status200)
 -- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -153,7 +154,8 @@ postKopalniaEditLinkGlR = processXEditable vald upd where
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaUrl =. value]
 
 postKopalniaEditRodzajR :: Handler Text
-postKopalniaEditRodzajR = sendResponseStatus status200 ("OK" :: Text)
+postKopalniaEditRodzajR = processXEditable readRodzaj upd where
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaRodzaj =. value]
 
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

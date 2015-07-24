@@ -1,19 +1,17 @@
-$(document).ready(function() {
-    $('#tytul').editable();
+if(#{isEdit}) {
+  $(document).ready(function() {
+      $('#tytul').editable();
 
-    $('#rodzaj').editable({
-      source: [{value: 'Pismo', text: 'Czasopismo'},
-               {value: 'Kolekcja', text: 'Kolekcja wydawnicza'},
-               {value: 'Numer', text: 'Numer czasopisma'}]
-    });
+      $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
 
-    $('#url').editable({
-      display: function(value, response) {
-       if(value.trim()=='') {
-           $(this).html('link do zawartości [brak]');
-         } else {
-           $(this).html('link do zawartości [ustawiony]'); 
-         }
-      }
-    });
-});
+      $('#url').editable({
+        display: function(value, response) {
+         if(value.trim()=='') {
+             $(this).html('link do zawartości [brak]');
+           } else {
+             $(this).html('link do zawartości [ustawiony]'); 
+           }
+        }
+      });
+  });
+}
