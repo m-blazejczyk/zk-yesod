@@ -45,13 +45,6 @@ readRodzaj "Notka" = Right Notka
 readRodzaj "RodzajInny" = Right RodzajInny
 readRodzaj _ = Left "Niepoprawny rodzaj publikacji"
 
--- To convert to Text use decodeUtf8 from Data.Text
-rodzajeToJson :: ByteString
-rodzajeToJson = let names = Prelude.map ((pack . show) &&& showRodzaj) [Pismo ..]  -- this returns a list of tuples
-                    formatOne p = object [("value" .= fst p), ("text" .= snd p)]
-                    formatAll = Prelude.map formatOne names
-  in encode $ object ["source" .= fromList formatAll]
-
 data Jezyk = JezykPL | JezykEN | JezykFR | JezykRU | JezykDE | JezykUA | JezykCZ | JezykSK | JezykLT | JezykSE | JezykES | JezykIT | JezykInny
     deriving (Show, Read, Eq, Enum)
 derivePersistField "Jezyk"
@@ -70,7 +63,6 @@ showJezyk JezykSE =   "szwedzki"
 showJezyk JezykES =   "hiszpański"
 showJezyk JezykIT =   "włoski"
 showJezyk JezykInny = "Inny"
-
 
 readJezyk :: Text -> Either Text Jezyk
 readJezyk "JezykPL" = Right JezykPL
@@ -91,3 +83,16 @@ readJezyk _ = Left "Niepoprawny język publikacji"
 data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
     deriving (Show, Read, Eq)
 derivePersistField "TypAutora"
+
+-- To convert to Text use decodeUtf8 from Data.Text
+enumToJson :: Show e => [e] -> (e -> Text) -> ByteString
+enumToJson allEnum showEnum = let names = Prelude.map ((pack . show) &&& showEnum) allEnum  -- this returns a list of tuples
+                                  formatOne p = object [("value" .= fst p), ("text" .= snd p)]
+                                  formatAll = Prelude.map formatOne names
+    in encode $ object ["source" .= fromList formatAll]
+
+rodzajeToJson :: ByteString
+rodzajeToJson = enumToJson [Pismo ..] showRodzaj
+
+jezykiToJson :: ByteString
+jezykiToJson = enumToJson [JezykPL ..] showJezyk
