@@ -202,7 +202,9 @@ postKopalniaEditJezykR = processXEditable readJezyk upd where
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaJezyk =. value]
 
 postKopalniaEditOpisR :: Handler Text
-postKopalniaEditOpisR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditOpisR = processXEditable vald upd where
+    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaOpis =. value]
 
 postKopalniaEditHaslaR :: Handler Text
 postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

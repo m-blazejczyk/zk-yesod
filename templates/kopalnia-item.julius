@@ -20,6 +20,8 @@ if(#{isEdit}) {
 
       $('#strony').editable({ display: displayWithEmpty });
 
+      $('#opis').editable({ display: displayWithEmpty });
+
       $('#url').editable({
         display: function(value, response) {
          if(value.trim()=='') {

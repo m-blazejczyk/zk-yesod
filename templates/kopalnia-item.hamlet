@@ -130,9 +130,19 @@
       $else
         #{showJezyk $ kopalniaJezyk kopalnia}
 
-    $maybe opis <- kopalniaOpis kopalnia
+    $if isEdit
       <p class="inobtrusive">Opis:
-      <p class="blockquote">#{opis}
+      <p class="blockquote">
+        $maybe opis <- kopalniaOpis kopalnia
+          <span id="opis" data-type="textarea" data-value=#{opis} data-pk="#{lookupId}" data-url=@{KopalniaEditOpisR} data-title="Opis">
+            #{opis}
+        $nothing
+          <span id="opis" data-type="textarea" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditOpisR} data-title="Opis">
+            [brak]
+    $else
+      $maybe opis <- kopalniaOpis kopalnia
+        <p class="inobtrusive">Opis:
+        <p class="blockquote">#{opis}
 
     $if not $ null $ haslaPrzedm
       <p class="inobtrusive">Hasła przedmiotowe:
