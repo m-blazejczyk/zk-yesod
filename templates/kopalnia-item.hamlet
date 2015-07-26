@@ -82,10 +82,20 @@
         <span class="inobtrusive">Strony:
         #{strony}
 
-    $maybe isbn <- kopalniaIsbn kopalnia
+    $if isEdit
       <p>
         <span class="inobtrusive">ISBN:
-        #{isbn}
+        $maybe isbn <- kopalniaIsbn kopalnia
+          <span class="inobtrusive" id="isbn" data-type="text" data-value=#{isbn} data-pk="#{lookupId}" data-url=@{KopalniaEditIsbnR} data-title="Kod ISBN">
+            #{isbn}
+        $nothing
+          <span class="inobtrusive" id="isbn" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditIsbnR} data-title="Kod ISBN">
+            [brak]
+    $else
+      $maybe isbn <- kopalniaIsbn kopalnia
+        <p>
+          <span class="inobtrusive">ISBN:
+          #{isbn}
 
     $maybe objetosc <- kopalniaObjetosc kopalnia
       <p>

@@ -178,8 +178,14 @@ postKopalniaEditWydawcaR = sendResponseStatus badRequest400 ("This is a message!
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
+-- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text
-postKopalniaEditIsbnR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditIsbnR = processXEditable vald upd where
+    vald v | T.length v == 0 = Right Nothing
+           | T.length v < 10 = Left "Za krótki kod"
+           | T.length v > 17 = Left "Za długi kod"
+           | otherwise = Right $ Just v
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
 postKopalniaEditStrR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

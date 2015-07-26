@@ -6,13 +6,23 @@ if(#{isEdit}) {
 
       $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
 
+      $('#isbn').editable({
+        display: function(value, response) {
+         if(value.trim()=='') {
+           $(this).html('[brak]');
+         } else {
+           $(this).html(value);
+         }
+        }
+      });
+
       $('#url').editable({
         display: function(value, response) {
          if(value.trim()=='') {
-             $(this).html('link do zawartości [brak]');
-           } else {
-             $(this).html('link do zawartości [ustawiony]'); 
-           }
+           $(this).html('link do zawartości [brak]');
+         } else {
+           $(this).html('link do zawartości [ustawiony]'); 
+         }
         }
       });
   });
