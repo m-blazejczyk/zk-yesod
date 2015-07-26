@@ -97,10 +97,20 @@
           <span class="inobtrusive">ISBN:
           #{isbn}
 
-    $maybe objetosc <- kopalniaObjetosc kopalnia
+    $if isEdit
       <p>
         <span class="inobtrusive">Objętość:
-        #{objetosc}
+        $maybe objetosc <- kopalniaObjetosc kopalnia
+          <span class="inobtrusive" id="objetosc" data-type="text" data-value=#{objetosc} data-pk="#{lookupId}" data-url=@{KopalniaEditObjR} data-title="Objętość">
+            #{objetosc}
+        $nothing
+          <span class="inobtrusive" id="objetosc" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditObjR} data-title="Objętość">
+            [brak]
+    $else
+      $maybe objetosc <- kopalniaObjetosc kopalnia
+        <p>
+          <span class="inobtrusive">Objętość:
+          #{objetosc}
 
     <p>
       <span class="inobtrusive">Język:

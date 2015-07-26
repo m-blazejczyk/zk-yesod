@@ -191,7 +191,9 @@ postKopalniaEditStrR :: Handler Text
 postKopalniaEditStrR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 postKopalniaEditObjR :: Handler Text
-postKopalniaEditObjR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditObjR = processXEditable vald upd where
+    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaObjetosc =. value]
 
 postKopalniaEditJezykR :: Handler Text
 postKopalniaEditJezykR = processXEditable readJezyk upd where

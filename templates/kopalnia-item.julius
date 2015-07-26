@@ -1,5 +1,13 @@
 if(#{isEdit}) {
   $(document).ready(function() {
+      var displayWithEmpty = function(value, response) {
+       if(value.trim()=='') {
+         $(this).html('[brak]');
+       } else {
+         $(this).html(value);
+       }
+      }
+
       $('#tytul').editable();
 
       $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
@@ -7,13 +15,11 @@ if(#{isEdit}) {
       $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
 
       $('#isbn').editable({
-        display: function(value, response) {
-         if(value.trim()=='') {
-           $(this).html('[brak]');
-         } else {
-           $(this).html(value);
-         }
-        }
+        display: displayWithEmpty
+      });
+
+      $('#objetosc').editable({
+        display: displayWithEmpty
       });
 
       $('#url').editable({
