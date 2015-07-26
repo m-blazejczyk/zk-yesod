@@ -4,6 +4,8 @@ if(#{isEdit}) {
 
       $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
 
+      $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
+
       $('#url').editable({
         display: function(value, response) {
          if(value.trim()=='') {

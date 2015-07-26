@@ -94,7 +94,11 @@
 
     <p>
       <span class="inobtrusive">Język:
-      #{showJezyk $ kopalniaJezyk kopalnia}
+      $if isEdit
+        <span class="inobtrusive" id="jezyk" data-type="select" data-value=#{show $ kopalniaJezyk kopalnia} data-pk="#{lookupId}" data-url=@{KopalniaEditJezykR} data-title="Język publikacji">
+          #{showJezyk $ kopalniaJezyk kopalnia}
+      $else
+        #{showJezyk $ kopalniaJezyk kopalnia}
 
     $maybe opis <- kopalniaOpis kopalnia
       <p class="inobtrusive">Opis:
