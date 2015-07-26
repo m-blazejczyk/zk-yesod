@@ -188,7 +188,9 @@ postKopalniaEditIsbnR = processXEditable vald upd where
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
-postKopalniaEditStrR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditStrR = processXEditable vald upd where
+    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaStrony =. value]
 
 postKopalniaEditObjR :: Handler Text
 postKopalniaEditObjR = processXEditable vald upd where

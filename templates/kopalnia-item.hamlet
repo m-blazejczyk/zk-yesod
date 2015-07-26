@@ -77,10 +77,20 @@
           #{miesiac} #
         \#{rok}
 
-    $maybe strony <- kopalniaStrony kopalnia
+    $if isEdit
       <p>
         <span class="inobtrusive">Strony:
-        #{strony}
+        $maybe strony <- kopalniaStrony kopalnia
+          <span class="inobtrusive" id="strony" data-type="text" data-value=#{strony} data-pk="#{lookupId}" data-url=@{KopalniaEditStrR} data-title="Strony, na których znajduje się publikacja">
+            #{strony}
+        $nothing
+          <span class="inobtrusive" id="strony" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditStrR} data-title="Strony, na których znajduje się publikacja">
+            [brak]
+    $else
+      $maybe strony <- kopalniaStrony kopalnia
+        <p>
+          <span class="inobtrusive">Strony:
+          #{strony}
 
     $if isEdit
       <p>

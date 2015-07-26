@@ -14,13 +14,11 @@ if(#{isEdit}) {
 
       $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
 
-      $('#isbn').editable({
-        display: displayWithEmpty
-      });
+      $('#isbn').editable({ display: displayWithEmpty });
 
-      $('#objetosc').editable({
-        display: displayWithEmpty
-      });
+      $('#objetosc').editable({ display: displayWithEmpty });
+
+      $('#strony').editable({ display: displayWithEmpty });
 
       $('#url').editable({
         display: function(value, response) {
