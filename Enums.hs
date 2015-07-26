@@ -71,6 +71,23 @@ showJezyk JezykES =   "hiszpański"
 showJezyk JezykIT =   "włoski"
 showJezyk JezykInny = "Inny"
 
+
+readJezyk :: Text -> Either Text Jezyk
+readJezyk "JezykPL" = Right JezykPL
+readJezyk "JezykEN" = Right JezykEN
+readJezyk "JezykFR" = Right JezykFR
+readJezyk "JezykRU" = Right JezykRU
+readJezyk "JezykDE" = Right JezykDE
+readJezyk "JezykUA" = Right JezykUA
+readJezyk "JezykCZ" = Right JezykCZ
+readJezyk "JezykSK" = Right JezykSK
+readJezyk "JezykLT" = Right JezykLT
+readJezyk "JezykSE" = Right JezykSE
+readJezyk "JezykES" = Right JezykES
+readJezyk "JezykIT" = Right JezykIT
+readJezyk "JezykInny" = Right JezykInny
+readJezyk _ = Left "Niepoprawny język publikacji"
+
 data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
     deriving (Show, Read, Eq)
 derivePersistField "TypAutora"
