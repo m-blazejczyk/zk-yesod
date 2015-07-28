@@ -2,7 +2,7 @@ module Enums where
 
 import Database.Persist.TH
 import Prelude
-import Data.Aeson (encode, object, (.=))
+import Data.Aeson (ToJSON, encode, object, (.=))
 import Data.ByteString.Lazy (ByteString)
 import Data.Text
 import Data.Vector (fromList)
@@ -84,12 +84,14 @@ data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
     deriving (Show, Read, Eq)
 derivePersistField "TypAutora"
 
--- To convert to Text use decodeUtf8 from Data.Text
-enumToJson :: Show e => [e] -> (e -> Text) -> ByteString
-enumToJson allEnum showEnum = let names = Prelude.map ((pack . show) &&& showEnum) allEnum  -- this returns a list of tuples
-                                  formatOne p = object [("value" .= fst p), ("text" .= snd p)]
-                                  formatAll = Prelude.map formatOne names
+-- To convert a ByteString to Text use decodeUtf8 from Data.Text
+tuplesToJson :: ToJSON e => [(e, Text)] -> ByteString
+tuplesToJson tuples = let formatOne tpl = object [("value" .= fst tpl), ("text" .= snd tpl)]
+                          formatAll = Prelude.map formatOne tuples
     in encode $ object ["source" .= fromList formatAll]
+
+enumToJson :: Show e => [e] -> (e -> Text) -> ByteString
+enumToJson allEnum showEnum = tuplesToJson $ Prelude.map ((pack . show) &&& showEnum) allEnum  -- this returns a list of tuples
 
 rodzajeToJson :: ByteString
 rodzajeToJson = enumToJson [Pismo ..] showRodzaj

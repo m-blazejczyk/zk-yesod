@@ -27,6 +27,7 @@ import qualified Data.Text as T
 import Text.Read (reads)
 import Network.URI (isURI)
 import Text.Julius (rawJS)
+import Data.ByteString.Lazy.Internal (ByteString)
 -- import Network.HTTP.Types (status200)
 -- import Network.Wai        (responseLBS)
 -- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
@@ -91,6 +92,7 @@ getKopalniaItemCommon isEdit lookupId = do
     redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
     tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
+    allWydJson <- allWydawcyToJson
     defaultLayout $
         if isEdit then do
             setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
@@ -98,6 +100,12 @@ getKopalniaItemCommon isEdit lookupId = do
         else do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
+
+allWydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
+allWydawcyToJson = do
+    wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
+    wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
+    return $ tuplesToJson wydawcy
 
 -- postKopalniaItemEditR :: Int64 -> Handler Value
 -- postKopalniaItemEditR _ = return $ object
