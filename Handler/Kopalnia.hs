@@ -92,7 +92,7 @@ getKopalniaItemCommon isEdit lookupId = do
     redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
     tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
-    allWydJson <- allWydawcyToJson
+    wydawcyJson <- wydawcyToJson
     defaultLayout $
         if isEdit then do
             setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
@@ -101,8 +101,8 @@ getKopalniaItemCommon isEdit lookupId = do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
 
-allWydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
-allWydawcyToJson = do
+wydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
+wydawcyToJson = do
     wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
     return $ tuplesToJson wydawcy

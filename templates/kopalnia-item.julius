@@ -22,6 +22,8 @@ if(#{isEdit}) {
 
       $('#opis').editable({ display: displayWithEmpty });
 
+      $('#wydawca').editable(#{rawJS $ decodeUtf8 wydawcyJson});
+
       $('#url').editable({
         display: function(value, response) {
          if(value.trim()=='') {

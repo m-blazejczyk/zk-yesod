@@ -68,7 +68,17 @@
               #{imiona} #
             #{autorNazwisko redaktor} #
 
-    ^{getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
+    $if isEdit
+      <p>
+        <span class="inobtrusive">Wydawca:
+        $maybe wydawca <- mWydawca
+          <span class="inobtrusive" id="wydawca" data-type="typeahead" data-value=#{wydawcaLookupId wydawca} data-pk="#{lookupId}" data-url=@{KopalniaEditWydawcaR} data-title="Wydawca">
+            #{wydawcaNazwa wydawca}
+        $nothing
+          <span class="inobtrusive" id="wydawca" data-type="typeahead" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditWydawcaR} data-title="Wydawca">
+            [brak]
+    $else
+      ^{getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
 
     $maybe rok <- kopalniaPubRok kopalnia
       <p>
