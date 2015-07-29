@@ -103,13 +103,11 @@ wydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
 wydawcyToJson = do
     wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
-    return $ encode $ tuplesToRawJson "source" "value" "text" wydawcy
-
--- postKopalniaItemEditR :: Int64 -> Handler Value
--- postKopalniaItemEditR _ = return $ object
---     [ ("status" .= ("error" :: Text)),
---       ("msg" .= ("This is a message!" :: Text))
---     ]
+    wydawcyJson <- return $ tuplesToRawJson "source" "value" "text" wydawcy  -- and this is aeson's Value
+    select2Conf <- return $ object ["select2" .= object [("multiple" .= False)
+                                                       , ("placeholder" .= ("wybierz wydawcę" :: Text))
+                                                       , ("minimumInputLength" .= (1 :: Int))]]
+    return $ encode select2Conf
 
 -- | A safe form of read.  Borrowed from http://hackage.haskell.org/package/txt-sushi-0.6.0/src/Database/TxtSushi/ParseUtil.hs
 maybeRead :: Maybe Text -> Maybe Int64
