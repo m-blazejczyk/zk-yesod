@@ -1,11 +1,11 @@
 if(#{isEdit}) {
   $(document).ready(function() {
       var displayWithEmpty = function(value, response) {
-       if(value.trim()=='') {
-         $(this).html('[brak]');
-       } else {
-         $(this).html(value);
-       }
+        if(value.trim()=='') {
+          $(this).html('[brak]');
+        } else {
+          $(this).html(value);
+        }
       }
 
       $('#tytul').editable();
@@ -22,15 +22,27 @@ if(#{isEdit}) {
 
       $('#opis').editable({ display: displayWithEmpty });
 
-      $('#wydawca').editable(#{rawJS $ decodeUtf8 wydawcyJson});
+      // rawJS $ decodeUtf8 wydawcyJson
+      $('#wydawca').editable({
+        source: [
+              {id: '1', text: 'Kultura Gniewu'},
+              {id: '2', text: 'timof i cisi wspólnicy'},
+              {id: '3', text: 'Egmont Polska'}
+           ],
+        select2: {
+           multiple: false,
+           placeholder: 'wybierz wydawcę',
+           minimumInputLength: 1
+        }
+      });
 
       $('#url').editable({
         display: function(value, response) {
-         if(value.trim()=='') {
-           $(this).html('link do zawartości [brak]');
-         } else {
-           $(this).html('link do zawartości [ustawiony]'); 
-         }
+          if(value.trim()=='') {
+            $(this).html('link do zawartości [brak]');
+          } else {
+            $(this).html('link do zawartości [ustawiony]'); 
+          }
         }
       });
   });

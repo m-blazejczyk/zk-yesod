@@ -8,9 +8,9 @@ import Yesod.Static (staticFiles)
 -- Warning: any files added to your static directory during run-time can't be
 -- accessed this way. You'll have to use their FilePath or URL to access them.
 --
--- For example, to refer to @static/js/script.js@ via an identifier, you'd use:
+-- For example, to refer to @static/js/script-1.0.js@ via an identifier, you'd use:
 --
---     js_script_js
+--     js_script_1_0_js
 --
 -- If the identifier is not available, you may use:
 --
