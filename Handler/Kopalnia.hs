@@ -28,9 +28,7 @@ import Text.Read (reads)
 import Network.URI (isURI)
 import Text.Julius (rawJS)
 import Data.ByteString.Lazy.Internal (ByteString)
--- import Network.HTTP.Types (status200)
--- import Network.Wai        (responseLBS)
--- import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), renderBootstrap3, withSmallInput)
+import Data.Aeson (encode)
 
 defaultTitle :: Html
 defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
@@ -105,7 +103,7 @@ wydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
 wydawcyToJson = do
     wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
-    return $ tuplesToJson wydawcy
+    return $ encode $ tuplesToRawJson "source" "value" "text" wydawcy
 
 -- postKopalniaItemEditR :: Int64 -> Handler Value
 -- postKopalniaItemEditR _ = return $ object
