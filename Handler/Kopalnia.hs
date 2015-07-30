@@ -117,7 +117,7 @@ maybeRead _ = Nothing
 -- and returns Either <error message> <converted value>.
 -- If everything succeeds then this value will be passed to the second argument alongside the db lookup criterion,
 -- typically applied against updateWhere.
-processXEditable :: (Text -> Either Text a) -> (Filter Kopalnia -> a -> Handler ()) -> Handler Text
+processXEditable :: (Text -> Handler (Either Text a)) -> (Filter Kopalnia -> a -> Handler ()) -> Handler Text
 processXEditable vald upd = do
     mLookupId <- lookupPostParam "pk"
     mLookupId2 <- return $ maybeRead mLookupId
@@ -126,7 +126,7 @@ processXEditable vald upd = do
             mValueRaw <- lookupPostParam "value"
             case mValueRaw of
                 Just valueRaw -> do
-                    eValue <- return $ vald $ T.strip valueRaw
+                    eValue <- vald $ T.strip valueRaw
                     case eValue of
                         Right value -> do
                             let criterion = KopalniaLookupId ==. lookupId
@@ -142,19 +142,20 @@ processXEditable vald upd = do
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable vald upd where
-    vald v | T.length v > 0 = Right v
-           | otherwise = Left "Tytuł nie może być pusty"
+    vald v | T.length v > 0 = return $ Right v
+           | otherwise = return $ Left "Tytuł nie może być pusty"
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaTytul =. value]
 
 postKopalniaEditLinkGlR :: Handler Text
 postKopalniaEditLinkGlR = processXEditable vald upd where
-    vald v | T.length v == 0 = Right Nothing
-           | isURI $ unpack v = Right $ Just v
-           | otherwise = Left "Niepoprawny adres"
+    vald v | T.length v == 0 = return $ Right Nothing
+           | isURI $ unpack v = return $ Right $ Just v
+           | otherwise = return $ Left "Niepoprawny adres"
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaUrl =. value]
 
 postKopalniaEditRodzajR :: Handler Text
-postKopalniaEditRodzajR = processXEditable readRodzaj upd where
+postKopalniaEditRodzajR = processXEditable vald upd where
+    vald = return . readRodzaj
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaRodzaj =. value]
 
 postKopalniaEditAutorR :: Handler Text
@@ -174,15 +175,15 @@ postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!"
 
 postKopalniaEditWydawcaR :: Handler Text
 postKopalniaEditWydawcaR = processXEditable vald upd where
-    vald v | T.length v == 0 = Right Nothing
+    vald v | T.length v == 0 = return $ Right Nothing
            | otherwise = parseId v
-    parseId v = case (maybeRead v) of
+    parseId v = case (maybeRead $ Just v) of
         Just iden -> do
             mWyd <- runDB $ getBy $ UniqueWydawca iden
-            return $ processWyd mWyd
-        Nothing -> Left "Błąd systemu: identyfikator wydawcy nie jest liczbą"
-    processWyd Just (Entity wydId _) = Right $ Just wydId
-    processWyd Nothing = Left "Błąd systemu: niezdefiniowany identyfikator wydawcy"
+            processWyd mWyd
+        Nothing -> return $ Left "Błąd systemu: identyfikator wydawcy nie jest liczbą"
+    processWyd (Just (Entity wydId _)) = return $ Right $ Just wydId
+    processWyd Nothing = return $ Left "Błąd systemu: niezdefiniowany identyfikator wydawcy"
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
@@ -191,29 +192,30 @@ postKopalniaEditDataWydR = sendResponseStatus badRequest400 ("This is a message!
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text
 postKopalniaEditIsbnR = processXEditable vald upd where
-    vald v | T.length v == 0 = Right Nothing
-           | T.length v < 10 = Left "Za krótki kod"
-           | T.length v > 17 = Left "Za długi kod"
-           | otherwise = Right $ Just v
+    vald v | T.length v == 0 = return $ Right Nothing
+           | T.length v < 10 = return $ Left "Za krótki kod"
+           | T.length v > 17 = return $ Left "Za długi kod"
+           | otherwise = return $ Right $ Just v
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
 postKopalniaEditStrR = processXEditable vald upd where
-    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaStrony =. value]
 
 postKopalniaEditObjR :: Handler Text
 postKopalniaEditObjR = processXEditable vald upd where
-    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaObjetosc =. value]
 
 postKopalniaEditJezykR :: Handler Text
-postKopalniaEditJezykR = processXEditable readJezyk upd where
+postKopalniaEditJezykR = processXEditable vald upd where
+    vald = return . readJezyk
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaJezyk =. value]
 
 postKopalniaEditOpisR :: Handler Text
 postKopalniaEditOpisR = processXEditable vald upd where
-    vald v = if T.length v == 0 then Right Nothing else Right $ Just v
+    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaOpis =. value]
 
 postKopalniaEditHaslaR :: Handler Text
