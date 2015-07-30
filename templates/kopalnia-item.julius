@@ -22,19 +22,33 @@ if(#{isEdit}) {
 
       $('#opis').editable({ display: displayWithEmpty });
 
-      // rawJS $ decodeUtf8 wydawcyJson
-      $('#wydawca').editable({
-        source: [
-              {id: '1', text: 'Kultura Gniewu'},
-              {id: '2', text: 'timof i cisi wspólnicy'},
-              {id: '3', text: 'Egmont Polska'}
-           ],
-        select2: {
-           multiple: false,
-           placeholder: 'wybierz wydawcę',
-           minimumInputLength: 1
+      // The source is obtained from Haskell, but the configuration is easier to provide directly here.
+      var wydConf = #{rawJS $ decodeUtf8 wydawcyJson};
+      wydConf.select2 = {
+        multiple: false,
+        placeholder: 'wybierz wydawcę',
+        minimumInputLength: 1,
+        minimumResultsForSearch: 5,
+        allowClear: true,
+        multiple: false
+      };
+      // We need a custom display function here to display the name of the publisher on the page after selection.
+      wydConf.display = function(value, response) {
+        if(value.trim()=='') {
+          $(this).html('[brak]');
+        } else {
+          var id = parseInt(value);
+          var text = value;
+          for(var i = 0, len = wydConf.source.length; i < len; i++) {
+            if(wydConf.source[i].id === id) {
+              text = wydConf.source[i].text;
+              break;
+            }
+          }
+          $(this).html(text);
         }
-      });
+      };
+      $('#wydawca').editable(wydConf);
 
       $('#url').editable({
         display: function(value, response) {
