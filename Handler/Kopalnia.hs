@@ -173,7 +173,17 @@ postKopalniaEditRodzicR :: Handler Text
 postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 postKopalniaEditWydawcaR :: Handler Text
-postKopalniaEditWydawcaR = sendResponseStatus status200 ("OK" :: Text)
+postKopalniaEditWydawcaR = processXEditable vald upd where
+    vald v | T.length v == 0 = Right Nothing
+           | otherwise = parseId v
+    parseId v = case (maybeRead v) of
+        Just iden -> do
+            mWyd <- runDB $ getBy $ UniqueWydawca iden
+            return $ processWyd mWyd
+        Nothing -> Left "Błąd systemu: identyfikator wydawcy nie jest liczbą"
+    processWyd Just (Entity wydId _) = Right $ Just wydId
+    processWyd Nothing = Left "Błąd systemu: niezdefiniowany identyfikator wydawcy"
+    upd criterion value = runDB $ updateWhere [criterion] [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
