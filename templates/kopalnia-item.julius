@@ -27,10 +27,8 @@ if(#{isEdit}) {
       wydConf.select2 = {
         multiple: false,
         placeholder: 'wybierz wydawcę',
-        minimumInputLength: 1,
-        minimumResultsForSearch: 5,
         allowClear: true,
-        multiple: false
+        width: 200
       };
       // We need a custom display function here to display the name of the publisher on the page after selection.
       wydConf.display = function(value, response) {
