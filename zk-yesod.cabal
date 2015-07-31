@@ -17,6 +17,8 @@ library
                      Foundation
                      Import
                      Import.NoFoundation
+                     Utils
+                     DbUtils
                      Enums
                      Model
                      Settings

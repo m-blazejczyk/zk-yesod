@@ -24,11 +24,10 @@ module Handler.Kopalnia (
 import Import
 import Enums
 import qualified Data.Text as T
-import Text.Read (reads)
 import Network.URI (isURI)
 import Text.Julius (rawJS)
-import Data.ByteString.Lazy.Internal (ByteString)
-import Data.Aeson (encode)
+import Utils
+import DbUtils
 
 defaultTitle :: Html
 defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
@@ -98,47 +97,6 @@ getKopalniaItemCommon isEdit lookupId = do
         else do
             setTitle $ "Fiszka publikacji - " ++ defaultTitle
             $(widgetFile "kopalnia-item")
-
-wydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
-wydawcyToJson = do
-    wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
-    wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
-    return $ encode $ tuplesToRawJson "source" "id" "text" wydawcy
-
--- | A safe form of read.  Borrowed from http://hackage.haskell.org/package/txt-sushi-0.6.0/src/Database/TxtSushi/ParseUtil.hs
-maybeRead :: Maybe Text -> Maybe Int64
-maybeRead (Just txt) = (fmap fst . listToMaybe . reads . unpack) txt
-maybeRead _ = Nothing
-
--- This function is quite ugly at the moment, but at least it works.
--- TODO: It should be improved by using a monad combinator such as EitherT.
---       Example: http://stackoverflow.com/questions/13252889/elegant-haskell-case-error-handling-in-sequential-monads
--- The first argument is a validation/conversion function that takes the raw (but trimmed) value of type Text
--- and returns Either <error message> <converted value>.
--- If everything succeeds then this value will be passed to the second argument alongside the db lookup criterion,
--- typically applied against updateWhere.
-processXEditable :: (Text -> Handler (Either Text a)) -> (Filter Kopalnia -> a -> Handler ()) -> Handler Text
-processXEditable vald upd = do
-    mLookupId <- lookupPostParam "pk"
-    mLookupId2 <- return $ maybeRead mLookupId
-    case mLookupId2 of
-        Just lookupId -> do
-            mValueRaw <- lookupPostParam "value"
-            case mValueRaw of
-                Just valueRaw -> do
-                    eValue <- vald $ T.strip valueRaw
-                    case eValue of
-                        Right value -> do
-                            let criterion = KopalniaLookupId ==. lookupId
-                            cnt <- runDB $ count [criterion]
-                            case cnt of
-                                1 -> do
-                                    upd criterion value
-                                    sendResponseStatus status200 ("OK" :: Text)
-                                _ -> sendResponseStatus badRequest400 ("Błąd systemu: nieistniejący identyfikator" :: Text)
-                        Left err -> sendResponseStatus badRequest400 err
-                _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zmiennej 'value'" :: Text)
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawna zmienna 'pk'" :: Text)
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable vald upd where
@@ -224,20 +182,6 @@ postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" 
 postKopalniaEditSlowaKluczR :: Handler Text
 postKopalniaEditSlowaKluczR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
--- Helper functions
-getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
-             YesodPersist site,
-             PersistEntityBackend ent ~ YesodPersistBackend site) =>
-            Maybe (Key ent) -> HandlerT site IO (Maybe ent)
-getMaybe (Just lookupId) = runDB $ get lookupId
-getMaybe _ = return Nothing
-
-getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
-             YesodPersist site,
-             PersistEntityBackend ent ~ YesodPersistBackend site) =>
-            [Key ent] -> HandlerT site IO [(Maybe ent)]
-getListM = mapM (\key -> runDB $ get key)
-
 -- This function is sort of a combination of map, zip and filter.
 -- It walks both input lists in parallel and retains only Autor records that are not Nothing
 -- and whose corresponding KopalniaAutor have the 'typ' field equal to the first argument.
@@ -251,21 +195,6 @@ keepOnly typ' kas' auts' = keepOnly' typ' kas' auts' []
             | typ == kopalniaAutorTyp ka = keepOnly' typ kas auts (aut:output)
             | otherwise = keepOnly' typ kas auts output
         keepOnly' _ _ _ output = output
-
-getMiesiac :: Maybe Int64 -> Maybe Text
-getMiesiac (Just 1) = Just "styczeń"
-getMiesiac (Just 2) = Just "luty"
-getMiesiac (Just 3) = Just "marzec"
-getMiesiac (Just 4) = Just "kwiecień"
-getMiesiac (Just 5) = Just "maj"
-getMiesiac (Just 6) = Just "czerwiec"
-getMiesiac (Just 7) = Just "lipiec"
-getMiesiac (Just 8) = Just "sierpień"
-getMiesiac (Just 9) = Just "wrzesień"
-getMiesiac (Just 10) = Just "październik"
-getMiesiac (Just 11) = Just "listopad"
-getMiesiac (Just 12) = Just "grudzień"
-getMiesiac _ = Nothing
 
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.

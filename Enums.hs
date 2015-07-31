@@ -2,11 +2,27 @@ module Enums where
 
 import Database.Persist.TH
 import Prelude
-import Data.Aeson (ToJSON, Value, encode, object, (.=))
+import Data.Int (Int64)
+import Data.Aeson (encode)
 import Data.ByteString.Lazy (ByteString)
 import Data.Text
-import Data.Vector (fromList)
 import Control.Arrow ((&&&))
+import Utils
+
+getMiesiac :: Maybe Int64 -> Maybe Text
+getMiesiac (Just 1) = Just "styczeń"
+getMiesiac (Just 2) = Just "luty"
+getMiesiac (Just 3) = Just "marzec"
+getMiesiac (Just 4) = Just "kwiecień"
+getMiesiac (Just 5) = Just "maj"
+getMiesiac (Just 6) = Just "czerwiec"
+getMiesiac (Just 7) = Just "lipiec"
+getMiesiac (Just 8) = Just "sierpień"
+getMiesiac (Just 9) = Just "wrzesień"
+getMiesiac (Just 10) = Just "październik"
+getMiesiac (Just 11) = Just "listopad"
+getMiesiac (Just 12) = Just "grudzień"
+getMiesiac _ = Nothing
 
 data Rodzaj = Pismo | Kolekcja | Numer | Portal | Dzial | Ksiazka | Praca | Artykul | Rozdzial | Wywiad | AudioWideo | Audycja | Notka | RodzajInny
     deriving (Show, Read, Eq, Enum)
@@ -85,12 +101,6 @@ data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
 derivePersistField "TypAutora"
 
 -- To convert a ByteString to Text use decodeUtf8 from Data.Text
-tuplesToRawJson :: ToJSON e => Text -> Text -> Text -> [(e, Text)] -> Value
-tuplesToRawJson topLevelName fstName sndName tuples = 
-    let formatOne tpl = object [(fstName .= fst tpl), (sndName .= snd tpl)]
-        formatAll = Prelude.map formatOne tuples
-    in object [topLevelName .= fromList formatAll]
-
 enumToJson :: Show e => [e] -> (e -> Text) -> ByteString
 enumToJson allEnum showEnum =
     encode $ tuplesToRawJson "source" "value" "text" (Prelude.map ((pack . show) &&& showEnum) allEnum)  -- this returns a list of tuples
