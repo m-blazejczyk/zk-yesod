@@ -90,6 +90,8 @@ getKopalniaItemCommon isEdit lookupId = do
     tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
     wydawcyJson <- wydawcyToJson
+    dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
+                       , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))
     defaultLayout $
         if isEdit then do
             setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
@@ -145,7 +147,7 @@ postKopalniaEditWydawcaR = processXEditable vald upd where
     upd criterion value = runDB $ updateWhere [criterion] [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
-postKopalniaEditDataWydR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditDataWydR = sendResponseStatus status200 ("OK" :: Text)
 
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text

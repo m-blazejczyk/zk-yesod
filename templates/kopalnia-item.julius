@@ -1,61 +1,110 @@
 if(#{isEdit}) {
   $(document).ready(function() {
-      var displayWithEmpty = function(value, response) {
+    var displayWithEmpty = function(value, response) {
+      if(value.trim()=='') {
+        $(this).html('[brak]');
+      } else {
+        $(this).html(value);
+      }
+    }
+
+    $('#tytul').editable();
+
+    $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
+
+    $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
+
+    $('#isbn').editable({ display: displayWithEmpty });
+
+    $('#objetosc').editable({ display: displayWithEmpty });
+
+    $('#strony').editable({ display: displayWithEmpty });
+
+    $('#opis').editable({ display: displayWithEmpty });
+
+    // The source is obtained from Haskell, but the configuration is easier to provide directly here.
+    var wydConf = #{rawJS $ decodeUtf8 wydawcyJson};
+    wydConf.select2 = {
+      multiple: false,
+      placeholder: 'wybierz wydawcę',
+      allowClear: true,
+      width: 200
+    };
+    // We need a custom display function here to display the name of the publisher on the page after selection.
+    wydConf.display = function(value, response) {
+      if(!value || (typeof(value) == 'string' && value.trim() == '')) {
+        $(this).html('[brak]');
+      } else {
+        var id = parseInt(value);
+        var text = value;
+        for(var i = 0, len = wydConf.source.length; i < len; i++) {
+          if(wydConf.source[i].id === id) {
+            text = wydConf.source[i].text;
+            break;
+          }
+        }
+        $(this).html(text);
+      }
+    };
+    $('#wydawca').editable(wydConf);
+
+    $('#url').editable({
+      display: function(value, response) {
         if(value.trim()=='') {
-          $(this).html('[brak]');
+          $(this).html('link do zawartości [brak]');
         } else {
-          $(this).html(value);
+          $(this).html('link do zawartości [ustawiony]'); 
         }
       }
+    });
 
-      $('#tytul').editable();
-
-      $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
-
-      $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
-
-      $('#isbn').editable({ display: displayWithEmpty });
-
-      $('#objetosc').editable({ display: displayWithEmpty });
-
-      $('#strony').editable({ display: displayWithEmpty });
-
-      $('#opis').editable({ display: displayWithEmpty });
-
-      // The source is obtained from Haskell, but the configuration is easier to provide directly here.
-      var wydConf = #{rawJS $ decodeUtf8 wydawcyJson};
-      wydConf.select2 = {
-        multiple: false,
-        placeholder: 'wybierz wydawcę',
-        allowClear: true,
-        width: 200
-      };
-      // We need a custom display function here to display the name of the publisher on the page after selection.
-      wydConf.display = function(value, response) {
-        if(value.trim()=='') {
+    $('#datapub').editable({
+      value: {
+        year: '#{rawJS $ fst dataWyd}',
+        month: '#{rawJS $ snd dataWyd}'
+      },
+      validate: function(value) {
+        if(value) {
+          if(value.year) {
+            var year = parseInt(value.year);
+            if(isNaN(year) || year < 1800 || year > (new Date()).getFullYear() + 1)
+              return 'Niepoprawny rok';
+          }
+          if(value.month) {
+            var month = parseInt(value.month);
+            if(isNaN(month) || month < 1 || month > 12)
+              return 'Niepoprawny miesiąc';
+          }
+          if(!value.year && value.month) 
+            return 'Rok jest wymagany, jeśli podajesz miesiąc';
+        }
+      },
+      display: function(value, response) {
+        if (!value || (!value.month && !value.year)) {
           $(this).html('[brak]');
         } else {
-          var id = parseInt(value);
-          var text = value;
-          for(var i = 0, len = wydConf.source.length; i < len; i++) {
-            if(wydConf.source[i].id === id) {
-              text = wydConf.source[i].text;
-              break;
-            }
-          }
-          $(this).html(text);
-        }
-      };
-      $('#wydawca').editable(wydConf);
+          if(value.month) {
+            var month = parseInt(value.month), monthStr = value.month;
 
-      $('#url').editable({
-        display: function(value, response) {
-          if(value.trim()=='') {
-            $(this).html('link do zawartości [brak]');
+            if(month == 1) monthStr = "styczeń";
+            else if(month == 2) monthStr = "luty";
+            else if(month == 3) monthStr = "marzec";
+            else if(month == 4) monthStr = "kwiecień";
+            else if(month == 5) monthStr = "maj";
+            else if(month == 6) monthStr = "czerwiec";
+            else if(month == 7) monthStr = "lipiec";
+            else if(month == 8) monthStr = "sierpień";
+            else if(month == 9) monthStr = "wrzesień";
+            else if(month == 10) monthStr = "październik";
+            else if(month == 11) monthStr = "listopad";
+            else if(month == 12) monthStr = "grudzień";
+
+            $(this).html(monthStr + " " + value.year);
           } else {
-            $(this).html('link do zawartości [ustawiony]'); 
+            $(this).html(value.year);
           }
         }
-      });
+      }
+    });
   });
 }

@@ -77,15 +77,22 @@
         $nothing
           <b id="wydawca" data-type="select2" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditWydawcaR} data-title="Wydawca">
             [brak]
+      <p>
+        <span class="inobtrusive">Miejsce wydania:
     $else
       ^{getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
 
-    $maybe rok <- kopalniaPubRok kopalnia
+    $if isEdit
       <p>
         <span class="inobtrusive">Data publikacji:
-        $maybe miesiac <- getMiesiac $ kopalniaPubMiesiac kopalnia
-          #{miesiac} #
-        \#{rok}
+          <span id="datapub" data-type="yearmonth" data-pk="#{lookupId}" data-url=@{KopalniaEditDataWydR} data-title="Data publikacji">
+    $else
+      $maybe rok <- kopalniaPubRok kopalnia
+        <p>
+          <span class="inobtrusive">Data publikacji:
+          $maybe miesiac <- getMiesiac $ kopalniaPubMiesiac kopalnia
+            #{miesiac} #
+          \#{rok}
 
     $if isEdit
       <p>
