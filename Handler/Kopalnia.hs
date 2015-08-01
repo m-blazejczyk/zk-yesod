@@ -152,20 +152,21 @@ postKopalniaEditDataWydR = sendResponseStatus status200 ("OK" :: Text)
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text
 postKopalniaEditIsbnR = processXEditable vald upd where
-    vald v | T.length v == 0 = return $ Right Nothing
-           | T.length v < 10 = return $ Left "Za krótki kod"
-           | T.length v > 17 = return $ Left "Za długi kod"
-           | otherwise = return $ Right $ Just v
+    vald = return . vald'
+    vald' v | T.length v == 0 = Right Nothing
+            | T.length v < 10 = Left "Za krótki kod"
+            | T.length v > 17 = Left "Za długi kod"
+            | otherwise = Right $ Just v
     upd value = [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
 postKopalniaEditStrR = processXEditable vald upd where
-    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
+    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
     upd value = [KopalniaStrony =. value]
 
 postKopalniaEditObjR :: Handler Text
 postKopalniaEditObjR = processXEditable vald upd where
-    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
+    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
     upd value = [KopalniaObjetosc =. value]
 
 postKopalniaEditJezykR :: Handler Text
@@ -175,7 +176,7 @@ postKopalniaEditJezykR = processXEditable vald upd where
 
 postKopalniaEditOpisR :: Handler Text
 postKopalniaEditOpisR = processXEditable vald upd where
-    vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
+    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
     upd value = [KopalniaOpis =. value]
 
 postKopalniaEditHaslaR :: Handler Text
