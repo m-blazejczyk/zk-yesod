@@ -14,12 +14,7 @@
       $if isEdit
         <span class="inobtrusive" id="rodzaj" data-type="select" data-value=#{show $ kopalniaRodzaj kopalnia} data-pk="#{lookupId}" data-url=@{KopalniaEditRodzajR} data-title="Rodzaj publikacji">
           #{showRodzaj $ kopalniaRodzaj kopalnia};
-        $maybe url <- kopalniaUrl kopalnia
-          <span id="url" data-type="text" data-value=#{url} data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
-            link do zawartości [ustawiony]
-        $nothing
-          <span id="url" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
-            link do zawartości [brak]
+        <span id="url" data-type="text" data-value=#{maybe "" show (kopalniaUrl kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaEditLinkGlR} data-title="Link do zawartości">
       $else
         $maybe url <- kopalniaUrl kopalnia
           <span class="inobtrusive">#{showRodzaj $ kopalniaRodzaj kopalnia};
@@ -85,7 +80,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Data publikacji:
-          <span id="datapub" data-type="yearmonth" data-pk="#{lookupId}" data-url=@{KopalniaEditDataWydR} data-title="Data publikacji">
+        <span id="datapub" data-type="yearmonth" data-pk="#{lookupId}" data-url=@{KopalniaEditDataWydR} data-title="Data publikacji">
     $else
       $maybe rok <- kopalniaPubRok kopalnia
         <p>
@@ -97,12 +92,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Strony:
-        $maybe strony <- kopalniaStrony kopalnia
-          <span class="inobtrusive" id="strony" data-type="text" data-value=#{strony} data-pk="#{lookupId}" data-url=@{KopalniaEditStrR} data-title="Strony, na których znajduje się publikacja">
-            #{strony}
-        $nothing
-          <span class="inobtrusive" id="strony" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditStrR} data-title="Strony, na których znajduje się publikacja">
-            [brak]
+        <span class="inobtrusive" id="strony" data-type="text" data-value=#{maybe "" show (kopalniaStrony kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaEditStrR} data-title="Strony, na których znajduje się publikacja">
     $else
       $maybe strony <- kopalniaStrony kopalnia
         <p>
@@ -112,12 +102,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">ISBN:
-        $maybe isbn <- kopalniaIsbn kopalnia
-          <span class="inobtrusive" id="isbn" data-type="text" data-value=#{isbn} data-pk="#{lookupId}" data-url=@{KopalniaEditIsbnR} data-title="Kod ISBN">
-            #{isbn}
-        $nothing
-          <span class="inobtrusive" id="isbn" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditIsbnR} data-title="Kod ISBN">
-            [brak]
+        <span class="inobtrusive" id="isbn" data-type="text" data-value=#{maybe "" show (kopalniaIsbn kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaEditIsbnR} data-title="Kod ISBN">
     $else
       $maybe isbn <- kopalniaIsbn kopalnia
         <p>
@@ -127,12 +112,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Objętość:
-        $maybe objetosc <- kopalniaObjetosc kopalnia
-          <span class="inobtrusive" id="objetosc" data-type="text" data-value=#{objetosc} data-pk="#{lookupId}" data-url=@{KopalniaEditObjR} data-title="Objętość">
-            #{objetosc}
-        $nothing
-          <span class="inobtrusive" id="objetosc" data-type="text" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditObjR} data-title="Objętość">
-            [brak]
+        <span class="inobtrusive" id="objetosc" data-type="text" data-value=#{maybe "" show (kopalniaObjetosc kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaEditObjR} data-title="Objętość">
     $else
       $maybe objetosc <- kopalniaObjetosc kopalnia
         <p>
@@ -150,12 +130,7 @@
     $if isEdit
       <p class="inobtrusive">Opis:
       <p class="blockquote">
-        $maybe opis <- kopalniaOpis kopalnia
-          <span id="opis" data-type="textarea" data-value=#{opis} data-pk="#{lookupId}" data-url=@{KopalniaEditOpisR} data-title="Opis">
-            #{opis}
-        $nothing
-          <span id="opis" data-type="textarea" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditOpisR} data-title="Opis">
-            [brak]
+        <span id="opis" data-type="textarea" data-value=#{maybe "" show (kopalniaOpis kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaEditOpisR} data-title="Opis">
     $else
       $maybe opis <- kopalniaOpis kopalnia
         <p class="inobtrusive">Opis:
