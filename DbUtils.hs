@@ -39,9 +39,9 @@ wydawcyToJson = do
 --       Example: http://stackoverflow.com/questions/13252889/elegant-haskell-case-error-handling-in-sequential-monads
 -- The first argument is a validation/conversion function that takes the raw (but trimmed) value of type Text
 -- and returns Either <error message> <converted value> in the Handler monad (to allow for database validation lookups).
--- If everything succeeds then this value will be passed to the second argument alongside the db lookup criterion,
--- typically applied against updateWhere.
-processXEditable :: (Text -> Handler (Either Text a)) -> (Filter Kopalnia -> a -> Handler ()) -> Handler Text
+-- If everything succeeds then this value will be passed to a call to updateWhere with the result of the second argument
+-- as the last parameter.
+processXEditable :: (Text -> Handler (Either Text a)) -> (a -> [Update Kopalnia]) -> Handler Text
 processXEditable vald upd = do
     mLookupId <- lookupPostParam "pk"
     mLookupId2 <- return $ maybeRead mLookupId
@@ -57,7 +57,7 @@ processXEditable vald upd = do
                             cnt <- runDB $ count [criterion]
                             case cnt of
                                 1 -> do
-                                    upd criterion value
+                                    runDB $ updateWhere [criterion] (upd value)
                                     sendResponseStatus status200 ("OK" :: Text)
                                 _ -> sendResponseStatus badRequest400 ("Błąd systemu: nieistniejący identyfikator" :: Text)
                         Left err -> sendResponseStatus badRequest400 err

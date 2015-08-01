@@ -104,19 +104,19 @@ postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable vald upd where
     vald v | T.length v > 0 = return $ Right v
            | otherwise = return $ Left "Tytuł nie może być pusty"
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaTytul =. value]
+    upd value = [KopalniaTytul =. value]
 
 postKopalniaEditLinkGlR :: Handler Text
 postKopalniaEditLinkGlR = processXEditable vald upd where
     vald v | T.length v == 0 = return $ Right Nothing
            | isURI $ unpack v = return $ Right $ Just v
            | otherwise = return $ Left "Niepoprawny adres"
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaUrl =. value]
+    upd value = [KopalniaUrl =. value]
 
 postKopalniaEditRodzajR :: Handler Text
 postKopalniaEditRodzajR = processXEditable vald upd where
     vald = return . readRodzaj
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaRodzaj =. value]
+    upd value = [KopalniaRodzaj =. value]
 
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
@@ -144,7 +144,7 @@ postKopalniaEditWydawcaR = processXEditable vald upd where
         Nothing -> return $ Left "Błąd systemu: identyfikator wydawcy nie jest liczbą"
     processWyd (Just (Entity wydId _)) = return $ Right $ Just wydId
     processWyd Nothing = return $ Left "Błąd systemu: niezdefiniowany identyfikator wydawcy"
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaWydawcaId =. value]
+    upd value = [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = sendResponseStatus status200 ("OK" :: Text)
@@ -156,27 +156,27 @@ postKopalniaEditIsbnR = processXEditable vald upd where
            | T.length v < 10 = return $ Left "Za krótki kod"
            | T.length v > 17 = return $ Left "Za długi kod"
            | otherwise = return $ Right $ Just v
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaIsbn =. value]
+    upd value = [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
 postKopalniaEditStrR = processXEditable vald upd where
     vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaStrony =. value]
+    upd value = [KopalniaStrony =. value]
 
 postKopalniaEditObjR :: Handler Text
 postKopalniaEditObjR = processXEditable vald upd where
     vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaObjetosc =. value]
+    upd value = [KopalniaObjetosc =. value]
 
 postKopalniaEditJezykR :: Handler Text
 postKopalniaEditJezykR = processXEditable vald upd where
     vald = return . readJezyk
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaJezyk =. value]
+    upd value = [KopalniaJezyk =. value]
 
 postKopalniaEditOpisR :: Handler Text
 postKopalniaEditOpisR = processXEditable vald upd where
     vald v = if T.length v == 0 then return $ Right Nothing else return $ Right $ Just v
-    upd criterion value = runDB $ updateWhere [criterion] [KopalniaOpis =. value]
+    upd value = [KopalniaOpis =. value]
 
 postKopalniaEditHaslaR :: Handler Text
 postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
