@@ -4,9 +4,18 @@ import Prelude
 import Data.Maybe (listToMaybe)
 import Data.Int (Int64)
 import Data.Aeson (ToJSON, Value, object, (.=))
-import Data.Text
+import qualified Data.Text as T
 import Data.Vector (fromList)
---import Text.Read (reads)
+
+data Result = Error T.Text | Success
+    deriving (Show, Read)
+
+combine :: T.Text -> [Result] -> Result
+combine sep = foldl combine' Success
+    where combine' (Error err) (Error acc) = Error $ T.concat [acc, sep, err]
+          combine' (Error err) Success = Error err
+          combine' Success (Error acc) = Error acc
+          combine' Success Success = Success
 
 -- This function converts a List of tuples to JSON.  This is how the generated JSON looks like:
 -- {
@@ -16,7 +25,7 @@ import Data.Vector (fromList)
 --      ...
 --    ]
 -- }
-tuplesToRawJson :: ToJSON e => Text -> Text -> Text -> [(e, Text)] -> Value
+tuplesToRawJson :: ToJSON e => T.Text -> T.Text -> T.Text -> [(e, T.Text)] -> Value
 tuplesToRawJson topLevelName fstName sndName tuples = 
     let formatOne tpl = object [(fstName .= fst tpl), (sndName .= snd tpl)]
         formatAll = Prelude.map formatOne tuples
@@ -24,7 +33,7 @@ tuplesToRawJson topLevelName fstName sndName tuples =
 
 -- A safe form of read.  Returns an Int64 to make it compatible with lookup ids in the database.
 -- Borrowed from http://hackage.haskell.org/package/txt-sushi-0.6.0/src/Database/TxtSushi/ParseUtil.hs
-maybeRead :: Maybe Text -> Maybe Int64
-maybeRead (Just txt) = (fmap fst . listToMaybe . reads . unpack) txt
+maybeRead :: Maybe T.Text -> Maybe Int64
+maybeRead (Just txt) = (fmap fst . listToMaybe . reads . T.unpack) txt
 maybeRead _ = Nothing
 

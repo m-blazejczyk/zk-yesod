@@ -101,22 +101,22 @@ getKopalniaItemCommon isEdit lookupId = do
             $(widgetFile "kopalnia-item")
 
 postKopalniaEditTytulR :: Handler Text
-postKopalniaEditTytulR = processXEditable vald upd where
-    vald v | T.length v > 0 = return $ Right v
-           | otherwise = return $ Left "Tytuł nie może być pusty"
-    upd value = [KopalniaTytul =. value]
+postKopalniaEditTytulR = processXEditable vald upd [] where
+    vald _ v | T.length v > 0 = return $ Right v
+             | otherwise = return $ Left "Tytuł nie może być pusty"
+    upd _ value = [KopalniaTytul =. value]
 
 postKopalniaEditLinkGlR :: Handler Text
-postKopalniaEditLinkGlR = processXEditable vald upd where
-    vald v | T.length v == 0 = return $ Right Nothing
-           | isURI $ unpack v = return $ Right $ Just v
-           | otherwise = return $ Left "Niepoprawny adres"
-    upd value = [KopalniaUrl =. value]
+postKopalniaEditLinkGlR = processXEditable vald upd [] where
+    vald _ v | T.length v == 0 = return $ Right Nothing
+             | isURI $ unpack v = return $ Right $ Just v
+             | otherwise = return $ Left "Niepoprawny adres"
+    upd _ value = [KopalniaUrl =. value]
 
 postKopalniaEditRodzajR :: Handler Text
-postKopalniaEditRodzajR = processXEditable vald upd where
-    vald = return . readRodzaj
-    upd value = [KopalniaRodzaj =. value]
+postKopalniaEditRodzajR = processXEditable vald upd [] where
+    vald _ = return . readRodzaj
+    upd _ value = [KopalniaRodzaj =. value]
 
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
@@ -134,9 +134,9 @@ postKopalniaEditRodzicR :: Handler Text
 postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 postKopalniaEditWydawcaR :: Handler Text
-postKopalniaEditWydawcaR = processXEditable vald upd where
-    vald v | T.length v == 0 = return $ Right Nothing
-           | otherwise = parseId v
+postKopalniaEditWydawcaR = processXEditable vald upd [] where
+    vald _ v | T.length v == 0 = return $ Right Nothing
+             | otherwise = parseId v
     parseId v = case (maybeRead $ Just v) of
         Just iden -> do
             mWyd <- runDB $ getBy $ UniqueWydawca iden
@@ -144,40 +144,40 @@ postKopalniaEditWydawcaR = processXEditable vald upd where
         Nothing -> return $ Left "Błąd systemu: identyfikator wydawcy nie jest liczbą"
     processWyd (Just (Entity wydId _)) = return $ Right $ Just wydId
     processWyd Nothing = return $ Left "Błąd systemu: niezdefiniowany identyfikator wydawcy"
-    upd value = [KopalniaWydawcaId =. value]
+    upd _ value = [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = sendResponseStatus status200 ("OK" :: Text)
 
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text
-postKopalniaEditIsbnR = processXEditable vald upd where
-    vald = return . vald'
+postKopalniaEditIsbnR = processXEditable vald upd [] where
+    vald _ = return . vald'
     vald' v | T.length v == 0 = Right Nothing
             | T.length v < 10 = Left "Za krótki kod"
             | T.length v > 17 = Left "Za długi kod"
             | otherwise = Right $ Just v
-    upd value = [KopalniaIsbn =. value]
+    upd _ value = [KopalniaIsbn =. value]
 
 postKopalniaEditStrR :: Handler Text
-postKopalniaEditStrR = processXEditable vald upd where
-    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
-    upd value = [KopalniaStrony =. value]
+postKopalniaEditStrR = processXEditable vald upd [] where
+    vald _ v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
+    upd _ value = [KopalniaStrony =. value]
 
 postKopalniaEditObjR :: Handler Text
-postKopalniaEditObjR = processXEditable vald upd where
-    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
-    upd value = [KopalniaObjetosc =. value]
+postKopalniaEditObjR = processXEditable vald upd [] where
+    vald _ v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
+    upd _ value = [KopalniaObjetosc =. value]
 
 postKopalniaEditJezykR :: Handler Text
-postKopalniaEditJezykR = processXEditable vald upd where
-    vald = return . readJezyk
-    upd value = [KopalniaJezyk =. value]
+postKopalniaEditJezykR = processXEditable vald upd [] where
+    vald _ = return . readJezyk
+    upd _ value = [KopalniaJezyk =. value]
 
 postKopalniaEditOpisR :: Handler Text
-postKopalniaEditOpisR = processXEditable vald upd where
-    vald v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
-    upd value = [KopalniaOpis =. value]
+postKopalniaEditOpisR = processXEditable vald upd [] where
+    vald _ v = return $ if T.length v == 0 then Right Nothing else Right $ Just v
+    upd _ value = [KopalniaOpis =. value]
 
 postKopalniaEditHaslaR :: Handler Text
 postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
