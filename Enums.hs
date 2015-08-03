@@ -44,22 +44,22 @@ showRodzaj Audycja =    "Audycja RTV"
 showRodzaj Notka =      "Notka prasowa"
 showRodzaj RodzajInny = "Inny"
 
-readRodzaj :: Text -> Either Text Rodzaj
-readRodzaj "Pismo" = Right Pismo
-readRodzaj "Kolekcja" = Right Kolekcja
-readRodzaj "Numer" = Right Numer
-readRodzaj "Portal" = Right Portal
-readRodzaj "Dzial" = Right Dzial
-readRodzaj "Ksiazka" = Right Ksiazka
-readRodzaj "Praca" = Right Praca
-readRodzaj "Artykul" = Right Artykul
-readRodzaj "Rozdzial" = Right Rozdzial
-readRodzaj "Wywiad" = Right Wywiad
-readRodzaj "AudioWideo" = Right AudioWideo
-readRodzaj "Audycja" = Right Audycja
-readRodzaj "Notka" = Right Notka
-readRodzaj "RodzajInny" = Right RodzajInny
-readRodzaj _ = Left "Niepoprawny rodzaj publikacji"
+readRodzaj :: Text -> Result Rodzaj
+readRodzaj "Pismo" = Success Pismo
+readRodzaj "Kolekcja" = Success Kolekcja
+readRodzaj "Numer" = Success Numer
+readRodzaj "Portal" = Success Portal
+readRodzaj "Dzial" = Success Dzial
+readRodzaj "Ksiazka" = Success Ksiazka
+readRodzaj "Praca" = Success Praca
+readRodzaj "Artykul" = Success Artykul
+readRodzaj "Rozdzial" = Success Rozdzial
+readRodzaj "Wywiad" = Success Wywiad
+readRodzaj "AudioWideo" = Success AudioWideo
+readRodzaj "Audycja" = Success Audycja
+readRodzaj "Notka" = Success Notka
+readRodzaj "RodzajInny" = Success RodzajInny
+readRodzaj _ = Error "Niepoprawny rodzaj publikacji"
 
 data Jezyk = JezykPL | JezykEN | JezykFR | JezykRU | JezykDE | JezykUA | JezykCZ | JezykSK | JezykLT | JezykSE | JezykES | JezykIT | JezykInny
     deriving (Show, Read, Eq, Enum)
@@ -80,21 +80,21 @@ showJezyk JezykES =   "hiszpański"
 showJezyk JezykIT =   "włoski"
 showJezyk JezykInny = "Inny"
 
-readJezyk :: Text -> Either Text Jezyk
-readJezyk "JezykPL" = Right JezykPL
-readJezyk "JezykEN" = Right JezykEN
-readJezyk "JezykFR" = Right JezykFR
-readJezyk "JezykRU" = Right JezykRU
-readJezyk "JezykDE" = Right JezykDE
-readJezyk "JezykUA" = Right JezykUA
-readJezyk "JezykCZ" = Right JezykCZ
-readJezyk "JezykSK" = Right JezykSK
-readJezyk "JezykLT" = Right JezykLT
-readJezyk "JezykSE" = Right JezykSE
-readJezyk "JezykES" = Right JezykES
-readJezyk "JezykIT" = Right JezykIT
-readJezyk "JezykInny" = Right JezykInny
-readJezyk _ = Left "Niepoprawny język publikacji"
+readJezyk :: Text -> Result Jezyk
+readJezyk "JezykPL" = Success JezykPL
+readJezyk "JezykEN" = Success JezykEN
+readJezyk "JezykFR" = Success JezykFR
+readJezyk "JezykRU" = Success JezykRU
+readJezyk "JezykDE" = Success JezykDE
+readJezyk "JezykUA" = Success JezykUA
+readJezyk "JezykCZ" = Success JezykCZ
+readJezyk "JezykSK" = Success JezykSK
+readJezyk "JezykLT" = Success JezykLT
+readJezyk "JezykSE" = Success JezykSE
+readJezyk "JezykES" = Success JezykES
+readJezyk "JezykIT" = Success JezykIT
+readJezyk "JezykInny" = Success JezykInny
+readJezyk _ = Error "Niepoprawny język publikacji"
 
 data TypAutora = AutorAut | AutorRed | AutorTlum | AutorWyw
     deriving (Show, Read, Eq)

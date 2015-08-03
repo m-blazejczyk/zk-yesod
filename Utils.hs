@@ -7,15 +7,17 @@ import Data.Aeson (ToJSON, Value, object, (.=))
 import qualified Data.Text as T
 import Data.Vector (fromList)
 
-data Result = Error T.Text | Success
+data Result a = Error T.Text | Success a
     deriving (Show, Read)
 
-combine :: T.Text -> [Result] -> Result
-combine sep = foldl combine' Success
-    where combine' (Error err) (Error acc) = Error $ T.concat [acc, sep, err]
-          combine' (Error err) Success = Error err
-          combine' Success (Error acc) = Error acc
-          combine' Success Success = Success
+combine :: T.Text -> [Result a] -> Result [a]
+combine sep arr = foldl combine' (Success []) arr
+    where combine' (Error acc) (Error err) = Error $ T.concat [acc, sep, err]
+          combine' (Success _) (Error err) = Error err
+          combine' (Error acc) (Success _) = Error acc
+          combine' (Success acc) (Success val) = Success (val:acc)
+
+--foldl :: (acc -> a -> acc) -> acc -> [a] -> acc
 
 -- This function converts a List of tuples to JSON.  This is how the generated JSON looks like:
 -- {
