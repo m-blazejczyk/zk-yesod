@@ -82,7 +82,7 @@ processXEditable' vald upd parNames = do
         Just lookupId -> do
             -- Make sure that all value parameters exist, and turn them into an array, or combine errors.
             lParams <- getNamedParams parNames
-            rParams <- return $ combine "<br>" lParams
+            rParams <- return $ combine "\n" lParams
             case rParams of
                 Success params -> do
                     -- Run the user-provided cross-validation function.

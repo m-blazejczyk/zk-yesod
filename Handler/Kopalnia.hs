@@ -147,12 +147,28 @@ postKopalniaEditWydawcaR = processXEditable1 vald upd where
     upd value = [KopalniaWydawcaId =. value]
 
 postKopalniaEditDataWydR :: Handler Text
-postKopalniaEditDataWydR = sendResponseStatus status200 ("OK" :: Text)
-    -- processXEditable vald upd ["year", "month"] where
-    -- vald "year" v | T.length v == 0 = return $ Success Nothing
-    --               | isURI $ unpack v = return $ Success $ Just v
-    --               | otherwise = return $ Error "Niepoprawny adres"
-    -- upd value = [KopalniaUrl =. value]
+postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
+    vald [tYear, tMonth] = do
+        curDate <- liftIO (getCurrentTime >>= return . toGregorian . utctDay)
+        curYear <- return $ fromIntegral $ fst3 curDate
+        -- * Cross-validate here!!!
+        -- * Properly handle empty values!!!
+        validated <- return $ [valdYear curYear tYear, valdMonth tMonth]
+        combined <- return $ combine "\n" validated
+        case combined of
+            Success [year, month] -> return $ Success (year, month)
+            Error err -> return $ Error err
+            _ -> return $ Error "Błąd systemu: niepoprawna ilość parametrów"
+    vald _ = return $ Error "Błąd systemu: niepoprawna ilość parametrów"
+    valdYear curYear tYear = case maybeRead $ Just tYear of
+        Just year -> if year < 1850 || year > curYear + 1 then Error "Niepoprawny rok" else Success $ Just year
+        Nothing -> Error "Rok nie jest liczbą"
+    valdMonth tMonth = case maybeRead $ Just tMonth of
+        Just month -> if month < 1 || month > 12 then Error "Niepoprawny miesiąc" else Success $ Just month
+        Nothing -> Error "Miesiąc nie jest liczbą"
+    upd criterion value = do
+        runDB $ updateWhere [criterion] [KopalniaPubRok =. fst value]
+        runDB $ updateWhere [criterion] [KopalniaPubMiesiac =. snd value]
 
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text

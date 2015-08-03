@@ -10,12 +10,29 @@ import Data.Vector (fromList)
 data Result a = Error T.Text | Success a
     deriving (Show, Read)
 
+-- Copied from source code of Control.Monad.Either.
+instance Functor Result where
+    fmap _ (Error a) = Error a
+    fmap f (Success a) = Success (f a)
+instance Monad Result where
+    return = Success
+    Success m >>= k = k m
+    Error e >>= _ = Error e
+instance Applicative Result where
+  pure = Success
+  a <*> b = do x <- a; y <- b; return (x y)
+
+-- This function turns an array of results into a single result that will have:
+--  * Either the array of results (with order preserved) as value if all results were successes,
+--  * Or a concatenated (using 'sep') error message if there was at least one error.
 combine :: T.Text -> [Result a] -> Result [a]
-combine sep arr = foldl combine' (Success []) arr
+combine sep arr = rev $ foldl combine' (Success []) arr
     where combine' (Error acc) (Error err) = Error $ T.concat [acc, sep, err]
           combine' (Success _) (Error err) = Error err
           combine' (Error acc) (Success _) = Error acc
           combine' (Success acc) (Success val) = Success (val:acc)
+          rev (Success val) = Success $ reverse val
+          rev (Error err) = Error err
 
 --foldl :: (acc -> a -> acc) -> acc -> [a] -> acc
 
@@ -39,3 +56,12 @@ maybeRead :: Maybe T.Text -> Maybe Int64
 maybeRead (Just txt) = (fmap fst . listToMaybe . reads . T.unpack) txt
 maybeRead _ = Nothing
 
+-- Access to elemnets of a 3-element tuple.
+fst3 :: (a, b, c) -> a
+fst3 (val, _, _) = val
+
+snd3 :: (a, b, c) -> b
+snd3 (_, val, _) = val
+
+trd3 :: (a, b, c) -> c
+trd3 (_, _, val) = val
