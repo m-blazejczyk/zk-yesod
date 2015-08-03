@@ -34,8 +34,6 @@ combine sep arr = rev $ foldl combine' (Success []) arr
           rev (Success val) = Success $ reverse val
           rev (Error err) = Error err
 
---foldl :: (acc -> a -> acc) -> acc -> [a] -> acc
-
 -- This function converts a List of tuples to JSON.  This is how the generated JSON looks like:
 -- {
 --    topLevelName: [
