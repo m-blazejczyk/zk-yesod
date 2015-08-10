@@ -11,6 +11,7 @@ module Handler.Kopalnia (
     postKopalniaEditWywiadR,
     postKopalniaEditRodzicR,
     postKopalniaEditWydawcaR,
+    postKopalniaAddWydawcaR,
     postKopalniaEditDataWydR,
     postKopalniaEditIsbnR,
     postKopalniaEditStrR,
@@ -57,7 +58,10 @@ getKopalniaMainR = do
     -- kopaut2 <- runDB $ insert $ KopalniaAutor autor2 item2 AutorRed
     -- kopaut3 <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
     -- kopaut4 <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
-    -- nastepny <- runDB $ insert $ Nastepny 4 2 5 2
+    intProp1 <- runDB $ insert $ IntProp "kopalnia" 4
+    intProp1 <- runDB $ insert $ IntProp "nkPub" 2
+    intProp1 <- runDB $ insert $ IntProp "autor" 5
+    intProp1 <- runDB $ insert $ IntProp "wydawca" 2
     defaultLayout $ do
         setTitle defaultTitle
         $(widgetFile "kopalnia-main")
@@ -111,8 +115,8 @@ postKopalniaEditTytulR = processXEditable1 vald upd where
 postKopalniaEditLinkGlR :: Handler Text
 postKopalniaEditLinkGlR = processXEditable1 vald upd where
     vald v | T.length v == 0 = return $ Success Nothing
-             | isURI $ unpack v = return $ Success $ Just v
-             | otherwise = return $ Error "Niepoprawny adres"
+           | isURI $ unpack v = return $ Success $ Just v
+           | otherwise = return $ Error "Niepoprawny adres"
     upd value = [KopalniaUrl =. value]
 
 postKopalniaEditRodzajR :: Handler Text
@@ -138,7 +142,7 @@ postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!"
 postKopalniaEditWydawcaR :: Handler Text
 postKopalniaEditWydawcaR = processXEditable1 vald upd where
     vald v | T.length v == 0 = return $ Success Nothing
-             | otherwise = parseId v
+           | otherwise = parseId v
     parseId v = case (maybeRead $ Just v) of
         Just iden -> do
             mWyd <- runDB $ getBy $ UniqueWydawca iden
@@ -147,6 +151,27 @@ postKopalniaEditWydawcaR = processXEditable1 vald upd where
     processWyd (Just (Entity wydId _)) = return $ Success $ Just wydId
     processWyd Nothing = return $ Error "Błąd systemu: niezdefiniowany identyfikator wydawcy"
     upd value = [KopalniaWydawcaId =. value]
+
+postKopalniaAddWydawcaR :: Handler Text
+postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
+    -- TODO: verify this logic
+    vald [tNazwa, tUrl] | T.length tNazwa == 0 && T.length tUrl == 0 = return $ Success Nothing
+                        | T.length tNazwa == 0 && T.length tUrl > 0 = return $ Error "Nazwa wydawcy jest wymagana"
+                        | T.length tUrl > 0 && (not $ isURI $ unpack tUrl) = return $ Error "Niepoprawny adres strony internetowej"
+                        | T.length tUrl == 0 = return $ Success $ Just (tNazwa, Nothing)
+                        | otherwise = return $ Success $ Just (tNazwa, Just tUrl)
+    vald _ = return $ Error "Błąd systemu: niepoprawna ilość parametrów"
+    upd _ Nothing = return ()  -- If both parameters were empty, simply ignore the request.
+                               -- TODO: verify that we can actually detect it on the client side.
+                               -- If not, return a specific error.
+    upd criterion (Just (nazwa, url)) = do
+        mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
+        case mNast of
+            Just (Entity _ nast) -> do
+                wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
+                runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
+                runDB $ updateWhere [criterion] [KopalniaWydawcaId =. (Just wydawca)]
+            Nothing -> return ()  -- TODO: silent fail...
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where

@@ -8,11 +8,15 @@ User
     UniqueUser email
     deriving Typeable
 
-Nastepny                  -- Następna dostępna wartość pola lookupId dla danej kolekcji
-    kopalnia Int64
-    nkPub Int64
-    autor Int64
-    wydawca Int64
+-- Keys:
+--  * kopalnia
+--  * nkPub
+--  * autor
+--  * wydawca
+IntProp
+    key Text
+    value Int64
+    UniqueIntProp key
     deriving Typeable
 
 NkPub                     -- Publikacja niekomiksowa

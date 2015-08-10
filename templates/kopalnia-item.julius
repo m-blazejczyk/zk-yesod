@@ -106,5 +106,27 @@ if(#{isEdit}) {
         }
       }
     });
+
+    // This editable is configured differently because it's purpose is to *add* new publisher records.
+    $('#addWydawce').editable({
+      value: {
+        nazwa: '',
+        url: ''
+      },
+      validate: function(value) {
+        if(value) {
+          if(value.url && !value.nazwa) {
+            return 'Nazwa wydawcy jest wymagana';
+          }
+          // TODO: validate the url
+        }
+      },
+      display: function(value, response) {
+        $(this).html(':');
+      },
+      success: function(response, newValue) {
+        console.log(response);
+      }
+    });
   });
 }

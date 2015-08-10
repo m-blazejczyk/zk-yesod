@@ -77,3 +77,4 @@ $newline never
   <script src=@{StaticR bootstrap3_editable_1_5_1_bootstrap3_editable_js_bootstrap_editable_min_js}></script>
   <script src=@{StaticR select2_3_5_2_select2_min_js}></script>
   <script src=@{StaticR js_monthyear_js}></script>
+  <script src=@{StaticR js_add_wydawce_js}></script>

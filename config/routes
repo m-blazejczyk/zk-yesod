@@ -14,6 +14,7 @@
 /bibliografia/zmien/wywiadowce KopalniaEditWywiadR POST
 /bibliografia/zmien/rodzica KopalniaEditRodzicR POST
 /bibliografia/zmien/wydawce KopalniaEditWydawcaR POST
+/bibliografia/dodaj/wydawce KopalniaAddWydawcaR POST
 /bibliografia/zmien/date-wydania KopalniaEditDataWydR POST
 /bibliografia/zmien/isbn KopalniaEditIsbnR POST
 /bibliografia/zmien/strony KopalniaEditStrR POST
