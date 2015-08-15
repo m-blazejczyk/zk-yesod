@@ -59,9 +59,9 @@ getKopalniaMainR = do
     -- kopaut3 <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
     -- kopaut4 <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
     intProp1 <- runDB $ insert $ IntProp "kopalnia" 4
-    intProp1 <- runDB $ insert $ IntProp "nkPub" 2
-    intProp1 <- runDB $ insert $ IntProp "autor" 5
-    intProp1 <- runDB $ insert $ IntProp "wydawca" 2
+    intProp2 <- runDB $ insert $ IntProp "nkPub" 2
+    intProp3 <- runDB $ insert $ IntProp "autor" 5
+    intProp4 <- runDB $ insert $ IntProp "wydawca" 2
     defaultLayout $ do
         setTitle defaultTitle
         $(widgetFile "kopalnia-main")
