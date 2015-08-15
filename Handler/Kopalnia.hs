@@ -161,9 +161,8 @@ postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
                         | T.length tUrl == 0 = return $ Success $ Just (tNazwa, Nothing)
                         | otherwise = return $ Success $ Just (tNazwa, Just tUrl)
     vald _ = return $ Error "Błąd systemu: niepoprawna ilość parametrów"
-    upd _ Nothing = return ()  -- If both parameters were empty, simply ignore the request.
-                               -- TODO: verify that we can actually detect it on the client side.
-                               -- If not, return a specific error.
+    upd _ Nothing = return $ Success "IGNORE"  -- If both parameters were empty, simply ignore the request.
+                                               -- Don't change this text without changing the JS file.
     upd criterion (Just (nazwa, url)) = do
         mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
         case mNast of
@@ -171,7 +170,8 @@ postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
                 wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
                 runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
                 runDB $ updateWhere [criterion] [KopalniaWydawcaId =. (Just wydawca)]
-            Nothing -> return ()  -- TODO: silent fail...
+                return $ Success "OK"
+            Nothing -> return $ Error "Błąd systemu: brak ustawienia 'wydawca' w bazie danych"
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
@@ -197,6 +197,7 @@ postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
     upd criterion value = do
         runDB $ updateWhere [criterion] [KopalniaPubRok =. fst value]
         runDB $ updateWhere [criterion] [KopalniaPubMiesiac =. snd value]
+        return $ Success "OK"
 
 -- TODO: add regex validation
 postKopalniaEditIsbnR :: Handler Text

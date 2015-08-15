@@ -52,7 +52,7 @@ wydawcyToJson = do
 -- TODO: This function should be improved by using a monad combinator such as EitherT.
 --       Example: http://stackoverflow.com/questions/13252889/elegant-haskell-case-error-handling-in-sequential-monads
 processXEditable :: ([Text] -> Handler (Result a))
-                 -> (Filter Kopalnia -> a -> Handler ())
+                 -> (Filter Kopalnia -> a -> Handler (Result Text))
                  -> [Text]
                  -> Handler Text
 processXEditable vald upd [] = processXEditable' vald upd [""]
@@ -68,11 +68,13 @@ processXEditable1 vald' upd' = processXEditable' vald upd [""]
         vald params = case headMay params of
             Just h -> vald' h
             Nothing -> return $ Error "Błąd systemu: brakuje parametrów"
-        upd criterion vals = runDB $ updateWhere [criterion] (upd' vals)
+        upd criterion vals = do
+            runDB $ updateWhere [criterion] (upd' vals)
+            return $ Success "OK"
 
 -- This function differs from the previous one in that it requires the list of parameter names not to be empty.
 processXEditable' :: ([Text] -> Handler (Result a))
-                  -> (Filter Kopalnia -> a -> Handler ())
+                  -> (Filter Kopalnia -> a -> Handler (Result Text))
                   -> [Text]
                   -> Handler Text
 processXEditable' vald upd parNames = do
@@ -93,8 +95,10 @@ processXEditable' vald upd parNames = do
                             cnt <- runDB $ count [criterion]
                             case cnt of
                                 1 -> do
-                                    upd criterion vals
-                                    sendResponseStatus status200 ("OK" :: Text)
+                                    res <- upd criterion vals
+                                    case res of
+                                        Error err -> sendResponseStatus badRequest400 err
+                                        Success msg -> sendResponseStatus status200 msg
                                 _ -> sendResponseStatus badRequest400 (T.concat ["Błąd systemu: fiszka o tym identyfikatorze nie istnieje: ", (pack $ show lookupId)])
                         Error err -> sendResponseStatus badRequest400 err
                 Error err -> sendResponseStatus badRequest400 err

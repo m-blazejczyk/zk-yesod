@@ -118,7 +118,11 @@ if(#{isEdit}) {
         $(this).html('<span></span>');
       },
       success: function(response, newValue) {
-        console.log(response);
+        if(response == 'OK') {
+          console.log('Response was OK');
+        } else if(response == 'IGNORE') {
+          console.log('Response was IGNORE');
+        }
       }
     });
   });
