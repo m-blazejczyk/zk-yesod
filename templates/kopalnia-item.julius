@@ -118,11 +118,10 @@ if(#{isEdit}) {
         $(this).html('<span></span>');
       },
       success: function(response, newValue) {
-        if(response == 'OK') {
-          console.log('Response was OK');
-        } else if(response == 'IGNORE') {
-          console.log('Response was IGNORE');
-        }
+        // TODO: The contents of the fields in the pop-up don't actually reset.
+        // TODO: The new item is not added to the available options in the "wydawcy" editable.
+        $('#addWydawce').editable('setValue', { nazwa: '', url: '' });
+        $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
   });
