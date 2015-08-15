@@ -95,6 +95,7 @@ processXEditable' vald upd parNames = do
                             cnt <- runDB $ count [criterion]
                             case cnt of
                                 1 -> do
+                                    -- Run the user-provided database update function.
                                     res <- upd criterion vals
                                     case res of
                                         Error err -> sendResponseStatus badRequest400 err
