@@ -1,12 +1,5 @@
 if(#{isEdit}) {
   $(document).ready(function() {
-    var displayWithEmpty = function(value, response) {
-      if(value.trim()=='') {
-        $(this).html('[brak]');
-      } else {
-        $(this).html(value);
-      }
-    }
 
     $('#tytul').editable();
 
@@ -14,13 +7,13 @@ if(#{isEdit}) {
 
     $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
 
-    $('#isbn').editable({ display: displayWithEmpty });
+    $('#isbn').editable({ emptytext: '[brak]' });
 
-    $('#objetosc').editable({ display: displayWithEmpty });
+    $('#objetosc').editable({ emptytext: '[brak]' });
 
-    $('#strony').editable({ display: displayWithEmpty });
+    $('#strony').editable({ emptytext: '[brak]' });
 
-    $('#opis').editable({ display: displayWithEmpty });
+    $('#opis').editable({ emptytext: '[brak]' });
 
     // The source is obtained from Haskell, but the configuration is easier to provide directly here.
     var wydConf = #{rawJS $ decodeUtf8 wydawcyJson};
