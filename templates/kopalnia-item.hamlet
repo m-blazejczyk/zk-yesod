@@ -73,8 +73,8 @@
         $nothing
           <b id="wydawca" data-type="select2" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaEditWydawcaR} data-title="Wydawca">
             [brak]
-        <button type="button" class="btn btn-default btn-xs">
-          <span class="glyphicon glyphicon-plus-sign" id="addWydawce" data-type="addWydawce" data-pk="#{lookupId}" data-url=@{KopalniaAddWydawcaR} data-title="Nowy wydawca" aria-hidden="true">
+        <a class="btn btn-default btn-xs">
+          <span class="glyphicon glyphicon-plus-sign editable-click-btn" id="addWydawce" data-type="addWydawce" data-pk="#{lookupId}" data-url=@{KopalniaAddWydawcaR} data-title="Nowy wydawca" aria-hidden="true">
       <p>
         <span class="inobtrusive">Miejsce wydania:
     $else
