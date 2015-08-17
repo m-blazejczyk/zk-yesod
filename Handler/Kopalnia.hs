@@ -125,7 +125,7 @@ postKopalniaEditRodzajR = processXEditable1 vald upd where
     upd value = [KopalniaRodzaj =. value]
 
 postKopalniaEditAutorR :: Handler Text
-postKopalniaEditAutorR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+postKopalniaEditAutorR = sendResponseStatus status200 ("OK" :: Text)
 
 postKopalniaEditTlumR :: Handler Text
 postKopalniaEditTlumR = sendResponseStatus badRequest400 ("This is a message!" :: Text)

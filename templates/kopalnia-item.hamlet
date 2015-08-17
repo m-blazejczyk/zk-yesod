@@ -26,14 +26,25 @@
 
   <div class="kopalnia-top-div">
 
-    $if length autorzy > 0
+    $if isEdit
       <p>
-        $forall autor <- autorzy
-          <b>
-            <a href=@{AutorR (autorLookupId autor)} class="link1">
+        <b id="autorzy" data-type="select2" data-pk="#{lookupId}" data-url=@{KopalniaEditAutorR} data-title="Autorzy">
+          $if length autorzy > 0
+            $forall autor <- autorzy
               $maybe imiona <- autorImiona autor
                 #{imiona} #
               #{autorNazwisko autor} #
+          $else
+            [brak]
+    $else
+      $if length autorzy > 0
+        <p>
+          $forall autor <- autorzy
+            <b>
+              <a href=@{AutorR (autorLookupId autor)} class="link1">
+                $maybe imiona <- autorImiona autor
+                  #{imiona} #
+                #{autorNazwisko autor} #
 
     $if length tlumacze > 0
       <p>

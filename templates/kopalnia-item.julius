@@ -21,7 +21,7 @@ if(#{isEdit}) {
       multiple: false,
       placeholder: 'wybierz wydawcę',
       allowClear: true,
-      width: 200
+      width: 300
     };
     // We need a custom display function here to display the name of the publisher on the page after selection.
     wydConf.display = function(value, response) {
@@ -124,5 +124,20 @@ if(#{isEdit}) {
         $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
+
+    $('#autorzy').editable({
+      source: [
+        {id: 1, text: 'Michał Błażejczyk'},
+        {id: 2, text: 'Jerzy Szyłak'},
+        {id: 3, text: 'Wojciech Birek'}
+      ],
+      select2: {
+        multiple: true,
+        placeholder: 'wybierz autorów',
+        allowClear: true,
+        width: 300
+      }
+    });
+
   });
 }
