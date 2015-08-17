@@ -6,8 +6,8 @@ Internally value stored as {nazwa: "kultura gniewu", url: "http://www.kultura.co
 @extends abstractinput
 @final
 @example
-<button type="button" class="btn btn-default btn-xs" id="addWydawce" data-type="addWydawce" data-pk="1">
-  <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+<a class="btn btn-default btn-xs">
+  <span class="glyphicon glyphicon-plus-sign editable-click-btn" id="addWydawce" data-type="addWydawce" data-pk="#{lookupId}" data-url=@{KopalniaAddWydawcaR} data-title="Nowy wydawca" aria-hidden="true">
 </button>
 <script>
 $(function(){
