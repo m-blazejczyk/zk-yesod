@@ -9,7 +9,7 @@ $newline never
     <meta name="keywords" content="ABC">
 
     <link rel="stylesheet" media="screen" href=@{StaticR slimbox2_css_slimbox2_css}>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href=@{StaticR bootstrap_3_3_5_css_bootstrap_min_css}>
     <link rel="stylesheet" href=@{StaticR bootstrap3_editable_1_5_1_bootstrap3_editable_css_bootstrap_editable_css}/>
     <link rel="stylesheet" href=@{StaticR select2_3_5_2_select2_css}>
     <link rel="stylesheet" href=@{StaticR select2_3_5_2_select2_bootstrap_css}>
@@ -73,7 +73,7 @@ $newline never
             O stronie
 
   <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <script src=@{StaticR bootstrap_3_3_5_js_bootstrap_min_js}></script>
   <script src=@{StaticR bootstrap3_editable_1_5_1_bootstrap3_editable_js_bootstrap_editable_min_js}></script>
   <script src=@{StaticR select2_3_5_2_select2_min_js}></script>
   <script src=@{StaticR js_monthyear_js}></script>
