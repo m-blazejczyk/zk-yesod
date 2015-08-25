@@ -11,6 +11,9 @@ import qualified Data.Text as T
 import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
+import Database.MongoDB ((=:))
+import Database.MongoDB (Document, Action, findOne)
+import qualified Database.MongoDB as MongoDB
 
 -- Turns a (Maybe <database id>) to a (Maybe <entity>).
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
@@ -26,6 +29,15 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              PersistEntityBackend ent ~ YesodPersistBackend site) =>
             [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
+
+rawOne :: MonadIO m => MongoDB.Collection -> MongoDB.Selector -> Action m (Maybe Document)
+rawOne collection q = findOne (MongoDB.select q collection)
+
+theCollection :: MonadIO m => MongoDB.Selector -> Action m (Maybe Document)
+theCollection = rawOne $ "collection-name"
+
+getTheR :: MongoDB.Val v => v -> Handler (Maybe Document)
+getTheR theId = runDB $ theCollection ["_id" =: theId]
 
 -- Returns all publishers as JSON, in the following format suitable for the select2 control:
 -- {
@@ -103,7 +115,7 @@ processXEditable' vald upd parNames = do
                                 _ -> sendResponseStatus badRequest400 (T.concat ["Błąd systemu: fiszka o tym identyfikatorze nie istnieje: ", (pack $ show lookupId)])
                         Error err -> sendResponseStatus badRequest400 err
                 Error err -> sendResponseStatus badRequest400 err
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawna wartość parametru pk" :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawna wartość albo brak parametru pk" :: Text)
 
 getNamedParams :: [Text] -> Handler [Result Text]
 getNamedParams = mapM get1Param

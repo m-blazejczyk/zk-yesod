@@ -124,7 +124,7 @@ if(#{isEdit}) {
         $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
-
+/*
     $('#autorzy').editable({
       source: [
         {id: 1, text: 'Michał Błażejczyk'},
@@ -137,6 +137,53 @@ if(#{isEdit}) {
         allowClear: true,
         width: 300
       }
+    });
+*/
+    $('#autorzy').editable({
+      select2: {
+        multiple: true,
+        placeholder: 'wybierz autorów',
+        allowClear: true,
+        width: 300,
+        minimumInputLength: 2,
+        quietMillis: 250,
+        ajax: {
+          url: '/autor/szukaj',
+          dataType: 'json',
+          data: function (term, page) {
+            return { q: term };
+          },
+          /*results: function (data, page) {
+            console.log("results: " + data);
+            return { results: data.items };
+          }*/
+        },
+        /*id: function (item) {
+          console.log("id: " + item);
+          return item.id;
+        },
+        formatResult: function (item) {
+          console.log("formatResult: " + item);
+          return item.text;
+        },
+        formatSelection: function (item) {
+          console.log("formatSelection: " + item);
+          return item.text;
+        },*/
+        initSelection: function (element, callback) {
+          // the input tag has a value attribute preloaded that points to a preselected repository's id
+          // this function resolves that id attribute to an object that select2 can render
+          // using its formatResult renderer - that way the repository name is shown preselected
+          console.log("initSelection: " + $(element).val());
+          /*
+          var id = $(element).val();
+          if (id !== "") {
+            $.ajax("https://api.github.com/repositories/" + id, { dataType: "json" })
+             .done(function(data) { callback(data); });
+          }
+          */
+        } 
+      }  
     });
 
   });

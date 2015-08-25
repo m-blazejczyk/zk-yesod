@@ -23,6 +23,7 @@
 /bibliografia/zmien/opis KopalniaEditOpisR POST
 /bibliografia/zmien/hasla-przedmiotowe KopalniaEditHaslaR POST
 /bibliografia/zmien/slowa-kluczowe KopalniaEditSlowaKluczR POST
-/autor/#Int64 AutorR GET
+!/autor/#Int64 AutorR GET
+/autor/szukaj FindAutorR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic

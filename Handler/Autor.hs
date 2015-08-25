@@ -1,4 +1,5 @@
-module Handler.Autor (getAutorR) where
+module Handler.Autor (getAutorR
+                    , getFindAutorR) where
 
 import Import
 import Enums()
@@ -18,3 +19,19 @@ getAutorR lookupId = do
     defaultLayout $ do
         setTitle "Fiszka autora - Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
         $(widgetFile "autor")
+
+-- Expected format:
+-- {
+--   "more": false,
+--   "results": [
+--     {id: 1, text: 'Michał Błażejczyk'},
+--     {id: 2, text: 'Jerzy Szyłak'},
+--     {id: 3, text: 'Wojciech Birek'}
+--   ]
+-- }
+getFindAutorR :: Handler Html
+getFindAutorR = do
+    mQ <- lookupPostParam "q"
+    case mQ of
+        Just q -> sendResponseStatus badRequest400 ("Błąd systemu: brak implementacji" :: Text)
+        _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
