@@ -30,6 +30,9 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
             [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
 
+-- Sample MongoDB query for authors:
+-- db.Autor.find({ $or: [{ imiona: { $regex: '^to', $options: 'i' } }, { nazwisko: { $regex: '^ma', $options: 'i' } }] })
+-- MongoDB docs: http://hackage.haskell.org/package/mongoDB-2.0.6/docs/Database-MongoDB.html
 rawOne :: MonadIO m => MongoDB.Collection -> MongoDB.Selector -> Action m (Maybe Document)
 rawOne collection q = findOne (MongoDB.select q collection)
 
