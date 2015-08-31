@@ -2,7 +2,8 @@ module Handler.Autor (getAutorR
                     , getFindAutorR) where
 
 import Import
-import Enums()
+import Enums
+import DbUtils
 
 getAutorR :: Int64 -> Handler Html
 getAutorR lookupId = do
@@ -33,5 +34,9 @@ getFindAutorR :: Handler Html
 getFindAutorR = do
     mQ <- lookupPostParam "q"
     case mQ of
-        Just q -> sendResponseStatus badRequest400 ("Błąd systemu: brak implementacji" :: Text)
+        Just q -> sendResponseStatus status200 autorzyJsonTxt
+        -- sendResponse $ responseLBS
+        --     status200
+        --     [("Content-Type", "application/json")]
+        --     autorzyJsonTxt
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)

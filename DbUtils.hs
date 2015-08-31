@@ -1,7 +1,10 @@
+{-# LANGUAGE ExtendedDefaultRules #-}  -- Required by MongoDB stuff
+
 module DbUtils (
     getMaybe,
     getListM,
     wydawcyToJson,
+    autorzyJsonTxt,
     processXEditable,
     processXEditable1
     ) where
@@ -41,6 +44,15 @@ theCollection = rawOne $ "collection-name"
 
 getTheR :: MongoDB.Val v => v -> Handler (Maybe Document)
 getTheR theId = runDB $ theCollection ["_id" =: theId]
+
+autorzyQuery :: [MongoDB.Field]
+autorzyQuery = [ "$or" =: [ [ "imiona" =: [ MongoDB.Regex "^to" "i" ] ]
+                          , [ "nazwisko" =: [ MongoDB.Regex "^ma" "i" ] ] ] ]
+
+autorzyJsonTxt = do
+    docs <- MongoDB.rest =<< MongoDB.find (MongoDB.select autorzyQuery "Autor")
+    let arr = MongoDB.Array $ fmap MongoDB.Doc docs
+    return $ T.pack $ show arr
 
 -- Returns all publishers as JSON, in the following format suitable for the select2 control:
 -- {
