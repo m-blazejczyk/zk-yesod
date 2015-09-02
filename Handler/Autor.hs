@@ -2,8 +2,8 @@ module Handler.Autor (getAutorR
                     , getFindAutorR) where
 
 import Import
-import Enums
-import DbUtils
+import Database.Persist.MongoDB ((=~.))
+import qualified Data.Text as T
 
 getAutorR :: Int64 -> Handler Html
 getAutorR lookupId = do
@@ -32,11 +32,12 @@ getAutorR lookupId = do
 -- }
 getFindAutorR :: Handler Html
 getFindAutorR = do
-    mQ <- lookupPostParam "q"
+    mQ <- lookupGetParam "q"
     case mQ of
-        Just q -> sendResponseStatus status200 autorzyJsonTxt
-        -- sendResponse $ responseLBS
-        --     status200
-        --     [("Content-Type", "application/json")]
-        --     autorzyJsonTxt
+        Just q -> do
+            aut <- runDB $ selectList
+                ( [AutorImiona =~. ("^to", "i")] ||. [AutorNazwisko =~. ("^ma", "i")] )
+                []
+            let l = show $ length aut
+            sendResponseStatus status200 (T.pack l)
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
