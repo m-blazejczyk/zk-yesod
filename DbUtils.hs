@@ -3,6 +3,7 @@
 module DbUtils (
     getMaybe,
     getListM,
+    prefixRegex,
     wydawcyToJson,
     processXEditable,
     processXEditable1
@@ -14,6 +15,7 @@ import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
 import Database.MongoDB ((=:))
+import Database.Persist.MongoDB (MongoRegex)
 import qualified Database.MongoDB as MongoDB
 
 -- Turns a (Maybe <database id>) to a (Maybe <entity>).
@@ -30,6 +32,10 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              PersistEntityBackend ent ~ YesodPersistBackend site) =>
             [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
+
+-- Helper function to create a Regex search term for MongoDB.
+prefixRegex :: Text -> MongoRegex -- i.e. (Text, Text)
+prefixRegex q = (,) (T.concat ["^", q]) "i"
 
 -- Sample MongoDB query for authors:
 --   db.Autor.find({ $or: [{ imiona: { $regex: '^to', $options: 'i' } }, { nazwisko: { $regex: '^ma', $options: 'i' } }] })

@@ -2,6 +2,7 @@ module Handler.Autor (getAutorR
                     , getFindAutorR) where
 
 import Import
+import DbUtils (prefixRegex)
 import Database.Persist.MongoDB ((=~.))
 import qualified Data.Text as T
 
@@ -35,8 +36,9 @@ getFindAutorR = do
     mQ <- lookupGetParam "q"
     case mQ of
         Just q -> do
+            let regex = prefixRegex q
             aut <- runDB $ selectList
-                ( [AutorImiona =~. ("^to", "i")] ||. [AutorNazwisko =~. ("^ma", "i")] )
+                ( [AutorImiona =~. regex] ||. [AutorNazwisko =~. regex] )
                 []
             let l = show $ length aut
             sendResponseStatus status200 (T.pack l)
