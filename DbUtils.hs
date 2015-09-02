@@ -4,7 +4,6 @@ module DbUtils (
     getMaybe,
     getListM,
     wydawcyToJson,
-    autorzyJsonTxt,
     processXEditable,
     processXEditable1
     ) where
@@ -15,7 +14,6 @@ import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
 import Database.MongoDB ((=:))
-import Database.MongoDB (Document, Action, findOne)
 import qualified Database.MongoDB as MongoDB
 
 -- Turns a (Maybe <database id>) to a (Maybe <entity>).
@@ -34,21 +32,15 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
 getListM = mapM (\key -> runDB $ get key)
 
 -- Sample MongoDB query for authors:
--- db.Autor.find({ $or: [{ imiona: { $regex: '^to', $options: 'i' } }, { nazwisko: { $regex: '^ma', $options: 'i' } }] })
+--   db.Autor.find({ $or: [{ imiona: { $regex: '^to', $options: 'i' } }, { nazwisko: { $regex: '^ma', $options: 'i' } }] })
 -- MongoDB docs: http://hackage.haskell.org/package/mongoDB-2.0.6/docs/Database-MongoDB.html
-rawOne :: MonadIO m => MongoDB.Collection -> MongoDB.Selector -> Action m (Maybe Document)
-rawOne collection q = findOne (MongoDB.select q collection)
-
-theCollection :: MonadIO m => MongoDB.Selector -> Action m (Maybe Document)
-theCollection = rawOne $ "collection-name"
-
-getTheR :: MongoDB.Val v => v -> Handler (Maybe Document)
-getTheR theId = runDB $ theCollection ["_id" =: theId]
-
+-- Custom MongoDB quesies in Yesod: https://github.com/yesodweb/yesod/wiki/Raw-Mongo
+-- I'm keeping these two functions here as reference.
 autorzyQuery :: [MongoDB.Field]
 autorzyQuery = [ "$or" =: [ [ "imiona" =: [ MongoDB.Regex "^to" "i" ] ]
                           , [ "nazwisko" =: [ MongoDB.Regex "^ma" "i" ] ] ] ]
 
+autorzyJsonTxt :: (MonadBaseControl IO m, MonadIO m) => MongoDB.Action m Text
 autorzyJsonTxt = do
     docs <- MongoDB.rest =<< MongoDB.find (MongoDB.select autorzyQuery "Autor")
     let arr = MongoDB.Array $ fmap MongoDB.Doc docs
