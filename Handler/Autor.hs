@@ -45,17 +45,10 @@ getFindAutorR = do
                 []
             let autJson = fmap transform aut
             let json = object ["more" .= False, "results" .= V.fromList autJson]
-            addHeader "Content-Type" "application/json"
-            sendResponseStatus status200 (decodeUtf8 $ encode json)
-            -- sendResponseJson json
+            addHeader "Content-Type" "application/json; charset=utf-8"
+            sendResponse (decodeUtf8 $ encode json)
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
     where
         transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
         getName autor = T.concat [getFName autor, autorNazwisko autor]
         getFName autor = maybe "" (\i -> T.concat [i, " "]) (autorImiona autor)
-
-sendResponseJson :: Value -> Handler Html
-sendResponseJson json = sendWaiResponse $ responseLBS
-                            status200
-                            [("Content-Type", "application/json")]
-                            $ encode json
