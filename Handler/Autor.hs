@@ -45,8 +45,9 @@ getFindAutorR = do
                 []
             let autJson = fmap transform aut
             let json = object ["more" .= False, "results" .= V.fromList autJson]
-            -- sendResponseStatus status200 (decodeUtf8 $ encode json)
-            sendResponseJson json
+            addHeader "Content-Type" "application/json"
+            sendResponseStatus status200 (decodeUtf8 $ encode json)
+            -- sendResponseJson json
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
     where
         transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
