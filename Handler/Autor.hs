@@ -5,6 +5,7 @@ import Import
 import DbUtils (prefixRegex)
 import Database.Persist.MongoDB ((=~.))
 import Data.Aeson (encode)
+import Network.Wai (responseLBS)
 import qualified Data.Vector as V
 import qualified Data.Text as T
 
@@ -44,9 +45,16 @@ getFindAutorR = do
                 []
             let autJson = fmap transform aut
             let json = object ["more" .= False, "results" .= V.fromList autJson]
-            sendResponseStatus status200 (decodeUtf8 $ encode json)
+            -- sendResponseStatus status200 (decodeUtf8 $ encode json)
+            sendResponseJson json
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
     where
         transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
         getName autor = T.concat [getFName autor, autorNazwisko autor]
         getFName autor = maybe "" (\i -> T.concat [i, " "]) (autorImiona autor)
+
+sendResponseJson :: Value -> Handler Html
+sendResponseJson json = sendWaiResponse $ responseLBS
+                            status200
+                            [("Content-Type", "application/json")]
+                            $ encode json
