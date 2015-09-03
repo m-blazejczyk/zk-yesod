@@ -4,6 +4,8 @@ module Handler.Autor (getAutorR
 import Import
 import DbUtils (prefixRegex)
 import Database.Persist.MongoDB ((=~.))
+import Data.Aeson (encode)
+import qualified Data.Vector as V
 import qualified Data.Text as T
 
 getAutorR :: Int64 -> Handler Html
@@ -40,6 +42,11 @@ getFindAutorR = do
             aut <- runDB $ selectList
                 ( [AutorImiona =~. regex] ||. [AutorNazwisko =~. regex] )
                 []
-            let l = show $ length aut
-            sendResponseStatus status200 (T.pack l)
+            let autJson = fmap transform aut
+            let json = object ["more" .= False, "results" .= V.fromList autJson]
+            sendResponseStatus status200 (decodeUtf8 $ encode json)
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
+    where
+        transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
+        getName autor = T.concat [getFName autor, autorNazwisko autor]
+        getFName autor = maybe "" (\i -> T.concat [i, " "]) (autorImiona autor)
