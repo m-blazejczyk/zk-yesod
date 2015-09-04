@@ -4,8 +4,6 @@ module Handler.Autor (getAutorR
 import Import
 import DbUtils (prefixRegex)
 import Database.Persist.MongoDB ((=~.))
-import Data.Aeson (encode)
-import Network.Wai (responseLBS)
 import qualified Data.Vector as V
 import qualified Data.Text as T
 
@@ -34,19 +32,15 @@ getAutorR lookupId = do
 --     {id: 3, text: 'Wojciech Birek'}
 --   ]
 -- }
-getFindAutorR :: Handler Html
+getFindAutorR :: Handler Value
 getFindAutorR = do
     mQ <- lookupGetParam "q"
     case mQ of
         Just q -> do
             let regex = prefixRegex q
-            aut <- runDB $ selectList
-                ( [AutorImiona =~. regex] ||. [AutorNazwisko =~. regex] )
-                []
+            aut <- runDB $ selectList ([AutorImiona =~. regex] ||. [AutorNazwisko =~. regex]) []
             let autJson = fmap transform aut
-            let json = object ["more" .= False, "results" .= V.fromList autJson]
-            addHeader "Content-Type" "application/json; charset=utf-8"
-            sendResponse (decodeUtf8 $ encode json)
+            returnJson $ object ["more" .= False, "results" .= V.fromList autJson]
         _ -> sendResponseStatus badRequest400 ("Błąd systemu: brak zapytania" :: Text)
     where
         transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
