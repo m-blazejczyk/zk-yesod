@@ -124,21 +124,7 @@ if(#{isEdit}) {
         $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
-/*
-    $('#autorzy').editable({
-      source: [
-        {id: 1, text: 'Michał Błażejczyk'},
-        {id: 2, text: 'Jerzy Szyłak'},
-        {id: 3, text: 'Wojciech Birek'}
-      ],
-      select2: {
-        multiple: true,
-        placeholder: 'wybierz autorów',
-        allowClear: true,
-        width: 300
-      }
-    });
-*/
+
     $('#autorzy').editable({
       select2: {
         multiple: true,
