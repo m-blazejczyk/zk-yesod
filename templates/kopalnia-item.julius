@@ -134,7 +134,7 @@ if(#{isEdit}) {
         minimumInputLength: 2,
         quietMillis: 250,
         ajax: {
-          url: '/autor/szukaj',
+          url: '@{FindAutorR}',
           dataType: 'json',
           data: function (term, page) {
             return { q: term };
