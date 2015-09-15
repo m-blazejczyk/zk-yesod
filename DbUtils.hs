@@ -5,6 +5,9 @@ module DbUtils (
     getListM,
     prefixRegex,
     wydawcyToJson,
+    systemError,
+    systemErrorT,
+    systemErrorS,
     processXEditable,
     processXEditable1
     ) where
@@ -65,6 +68,19 @@ wydawcyToJson = do
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
     return $ encode $ tuplesToRawJson "source" "id" "text" wydawcy
 
+-- Prepends 'Błąd systemu: ' to the given message.
+systemError :: Text -> Text
+systemError msg = T.concat ["Błąd systemu: ", msg]
+
+-- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument.
+systemErrorT :: Text -> Text -> Text
+systemErrorT msg argT = T.concat ["Błąd systemu: ", msg, ": ", argT]
+
+-- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument
+-- ('show'ed and 'pack'ed).
+systemErrorS :: Show a => Text -> a -> Text
+systemErrorS msg argS = T.concat ["Błąd systemu: ", msg, ": ", (pack $ show argS)]
+
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should first be validated,
 --   and then one or more database fields should be updated.
 -- The first argument is a validation/conversion function that takes a list of the raw (but trimmed) values of type Text
@@ -92,7 +108,7 @@ processXEditable1 vald' upd' = processXEditable' vald upd [""]
     where
         vald params = case headMay params of
             Just h -> vald' h
-            Nothing -> return $ Error "Błąd systemu: brakuje parametrów"
+            Nothing -> return $ Error $ systemError "Brakuje parametrów"
         upd criterion vals = do
             runDB $ updateWhere [criterion] (upd' vals)
             return $ Success "OK"
@@ -125,10 +141,10 @@ processXEditable' vald upd parNames = do
                                     case res of
                                         Error err -> sendResponseStatus badRequest400 err
                                         Success msg -> sendResponseStatus status200 msg
-                                _ -> sendResponseStatus badRequest400 (T.concat ["Błąd systemu: fiszka o tym identyfikatorze nie istnieje: ", (pack $ show lookupId)])
+                                _ -> sendResponseStatus badRequest400 (systemErrorS "Fiszka o tym identyfikatorze nie istnieje"lookupId)
                         Error err -> sendResponseStatus badRequest400 err
                 Error err -> sendResponseStatus badRequest400 err
-        _ -> sendResponseStatus badRequest400 ("Błąd systemu: niepoprawna wartość albo brak parametru pk" :: Text)
+        _ -> sendResponseStatus badRequest400 (systemError "Niepoprawna wartość albo brak parametru pk")
 
 getNamedParams :: [Text] -> Handler [Result Text]
 getNamedParams = mapM get1Param
@@ -138,6 +154,6 @@ getNamedParams = mapM get1Param
             mValueRaw <- lookupPostParam actualName
             case mValueRaw of
                 Just valueRaw -> return $ Success $ T.strip valueRaw
-                Nothing -> return $ Error $ T.concat ["Błąd systemu: brak parametru ", parName]
+                Nothing -> return $ Error $ systemErrorT "Brak parametru" parName
         getActualName "" = "value"
         getActualName parName = T.concat ["value[", parName, "]"]

@@ -124,6 +124,7 @@ postKopalniaEditRodzajR = processXEditable1 vald upd where
     vald = return . readRodzaj
     upd value = [KopalniaRodzaj =. value]
 
+-- Params: [("name","autorzy"),("value[]","2"),("value[]","1"),("pk","1")]
 postKopalniaEditAutorR :: Handler Text
 postKopalniaEditAutorR = sendResponseStatus status200 ("OK" :: Text)
 
@@ -147,9 +148,9 @@ postKopalniaEditWydawcaR = processXEditable1 vald upd where
         Just iden -> do
             mWyd <- runDB $ getBy $ UniqueWydawca iden
             processWyd mWyd
-        Nothing -> return $ Error "Błąd systemu: identyfikator wydawcy nie jest liczbą"
+        Nothing -> return $ Error $ systemError "Identyfikator wydawcy nie jest liczbą"
     processWyd (Just (Entity wydId _)) = return $ Success $ Just wydId
-    processWyd Nothing = return $ Error "Błąd systemu: niezdefiniowany identyfikator wydawcy"
+    processWyd Nothing = return $ Error $ systemError "Niezdefiniowany identyfikator wydawcy"
     upd value = [KopalniaWydawcaId =. value]
 
 postKopalniaAddWydawcaR :: Handler Text
@@ -160,7 +161,7 @@ postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
                         | T.length tUrl > 0 && (not $ isURI $ unpack tUrl) = return $ Error "Niepoprawny adres strony internetowej"
                         | T.length tUrl == 0 = return $ Success $ Just (tNazwa, Nothing)
                         | otherwise = return $ Success $ Just (tNazwa, Just tUrl)
-    vald _ = return $ Error "Błąd systemu: niepoprawna ilość parametrów"
+    vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
     upd _ Nothing = return $ Success "IGNORE"  -- If both parameters were empty, simply ignore the request.
                                                -- Don't change this text without changing the JS file.
     upd criterion (Just (nazwa, url)) = do
@@ -171,7 +172,7 @@ postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
                 runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
                 runDB $ updateWhere [criterion] [KopalniaWydawcaId =. (Just wydawca)]
                 return $ Success "OK"
-            Nothing -> return $ Error "Błąd systemu: brak ustawienia 'wydawca' w bazie danych"
+            Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
 postKopalniaEditDataWydR :: Handler Text
 postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
@@ -184,8 +185,8 @@ postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
         case combined of
             Success (year:month:_) -> return $ Success (year, month)
             Error err -> return $ Error err
-            _ -> return $ Error "Błąd systemu: niepoprawna ilość parametrów"
-    vald _ = return $ Error "Błąd systemu: niepoprawna ilość parametrów"
+            _ -> return $ Error $ systemError "Niepoprawna ilość parametrów"
+    vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
     valdYear curYear tYear = if tYear == "" then Success Nothing else case maybeRead $ Just tYear of
         Just year -> if year < 1850 || year > curYear + 1 then Error "Niepoprawny rok" else Success $ Just year
         Nothing -> Error "Rok nie jest liczbą"
