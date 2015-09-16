@@ -29,6 +29,7 @@ import Network.URI (isURI)
 import Text.Julius (rawJS)
 import Utils
 import DbUtils
+import Handler.XEditable
 
 defaultTitle :: Html
 defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"

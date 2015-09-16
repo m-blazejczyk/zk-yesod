@@ -23,6 +23,7 @@ library
                      Model
                      Settings
                      Settings.StaticFiles
+                     Handler.XEditable
                      Handler.Common
                      Handler.Home
                      Handler.Kopalnia
