@@ -68,19 +68,6 @@ wydawcyToJson = do
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
     return $ encode $ tuplesToRawJson "source" "id" "text" wydawcy
 
--- Prepends 'Błąd systemu: ' to the given message.
-systemError :: Text -> Text
-systemError msg = T.concat ["Błąd systemu: ", msg]
-
--- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument.
-systemErrorT :: Text -> Text -> Text
-systemErrorT msg argT = T.concat ["Błąd systemu: ", msg, ": ", argT]
-
--- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument
--- ('show'ed and 'pack'ed).
-systemErrorS :: Show a => Text -> a -> Text
-systemErrorS msg argS = T.concat ["Błąd systemu: ", msg, ": ", (pack $ show argS)]
-
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should first be validated,
 --   and then one or more database fields should be updated.
 -- The first argument is a validation/conversion function that takes a list of the raw (but trimmed) values of type Text

@@ -64,3 +64,16 @@ snd3 (_, val, _) = val
 
 trd3 :: (a, b, c) -> c
 trd3 (_, _, val) = val
+
+-- Prepends 'Błąd systemu: ' to the given message.
+systemError :: T.Text -> T.Text
+systemError msg = T.concat ["Błąd systemu: ", msg]
+
+-- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument.
+systemErrorT :: T.Text -> T.Text -> T.Text
+systemErrorT msg argT = T.concat ["Błąd systemu: ", msg, ": ", argT]
+
+-- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument
+-- ('show'ed and 'pack'ed).
+systemErrorS :: Show a => T.Text -> a -> T.Text
+systemErrorS msg argS = T.concat ["Błąd systemu: ", msg, ": ", (T.pack $ show argS)]

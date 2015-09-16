@@ -2,7 +2,8 @@ module Handler.Autor (getAutorR
                     , getFindAutorR) where
 
 import Import
-import DbUtils (prefixRegex, systemError)
+import DbUtils (prefixRegex)
+import Utils (systemError)
 import Database.Persist.MongoDB ((=~.))
 import qualified Data.Vector as V
 import qualified Data.Text as T
