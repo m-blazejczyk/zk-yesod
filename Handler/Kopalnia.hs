@@ -87,6 +87,7 @@ getKopalniaItemCommon isEdit lookupId = do
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     linki <- getListM $ kopalniaLinki kopalnia
+    t <- return $ T.dropEnd 3 "abcdef"
     -- This call return a List of [Entity KopalniaAutor]
     kopAuts <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
     -- This call returns a List of Maybe Autor

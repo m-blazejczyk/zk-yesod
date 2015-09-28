@@ -8,6 +8,8 @@ import qualified Data.Text as T
 import Utils (Result(..), maybeRead, combine, systemError, systemErrorT, systemErrorS)
 -- import DbUtils
 
+data XEdVal = XEdNone | XEdValOne T.Text | XEdValArr [T.Text] | XEdValMap [(T.Text, T.Text)]
+
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should first be validated,
 --   and then one or more database fields should be updated.
 -- The first argument is a validation/conversion function that takes a list of the raw (but trimmed) values of type Text
@@ -68,11 +70,16 @@ processXEditable' vald upd parNames = do
                                     case res of
                                         Error err -> sendResponseStatus badRequest400 err
                                         Success msg -> sendResponseStatus status200 msg
-                                _ -> sendResponseStatus badRequest400 (systemErrorS "Fiszka o tym identyfikatorze nie istnieje"lookupId)
+                                _ -> sendResponseStatus badRequest400 (systemErrorS "Fiszka o tym identyfikatorze nie istnieje" lookupId)
                         Error err -> sendResponseStatus badRequest400 err
                 Error err -> sendResponseStatus badRequest400 err
         _ -> sendResponseStatus badRequest400 (systemError "Niepoprawna wartość albo brak parametru pk")
 
+-- This function should return a value of type HttpVal that has 3 constructors: for a single value,
+-- for an array and for a map.  The function will auto-detect the constructor to use.  Then, validation
+-- functions will look at these values and return errors if the value is of a wrong type.  It could even
+-- happen in wrapper functions in this here module.  Also, passing around the array of parameter names
+-- won't be necessary - this function should call lookupPostParams.
 getNamedParams :: [Text] -> Handler [Result Text]
 getNamedParams = mapM get1Param
     where 
@@ -84,3 +91,16 @@ getNamedParams = mapM get1Param
                 Nothing -> return $ Error $ systemErrorT "Brak parametru" parName
         getActualName "" = "value"
         getActualName parName = T.concat ["value[", parName, "]"]
+
+getXEdValues :: Handler XEdVal
+getXEdValues = do
+    (pp, _) <- runRequestBody
+    return $ foldr process XEdNone pp
+    where
+        process ("value", pv) XEdNone = XEdValOne pv
+        process ("value[]", pv) XEdNone = XEdValArr [pv]
+        process (pn, pv) XEdNone | T.isPrefixOf "value[" pn && T.isSuffixOf "]" pn = XEdValMap [(T.drop 6 pn, pv)]
+                                 | otherwise = XEdNone
+        process _ vOne@(XEdValOne v) = vOne
+        process (pn, pv) (XEdValArr vArr) = undefined
+        process (pn, pv) (XEdValMap vMap) = undefined
