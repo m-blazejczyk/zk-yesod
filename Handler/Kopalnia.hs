@@ -1,5 +1,6 @@
 module Handler.Kopalnia (
     getKopalniaMainR,
+    getKopalniaInitR,
     getKopalniaItemR,
     getKopalniaItemEditR,
     postKopalniaEditTytulR,
@@ -36,36 +37,39 @@ defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"
 
 getKopalniaMainR :: Handler Html
 getKopalniaMainR = do
-    -- This code can be uncommented and compiled in order to initialize a fresh test database.
-    --
-    -- autor1 <- runDB $ insert $ Autor 1 (Just "Piotr") "Marczewski"
-    -- autor2 <- runDB $ insert $ Autor 2 (Just "Jerzy") "Szyłak"
-    -- autor3 <- runDB $ insert $ Autor 3 (Just "Michał") "Traczyk"
-    -- autor4 <- runDB $ insert $ Autor 4 (Just "Tomasz") "Marciniak"
-    -- now <- liftIO $ getCurrentTime
-    -- nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
-    -- klucz1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
-    -- klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
-    -- haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
-    -- haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
-    -- wydawca <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
-    -- link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
-    -- link2 <- runDB $ insert $ KopalniaLink "http://www.google.com" (Just "Google") Nothing
-    -- link3 <- runDB $ insert $ KopalniaLink "http://www.pgx.ca" Nothing (Just "Strona PGx")
-    -- item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Nothing Artykul Nothing JezykPL [] [] [] now now
-    -- item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just wydawca) (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1] now now
-    -- item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just wydawca) (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3] now now
-    -- kopaut1 <- runDB $ insert $ KopalniaAutor autor1 item1 AutorAut
-    -- kopaut2 <- runDB $ insert $ KopalniaAutor autor2 item2 AutorRed
-    -- kopaut3 <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
-    -- kopaut4 <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
-    -- intProp1 <- runDB $ insert $ IntProp "kopalnia" 4
-    -- intProp2 <- runDB $ insert $ IntProp "nkPub" 2
-    -- intProp3 <- runDB $ insert $ IntProp "autor" 5
-    -- intProp4 <- runDB $ insert $ IntProp "wydawca" 2
     defaultLayout $ do
         setTitle defaultTitle
         $(widgetFile "kopalnia-main")
+
+-- This handler is used to put data into a fresh test Kopalnia database.
+getKopalniaInitR :: Handler Text
+getKopalniaInitR = do
+    autor1 <- runDB $ insert $ Autor 1 (Just "Piotr") "Marczewski"
+    autor2 <- runDB $ insert $ Autor 2 (Just "Jerzy") "Szyłak"
+    autor3 <- runDB $ insert $ Autor 3 (Just "Michał") "Traczyk"
+    autor4 <- runDB $ insert $ Autor 4 (Just "Tomasz") "Marciniak"
+    now <- liftIO $ getCurrentTime
+    nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
+    klucz1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
+    klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
+    haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
+    haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
+    wydawca <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
+    link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
+    link2 <- runDB $ insert $ KopalniaLink "http://www.google.com" (Just "Google") Nothing
+    link3 <- runDB $ insert $ KopalniaLink "http://www.pgx.ca" Nothing (Just "Strona PGx")
+    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Nothing Artykul Nothing JezykPL [] [] [] now now
+    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just wydawca) (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1] now now
+    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just wydawca) (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3] now now
+    kopaut1 <- runDB $ insert $ KopalniaAutor autor1 item1 AutorAut
+    kopaut2 <- runDB $ insert $ KopalniaAutor autor2 item2 AutorRed
+    kopaut3 <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
+    kopaut4 <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
+    intProp1 <- runDB $ insert $ IntProp "kopalnia" 4
+    intProp2 <- runDB $ insert $ IntProp "nkPub" 2
+    intProp3 <- runDB $ insert $ IntProp "autor" 5
+    intProp4 <- runDB $ insert $ IntProp "wydawca" 2
+    sendResponseStatus status200 ("Baza danych została zainicjalizowana." :: Text)
 
 getKopalniaItemR :: Int64 -> Handler Html
 getKopalniaItemR = getKopalniaItemCommon False

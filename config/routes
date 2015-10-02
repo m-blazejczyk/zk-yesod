@@ -3,7 +3,7 @@
 
 / HomeR GET POST
 /bibliografia KopalniaMainR GET
-/bibliografia/#Int64 KopalniaItemR GET
+!/bibliografia/#Int64 KopalniaItemR GET
 /bibliografia/#Int64/zmien KopalniaItemEditR GET
 /bibliografia/zmien/tytul KopalniaEditTytulR POST
 /bibliografia/zmien/rodzaj KopalniaEditRodzajR POST
@@ -23,6 +23,7 @@
 /bibliografia/zmien/opis KopalniaEditOpisR POST
 /bibliografia/zmien/hasla-przedmiotowe KopalniaEditHaslaR POST
 /bibliografia/zmien/slowa-kluczowe KopalniaEditSlowaKluczR POST
+/bibliografia/init KopalniaInitR GET
 !/autor/#Int64 AutorR GET
 /autor/szukaj FindAutorR GET
 /auth AuthR Auth getAuth
