@@ -1,5 +1,6 @@
-module Handler.Autor (getAutorR
-                    , getFindAutorR) where
+module Handler.Autor (getAutorR,
+                      getFindAutorR
+                      ) where
 
 import Import
 import DbUtils (prefixRegex)

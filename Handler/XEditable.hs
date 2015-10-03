@@ -8,7 +8,11 @@ import qualified Data.Text as T
 import Utils (Result(..), maybeRead, combine, systemError, systemErrorT, systemErrorS)
 -- import DbUtils
 
-data XEdVal = XEdNone | XEdValOne T.Text | XEdValArr [T.Text] | XEdValMap [(T.Text, T.Text)]
+data XEdVal = XEdNone
+            | XEdValOne T.Text
+            | XEdValArr [T.Text]
+            | XEdValMap [(T.Text, T.Text)]
+    deriving (Show)
 
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should first be validated,
 --   and then one or more database fields should be updated.
@@ -92,15 +96,27 @@ getNamedParams = mapM get1Param
         getActualName "" = "value"
         getActualName parName = T.concat ["value[", parName, "]"]
 
-getXEdValues :: Handler XEdVal
-getXEdValues = do
+getXEdValues' :: Handler XEdVal
+getXEdValues' = do
     (pp, _) <- runRequestBody
-    return $ foldr process XEdNone pp
+    return $ getXEdValues pp
+
+getXEdValues :: [(T.Text, T.Text)] -> XEdVal
+getXEdValues = foldr process XEdNone
     where
+        -- All of these are for cases when any parameter named 'value*' hasn't been seen yet.
         process ("value", pv) XEdNone = XEdValOne pv
         process ("value[]", pv) XEdNone = XEdValArr [pv]
-        process (pn, pv) XEdNone | T.isPrefixOf "value[" pn && T.isSuffixOf "]" pn = XEdValMap [(T.drop 6 pn, pv)]
-                                 | otherwise = XEdNone
-        process _ vOne@(XEdValOne v) = vOne
-        process (pn, pv) (XEdValArr vArr) = undefined
-        process (pn, pv) (XEdValMap vMap) = undefined
+        process (pn, pv) XEdNone | isMap pn = XEdValMap $ mkMap pn pv []
+                                 | otherwise = XEdValOne pn
+        -- If we already have a XEdValOne then ignore all further parameters.
+        process _ vOne@(XEdValOne _) = vOne
+        -- If we have a XEdValArr and found another "value[]" then we append; otherwise - ignore.
+        process ("value[]", pv) (XEdValArr oldArr) = XEdValArr (pv:oldArr)
+        process _ vArr@(XEdValArr _) = vArr
+        -- If we have a XEdValMap and found another "value[xxx]" then we append; otherwise - ignore.
+        process (pn, pv) vMap@(XEdValMap oldMap) | isMap pn = XEdValMap $ mkMap pn pv oldMap
+                                                 | otherwise = vMap
+        -- Helper functions.
+        mkMap pn pv oldMap = (T.drop 6 pn, pv):oldMap
+        isMap pn = T.length pn > 7 && T.isPrefixOf "value[" pn && T.isSuffixOf "]" pn
