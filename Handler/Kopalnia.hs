@@ -103,13 +103,10 @@ getKopalniaItemCommon isEdit lookupId = do
     wydawcyJson <- wydawcyToJson
     dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
                        , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))
-    defaultLayout $
-        if isEdit then do
-            setTitle $ "Edycja fiszki publikacji - " ++ defaultTitle
-            $(widgetFile "kopalnia-item")
-        else do
-            setTitle $ "Fiszka publikacji - " ++ defaultTitle
-            $(widgetFile "kopalnia-item")
+    let prefix = if isEdit then "Edycja fiszki" else "Fiszka"
+    defaultLayout $ do
+        setTitle $ prefix ++ " publikacji - " ++ defaultTitle
+        $(widgetFile "kopalnia-item")
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable1 vald upd where
