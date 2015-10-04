@@ -12,9 +12,7 @@ import qualified Data.Text as T
 import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
-import Database.MongoDB ((=:))
 import Database.Persist.MongoDB (MongoRegex)
-import qualified Database.MongoDB as MongoDB
 
 -- Turns a (Maybe <database id>) to a (Maybe <entity>).
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
@@ -34,21 +32,6 @@ getListM = mapM (\key -> runDB $ get key)
 -- Helper function to create a Regex search term for MongoDB.
 prefixRegex :: Text -> MongoRegex -- i.e. (Text, Text)
 prefixRegex q = (,) (T.concat ["^", q]) "i"
-
--- Sample MongoDB query for authors:
---   db.Autor.find({ $or: [{ imiona: { $regex: '^to', $options: 'i' } }, { nazwisko: { $regex: '^ma', $options: 'i' } }] })
--- MongoDB docs: http://hackage.haskell.org/package/mongoDB-2.0.6/docs/Database-MongoDB.html
--- Custom MongoDB quesies in Yesod: https://github.com/yesodweb/yesod/wiki/Raw-Mongo
--- I'm keeping these two functions here as reference.
-autorzyQuery :: [MongoDB.Field]
-autorzyQuery = [ "$or" =: [ [ "imiona" =: [ MongoDB.Regex "^to" "i" ] ]
-                          , [ "nazwisko" =: [ MongoDB.Regex "^ma" "i" ] ] ] ]
-
-autorzyJsonTxt :: (MonadBaseControl IO m, MonadIO m) => MongoDB.Action m Text
-autorzyJsonTxt = do
-    docs <- MongoDB.rest =<< MongoDB.find (MongoDB.select autorzyQuery "Autor")
-    let arr = MongoDB.Array $ fmap MongoDB.Doc docs
-    return $ T.pack $ show arr
 
 -- Returns all publishers as JSON, in the following format suitable for the select2 control:
 -- {

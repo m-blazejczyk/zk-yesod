@@ -54,7 +54,7 @@ instance Yesod App where
         "config/client_session_key.aes"
 
     defaultLayout widget = do
-        master <- getYesod
+        -- master <- getYesod
         mmsg <- getMessage
 
         -- We break up the default layout into two components:
@@ -158,10 +158,10 @@ instance YesodAuthEmail App where
             , mailHeaders =
                 [ ("Subject", "Verify your email address")
                 ]
-            , mailParts = [[textPart, htmlPart]]
+            , mailParts = [[textPart', htmlPart']]
             }
       where
-        textPart = Part
+        textPart' = Part
             { partType = "text/plain; charset=utf-8"
             , partEncoding = None
             , partFilename = Nothing
@@ -175,7 +175,7 @@ instance YesodAuthEmail App where
                 |]
             , partHeaders = []
             }
-        htmlPart = Part
+        htmlPart' = Part
             { partType = "text/html; charset=utf-8"
             , partEncoding = None
             , partFilename = Nothing
@@ -197,7 +197,7 @@ instance YesodAuthEmail App where
         mu <- get uid
         case mu of
             Nothing -> return Nothing
-            Just u -> do
+            Just _ -> do
                 update uid [UserVerified =. True]
                 return $ Just uid
 

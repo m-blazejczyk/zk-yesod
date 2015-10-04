@@ -1,7 +1,6 @@
 module Utils where
 
 import Prelude
-import Control.Applicative (Applicative, pure, (<*>))
 import Data.Maybe (listToMaybe)
 import Data.Int (Int64)
 import Data.Aeson (ToJSON, Value, object, (.=))
