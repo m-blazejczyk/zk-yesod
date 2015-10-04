@@ -3,6 +3,7 @@ module Handler.Kopalnia (
     getKopalniaInitR,
     getKopalniaItemR,
     getKopalniaItemEditR,
+    postKopalniaItemUpdateR,
     postKopalniaEditTytulR,
     postKopalniaEditRodzajR,
     postKopalniaEditLinkGlR,
@@ -30,6 +31,7 @@ import Network.URI (isURI)
 import Text.Julius (rawJS)
 import Utils
 import DbUtils
+import Handler.Common (EditHandler, lookupHandler)
 import Handler.XEditable
 
 defaultTitle :: Html
@@ -107,6 +109,50 @@ getKopalniaItemCommon isEdit lookupId = do
     defaultLayout $ do
         setTitle $ prefix ++ " publikacji - " ++ defaultTitle
         $(widgetFile "kopalnia-item")
+
+data KopalniaField = 
+     FldTytul
+   | FldRodzaj
+   | FldLinkGl
+   | FldAutor
+   | FldTlum
+   | FldRed
+   | FldWywiad
+   | FldRodzic
+   | FldWydawca
+   | FldWydawcaAdd
+   | FldDataWyd
+   | FldIsbn
+   | FldStr
+   | FldObj
+   | FldJezyk
+   | FldOpis
+   | FldHasla
+   | FldSlowaKlucz
+   deriving (Eq)
+
+fields :: [(KopalniaField, (Text, EditHandler))]
+fields = [(FldTytul, ("tytul", editTytulR))]
+
+postKopalniaItemUpdateR :: Handler Text
+postKopalniaItemUpdateR = do
+    (params, _) <- runRequestBody
+    let mHandler = lookupHandler "name" params fields
+    case mHandler of
+        Just handler -> handler params
+        Nothing -> sendResponseStatus badRequest400 (systemError "Brak funkcji obsługującej albo parametru 'name'")
+
+    -- let mName = lookup "name" params
+    -- case mName of
+    --     Just name -> do
+    --         let mHandler = getEditHandler name fields
+    --         case mHandler of
+    --             Just handler -> handler params
+    --             Nothing -> sendResponseStatus badRequest400 (systemErrorT "Brak funkcji obsługującej parametr" name)
+    --     Nothing -> sendResponseStatus badRequest400 (systemError "Brak parametru 'name'")
+
+editTytulR :: EditHandler
+editTytulR params = sendResponseStatus badRequest400 (systemErrorS "" params)
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable1 vald upd where

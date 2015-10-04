@@ -47,7 +47,7 @@ processXEditable vald upd = do
             -- Get the value representing all "value*" POST parameters.
             let xEdVals = getXEdValues params
             case xEdVals of
-                XEdNone -> sendResponseStatus badRequest400 (systemError "Brak parametru value")
+                XEdNone -> sendResponseStatus badRequest400 (systemError "Brak parametru 'value'")
                 _ -> do
                     -- Run the user-provided cross-validation function.
                     parsOk <- vald xEdVals
@@ -64,7 +64,7 @@ processXEditable vald upd = do
                                         Success msg -> sendResponseStatus status200 msg
                                 _ -> sendResponseStatus badRequest400 (systemErrorS "Fiszka o tym identyfikatorze nie istnieje" lookupId)
                         Error err -> sendResponseStatus badRequest400 err
-        _ -> sendResponseStatus badRequest400 (systemError "Niepoprawny format albo brak parametru pk")
+        _ -> sendResponseStatus badRequest400 (systemError "Niepoprawny format albo brak parametru 'pk'")
 
 -- This function takes a map of POST parameters and produces an XEdVal.
 -- In a sense, it performs the auto-discovery of the type of XEditable value,
