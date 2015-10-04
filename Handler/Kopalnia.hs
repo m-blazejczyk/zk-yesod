@@ -91,7 +91,6 @@ getKopalniaItemCommon isEdit lookupId = do
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     linki <- getListM $ kopalniaLinki kopalnia
-    t <- return $ T.dropEnd 3 "abcdef"
     -- This call return a List of [Entity KopalniaAutor]
     kopAuts <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
     -- This call returns a List of Maybe Autor
@@ -159,14 +158,16 @@ postKopalniaEditWydawcaR = processXEditable1 vald upd where
     processWyd Nothing = return $ Error $ systemError "Niezdefiniowany identyfikator wydawcy"
     upd value = [KopalniaWydawcaId =. value]
 
+-- TODO: Add the new publisher to the drop-down in the XEditable on the page.
 postKopalniaAddWydawcaR :: Handler Text
-postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
+postKopalniaAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     -- TODO: verify this logic
-    vald [tNazwa, tUrl] | T.length tNazwa == 0 && T.length tUrl == 0 = return $ Success Nothing
-                        | T.length tNazwa == 0 && T.length tUrl > 0 = return $ Error "Nazwa wydawcy jest wymagana"
-                        | T.length tUrl > 0 && (not $ isURI $ unpack tUrl) = return $ Error "Niepoprawny adres strony internetowej"
-                        | T.length tUrl == 0 = return $ Success $ Just (tNazwa, Nothing)
-                        | otherwise = return $ Success $ Just (tNazwa, Just tUrl)
+    vald [Just tNazwa, Just tUrl]
+        | T.length tNazwa == 0 && T.length tUrl == 0 = return $ Success Nothing
+        | T.length tNazwa == 0 && T.length tUrl > 0 = return $ Error "Nazwa wydawcy jest wymagana"
+        | T.length tUrl > 0 && (not $ isURI $ unpack tUrl) = return $ Error "Niepoprawny adres strony internetowej"
+        | T.length tUrl == 0 = return $ Success $ Just (tNazwa, Nothing)
+        | otherwise = return $ Success $ Just (tNazwa, Just tUrl)
     vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
     upd _ Nothing = return $ Success "IGNORE"  -- If both parameters were empty, simply ignore the request.
                                                -- Don't change this text without changing the JS file.
@@ -181,8 +182,8 @@ postKopalniaAddWydawcaR = processXEditable vald upd ["nazwa", "url"] where
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
 postKopalniaEditDataWydR :: Handler Text
-postKopalniaEditDataWydR = processXEditable vald upd ["year", "month"] where
-    vald [tYear, tMonth] = do
+postKopalniaEditDataWydR = processXEditable (valdMap ["year", "month"] vald) upd where
+    vald [Just tYear, Just tMonth] = do
         curDate <- liftIO (getCurrentTime >>= return . toGregorian . utctDay)
         curYear <- return $ fromIntegral $ fst3 curDate
         validated <- return $ [valdYear curYear tYear, valdMonth tMonth]

@@ -55,7 +55,7 @@ maybeRead :: Maybe T.Text -> Maybe Int64
 maybeRead (Just txt) = (fmap fst . listToMaybe . reads . T.unpack) txt
 maybeRead _ = Nothing
 
--- Access to elemnets of a 3-element tuple.
+-- Access to elements of a 3-element tuple.
 fst3 :: (a, b, c) -> a
 fst3 (val, _, _) = val
 
@@ -73,7 +73,11 @@ systemError msg = T.concat ["Błąd systemu: ", msg]
 systemErrorT :: T.Text -> T.Text -> T.Text
 systemErrorT msg argT = T.concat ["Błąd systemu: ", msg, ": ", argT]
 
--- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument
+-- Prepends 'Błąd systemu: ' to the given message, and then appends a colon and the second argument.
 -- ('show'ed and 'pack'ed).
 systemErrorS :: Show a => T.Text -> a -> T.Text
 systemErrorS msg argS = T.concat ["Błąd systemu: ", msg, ": ", (T.pack $ show argS)]
+
+-- Given a list of map keys, and the map itself, return a list of values.
+lookupParams :: [T.Text] -> [(T.Text, T.Text)] -> [Maybe T.Text]
+lookupParams names vals = map (\name -> lookup name vals) names

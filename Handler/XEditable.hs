@@ -1,18 +1,32 @@
 module Handler.XEditable (
+    XEdVal(..),
     processXEditable,
-    processXEditable1
+    processXEditable1,
+    valdMap
     ) where
 
 import Import
 import qualified Data.Text as T
-import Utils (Result(..), maybeRead, combine, systemError, systemErrorT, systemErrorS)
--- import DbUtils
+import Utils (Result(..), maybeRead, systemError, systemErrorS, lookupParams)
 
-data XEdVal = XEdNone
-            | XEdValOne T.Text
-            | XEdValArr [T.Text]
-            | XEdValMap [(T.Text, T.Text)]
+data XEdVal = XEdNone                       -- No "value*" parameter was found at all
+            | XEdValOne T.Text              -- A "value" parameter was found
+            | XEdValArr [T.Text]            -- Several "value[]" parameters were found
+            | XEdValMap [(T.Text, T.Text)]  -- Several "value[*]" parameters were found
     deriving (Show)
+
+-- This is a version of processXEditable for POST requests requiring a single parameter value.
+-- The upd function in this case should simply return a value that will be passed to a call to runDb $ updateWhere.
+processXEditable1 :: (Text -> Handler (Result a))
+                  -> (a -> [Update Kopalnia])
+                  -> Handler Text
+processXEditable1 vald upd = processXEditable vald' upd'
+    where
+        vald' (XEdValOne val) = vald val
+        vald' _ = return $ Error $ systemError "Brakuje parametru"
+        upd' criterion vals = do
+            runDB $ updateWhere [criterion] (upd vals)
+            return $ Success "OK"
 
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should first be validated,
 --   and then one or more database fields should be updated.
@@ -25,44 +39,22 @@ data XEdVal = XEdNone
 -- The last argument is an array of expected POST parameter names, or an empty array if only a single value is expected.
 -- TODO: This function should be improved by using a monad combinator such as EitherT.
 --       Example: http://stackoverflow.com/questions/13252889/elegant-haskell-case-error-handling-in-sequential-monads
-processXEditable :: ([Text] -> Handler (Result a))
+processXEditable :: (XEdVal -> Handler (Result a))
                  -> (Filter Kopalnia -> a -> Handler (Result Text))
-                 -> [Text]
                  -> Handler Text
-processXEditable vald upd [] = processXEditable' vald upd [""]
-processXEditable vald upd parNames = processXEditable' vald upd parNames
-
--- This is a version of processXEditable for POST requests requiring a single parameter value.
--- The upd function in this case should simply return a value that will be passed to a call to runDb $ updateWhere.
-processXEditable1 :: (Text -> Handler (Result a))
-                  -> (a -> [Update Kopalnia])
-                  -> Handler Text
-processXEditable1 vald' upd' = processXEditable' vald upd [""]
-    where
-        vald params = case headMay params of
-            Just h -> vald' h
-            Nothing -> return $ Error $ systemError "Brakuje parametrów"
-        upd criterion vals = do
-            runDB $ updateWhere [criterion] (upd' vals)
-            return $ Success "OK"
-
--- This function differs from the previous one in that it requires the list of parameter names not to be empty.
-processXEditable' :: ([Text] -> Handler (Result a))
-                  -> (Filter Kopalnia -> a -> Handler (Result Text))
-                  -> [Text]
-                  -> Handler Text
-processXEditable' vald upd parNames = do
-    mLookupId <- lookupPostParam "pk"
-    mLookupId2 <- return $ maybeRead mLookupId
-    case mLookupId2 of
+processXEditable vald upd = do
+    (params, _) <- runRequestBody
+    let mLookupIdT = lookup "pk" params
+    let mLookupIdI = maybeRead mLookupIdT
+    case mLookupIdI of
         Just lookupId -> do
-            -- Make sure that all value parameters exist, and turn them into an array, or combine errors.
-            lParams <- getNamedParams parNames
-            rParams <- return $ combine "\n" lParams
-            case rParams of
-                Success params -> do
+            -- Get the value representing all "value*" POST parameters.
+            let xEdVals = getXEdValues params
+            case xEdVals of
+                XEdNone -> sendResponseStatus badRequest400 (systemError "Brak parametru value")
+                _ -> do
                     -- Run the user-provided cross-validation function.
-                    parsOk <- vald params
+                    parsOk <- vald xEdVals
                     case parsOk of
                         Success vals -> do
                             let criterion = KopalniaLookupId ==. lookupId
@@ -76,31 +68,11 @@ processXEditable' vald upd parNames = do
                                         Success msg -> sendResponseStatus status200 msg
                                 _ -> sendResponseStatus badRequest400 (systemErrorS "Fiszka o tym identyfikatorze nie istnieje" lookupId)
                         Error err -> sendResponseStatus badRequest400 err
-                Error err -> sendResponseStatus badRequest400 err
-        _ -> sendResponseStatus badRequest400 (systemError "Niepoprawna wartość albo brak parametru pk")
+        _ -> sendResponseStatus badRequest400 (systemError "Niepoprawny format albo brak parametru pk")
 
--- This function should return a value of type HttpVal that has 3 constructors: for a single value,
--- for an array and for a map.  The function will auto-detect the constructor to use.  Then, validation
--- functions will look at these values and return errors if the value is of a wrong type.  It could even
--- happen in wrapper functions in this here module.  Also, passing around the array of parameter names
--- won't be necessary - this function should call lookupPostParams.
-getNamedParams :: [Text] -> Handler [Result Text]
-getNamedParams = mapM get1Param
-    where 
-        get1Param parName = do
-            actualName <- return $ getActualName parName
-            mValueRaw <- lookupPostParam actualName
-            case mValueRaw of
-                Just valueRaw -> return $ Success $ T.strip valueRaw
-                Nothing -> return $ Error $ systemErrorT "Brak parametru" parName
-        getActualName "" = "value"
-        getActualName parName = T.concat ["value[", parName, "]"]
-
-getXEdValues' :: Handler XEdVal
-getXEdValues' = do
-    (pp, _) <- runRequestBody
-    return $ getXEdValues pp
-
+-- This function takes a map of POST parameters and produces an XEdVal.
+-- In a sense, it performs the auto-discovery of the type of XEditable value,
+-- i.e. is it a single value, an array, or a map (many named values).
 getXEdValues :: [(T.Text, T.Text)] -> XEdVal
 getXEdValues = foldr process XEdNone
     where
@@ -108,7 +80,7 @@ getXEdValues = foldr process XEdNone
         process ("value", pv) XEdNone = XEdValOne pv
         process ("value[]", pv) XEdNone = XEdValArr [pv]
         process (pn, pv) XEdNone | isMap pn = XEdValMap $ mkMap pn pv []
-                                 | otherwise = XEdValOne pn
+                                 | otherwise = XEdNone
         -- If we already have a XEdValOne then ignore all further parameters.
         process _ vOne@(XEdValOne _) = vOne
         -- If we have a XEdValArr and found another "value[]" then we append; otherwise - ignore.
@@ -118,5 +90,16 @@ getXEdValues = foldr process XEdNone
         process (pn, pv) vMap@(XEdValMap oldMap) | isMap pn = XEdValMap $ mkMap pn pv oldMap
                                                  | otherwise = vMap
         -- Helper functions.
-        mkMap pn pv oldMap = (T.drop 6 pn, pv):oldMap
+        mkMap pn pv oldMap = ((T.drop 6 . T.dropEnd 1) pn, pv):oldMap
         isMap pn = T.length pn > 7 && T.isPrefixOf "value[" pn && T.isSuffixOf "]" pn
+
+-- This function simplifies the construction of the validation function for processXEditable
+-- when the expected POST values are a map.
+-- The first argument is an array of expected parameter names, and the second one is a function
+-- that takes an array (in the same order as the first array) of parameter values and validates
+-- them.
+valdMap :: [T.Text] -> ([Maybe T.Text] -> Handler (Result a)) -> (XEdVal -> Handler (Result a))
+valdMap names vald = wrapper
+    where 
+        wrapper (XEdValMap vMap) = vald $ lookupParams names vMap
+        wrapper _ = return $ Error $ systemError "Niepoprawna forma parametrów"
