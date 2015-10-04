@@ -18,18 +18,17 @@ getRobotsR = return $ TypedContent typePlain
 -- Type representing a function that takes a map of POST parameters as argument.
 type EditHandler = [(Text, Text)] -> Handler Text
 
-getEditParamName :: Eq a => a -> [(a, (Text, EditHandler))] -> Maybe Text
-getEditParamName field dat = do
+-- Given the field identifier (of type 'a') returns the expected POST parameter name.
+lookupEditParam :: Eq a => a -> [(a, (Text, EditHandler))] -> Maybe Text
+lookupEditParam field dat = do
     pair <- L.lookup field dat
     return $ fst pair
 
-getEditHandler :: Text -> [(a, (Text, EditHandler))] -> Maybe EditHandler
-getEditHandler name dat = do
-    pair <- L.find (\item -> ((fst . snd) item) == name) dat
-    return $ (snd . snd) pair
-
-lookupHandler :: Text -> [(Text, Text)] -> [(a, (Text, EditHandler))] -> Maybe EditHandler
-lookupHandler lookupName params handlers = do
+-- Given the name of the POST parameter containing the field name, returns the handler.
+-- First looks up 'lookupName' in 'params' and then looks up the resulting text value
+-- in (fst.snd) of 'handlers'.
+lookupEditHandler :: Text -> [(Text, Text)] -> [(a, (Text, EditHandler))] -> Maybe EditHandler
+lookupEditHandler lookupName params handlers = do
     field <- L.lookup lookupName params
     pair <- L.find (\item -> ((fst . snd) item) == field) handlers
     return $ (snd . snd) pair

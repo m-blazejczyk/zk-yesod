@@ -31,7 +31,7 @@ import Network.URI (isURI)
 import Text.Julius (rawJS)
 import Utils
 import DbUtils
-import Handler.Common (EditHandler, lookupHandler)
+import Handler.Common (EditHandler, lookupEditHandler)
 import Handler.XEditable
 
 defaultTitle :: Html
@@ -137,22 +137,13 @@ fields = [(FldTytul, ("tytul", editTytulR))]
 postKopalniaItemUpdateR :: Handler Text
 postKopalniaItemUpdateR = do
     (params, _) <- runRequestBody
-    let mHandler = lookupHandler "name" params fields
+    let mHandler = lookupEditHandler "name" params fields
     case mHandler of
         Just handler -> handler params
         Nothing -> sendResponseStatus badRequest400 (systemError "Brak funkcji obsługującej albo parametru 'name'")
 
-    -- let mName = lookup "name" params
-    -- case mName of
-    --     Just name -> do
-    --         let mHandler = getEditHandler name fields
-    --         case mHandler of
-    --             Just handler -> handler params
-    --             Nothing -> sendResponseStatus badRequest400 (systemErrorT "Brak funkcji obsługującej parametr" name)
-    --     Nothing -> sendResponseStatus badRequest400 (systemError "Brak parametru 'name'")
-
 editTytulR :: EditHandler
-editTytulR params = sendResponseStatus badRequest400 (systemErrorS "" params)
+editTytulR params = sendResponseStatus badRequest400 (systemErrorS "" params)  -- Test only!
 
 postKopalniaEditTytulR :: Handler Text
 postKopalniaEditTytulR = processXEditable1 vald upd where
