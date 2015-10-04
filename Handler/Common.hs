@@ -19,10 +19,12 @@ getRobotsR = return $ TypedContent typePlain
 type EditHandler = [(Text, Text)] -> Handler Text
 
 -- Given the field identifier (of type 'a') returns the expected POST parameter name.
-lookupEditParam :: Eq a => a -> [(a, (Text, EditHandler))] -> Maybe Text
-lookupEditParam field dat = do
-    pair <- L.lookup field dat
-    return $ fst pair
+-- If the lookup failed, returns 'error'.
+lookupEditParam :: Eq a => a -> [(a, (Text, EditHandler))] -> Text
+lookupEditParam field handlers =
+    case L.lookup field handlers of
+        Just pair -> fst pair
+        Nothing -> "error"
 
 -- Given the name of the POST parameter containing the field name, returns the handler.
 -- First looks up 'lookupName' in 'params' and then looks up the resulting text value
