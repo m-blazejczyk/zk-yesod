@@ -1,13 +1,37 @@
 module Handler.XEditable (
     XEdVal(..),
+    EditHandler,
+    lookupEditParam,
+    lookupEditHandler,
     processXEditable,
     processXEditable1,
     valdMap
     ) where
 
 import Import
+import qualified Data.List as L
 import qualified Data.Text as T
 import Utils (Result(..), maybeRead, systemError, systemErrorS, lookupParams)
+
+-- Type representing a function that takes a map of POST parameters as argument.
+type EditHandler = [(Text, Text)] -> Handler Text
+
+-- Given the field identifier (of type 'a') returns the expected POST parameter name.
+-- If the lookup failed, returns 'error'.
+lookupEditParam :: Eq a => a -> [(a, (Text, EditHandler))] -> Text
+lookupEditParam field handlers =
+    case L.lookup field handlers of
+        Just pair -> fst pair
+        Nothing -> "error"
+
+-- Given the name of the POST parameter containing the field name, returns the handler.
+-- First looks up 'lookupName' in 'params' and then looks up the resulting text value
+-- in (fst.snd) of 'handlers'.
+lookupEditHandler :: Text -> [(Text, Text)] -> [(a, (Text, EditHandler))] -> Maybe EditHandler
+lookupEditHandler lookupName params handlers = do
+    field <- L.lookup lookupName params
+    pair <- L.find (\item -> ((fst . snd) item) == field) handlers
+    return $ (snd . snd) pair
 
 data XEdVal = XEdNone                       -- No "value*" parameter was found at all
             | XEdValOne T.Text              -- A "value" parameter was found

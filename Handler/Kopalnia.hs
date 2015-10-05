@@ -13,7 +13,6 @@ import Network.URI (isURI)
 import Text.Julius (rawJS)
 import Utils
 import DbUtils
-import Handler.Common (EditHandler, lookupEditHandler, lookupEditParam)
 import Handler.XEditable
 
 defaultTitle :: Html
