@@ -18,10 +18,11 @@ data XEdVal = XEdNone                       -- No "value*" parameter was found a
 -- This is a version of processXEditable for POST requests requiring a single parameter value.
 -- The upd function in this case should simply return a value that will be passed to a call
 --   to runDb $ updateWhere.
-processXEditable1 :: (Text -> Handler (Result a))
+processXEditable1 :: [(T.Text, T.Text)]
+                  -> (Text -> Handler (Result a))
                   -> (a -> [Update Kopalnia])
                   -> Handler Text
-processXEditable1 vald upd = processXEditable vald' upd'
+processXEditable1 params vald upd = processXEditable params vald' upd'
     where
         vald' (XEdValOne val) = vald val
         vald' _ = return $ Error $ systemError "Brakuje parametru"
@@ -31,15 +32,16 @@ processXEditable1 vald upd = processXEditable vald' upd'
 
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should
 --   first be validated, and then one or more database fields should be updated.
--- The first argument is a validation/conversion function that takes an XEdVal and returns
+-- The first argument is the map of POST parameters.
+-- The second argument is a validation/conversion function that takes an XEdVal and returns
 --   Result <converted value> in the Handler monad (to allow for database validation lookups).
--- If everything succeeds then the second argument function (upd) will be called to store the values
+-- If everything succeeds then the third argument function (upd) will be called to store the values
 --   returned by vald in the database.
-processXEditable :: (XEdVal -> Handler (Result a))
+processXEditable :: [(T.Text, T.Text)]
+                 -> (XEdVal -> Handler (Result a))
                  -> (Filter Kopalnia -> a -> Handler (Result Text))
                  -> Handler Text
-processXEditable vald upd = do
-    (params, _) <- runRequestBody
+processXEditable params vald upd = do
     let mLookupIdT = lookup "pk" params
     let mLookupIdI = maybeRead mLookupIdT
     case mLookupIdI of

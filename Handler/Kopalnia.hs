@@ -3,25 +3,7 @@ module Handler.Kopalnia (
     getKopalniaInitR,
     getKopalniaItemR,
     getKopalniaItemEditR,
-    postKopalniaItemUpdateR,
-    postKopalniaEditTytulR,
-    postKopalniaEditRodzajR,
-    postKopalniaEditLinkGlR,
-    postKopalniaEditAutorR,
-    postKopalniaEditTlumR,
-    postKopalniaEditRedR,
-    postKopalniaEditWywiadR,
-    postKopalniaEditRodzicR,
-    postKopalniaEditWydawcaR,
-    postKopalniaAddWydawcaR,
-    postKopalniaEditDataWydR,
-    postKopalniaEditIsbnR,
-    postKopalniaEditStrR,
-    postKopalniaEditObjR,
-    postKopalniaEditJezykR,
-    postKopalniaEditOpisR,
-    postKopalniaEditHaslaR,
-    postKopalniaEditSlowaKluczR
+    postKopalniaItemUpdateR
     ) where
 
 import Import
@@ -113,18 +95,18 @@ getKopalniaItemCommon isEdit lookupId = do
 data KopalniaField = 
      FldTytul
    | FldRodzaj
-   | FldLinkGl
+   | FldLinkGlowny
    | FldAutor
-   | FldTlum
-   | FldRed
+   | FldTlumacz
+   | FldRedaktor
    | FldWywiad
    | FldRodzic
    | FldWydawca
-   | FldWydawcaAdd
-   | FldDataWyd
+   | FldAddWydawca
+   | FldDataWydania
    | FldIsbn
-   | FldStr
-   | FldObj
+   | FldStrony
+   | FldObjetosc
    | FldJezyk
    | FldOpis
    | FldHasla
@@ -132,7 +114,24 @@ data KopalniaField =
    deriving (Eq)
 
 fields :: [(KopalniaField, (Text, EditHandler))]
-fields = [(FldTytul, ("tytul", editTytulR))]
+fields = [(FldTytul,       ("tytul",      editTytulR)),
+          (FldRodzaj,      ("rodzaj",     editRodzajR)),
+          (FldLinkGlowny,  ("url",        editLinkGlownyR)),
+          (FldAutor,       ("autorzy",    editAutorR)),
+          (FldTlumacz,     ("tlumacze",   editTlumaczR)),
+          (FldRedaktor,    ("redaktorzy", editRedaktorR)),
+          (FldWywiad,      ("wywiadowcy", editWywiadR)),
+          (FldRodzic,      ("rodzic",     editRodzicR)),
+          (FldWydawca,     ("wydawca",    editWydawcaR)),
+          (FldAddWydawca,  ("addWydawce", editAddWydawcaR)),
+          (FldDataWydania, ("dataWyd",    editDataWydaniaR)),
+          (FldIsbn,        ("isbn",       editIsbnR)),
+          (FldStrony,      ("strony",     editStronyR)),
+          (FldObjetosc,    ("objetosc",   editObjetoscR)),
+          (FldJezyk,       ("jezyk",      editJezykR)),
+          (FldOpis,        ("opis",       editOpisR)),
+          (FldHasla,       ("hasla",      editHaslaR)),
+          (FldSlowaKlucz,  ("slowa",      editSlowaKluczR))]
 
 postKopalniaItemUpdateR :: Handler Text
 postKopalniaItemUpdateR = do
@@ -143,45 +142,41 @@ postKopalniaItemUpdateR = do
         Nothing -> sendResponseStatus badRequest400 (systemError "Brak funkcji obsługującej albo parametru 'name'")
 
 editTytulR :: EditHandler
-editTytulR params = sendResponseStatus badRequest400 (systemErrorS "" parName)  -- Test only!
-    where parName = lookupEditParam FldTytul fields
-
-postKopalniaEditTytulR :: Handler Text
-postKopalniaEditTytulR = processXEditable1 vald upd where
+editTytulR params = processXEditable1 params vald upd where
     vald v | T.length v > 0 = return $ Success v
            | otherwise = return $ Error "Tytuł nie może być pusty"
     upd value = [KopalniaTytul =. value]
 
-postKopalniaEditLinkGlR :: Handler Text
-postKopalniaEditLinkGlR = processXEditable1 vald upd where
+editLinkGlownyR :: EditHandler
+editLinkGlownyR params = processXEditable1 params vald upd where
     vald v | T.length v == 0 = return $ Success Nothing
            | isURI $ unpack v = return $ Success $ Just v
            | otherwise = return $ Error "Niepoprawny adres"
     upd value = [KopalniaUrl =. value]
 
-postKopalniaEditRodzajR :: Handler Text
-postKopalniaEditRodzajR = processXEditable1 vald upd where
+editRodzajR :: EditHandler
+editRodzajR params = processXEditable1 params vald upd where
     vald = return . readRodzaj
     upd value = [KopalniaRodzaj =. value]
 
 -- Params: [("name","autorzy"),("value[]","2"),("value[]","1"),("pk","1")]
-postKopalniaEditAutorR :: Handler Text
-postKopalniaEditAutorR = sendResponseStatus status200 ("OK" :: Text)
+editAutorR :: EditHandler
+editAutorR _ = sendResponseStatus status200 ("OK" :: Text)
 
-postKopalniaEditTlumR :: Handler Text
-postKopalniaEditTlumR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editTlumaczR :: EditHandler
+editTlumaczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-postKopalniaEditRedR :: Handler Text
-postKopalniaEditRedR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editRedaktorR :: EditHandler
+editRedaktorR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-postKopalniaEditWywiadR :: Handler Text
-postKopalniaEditWywiadR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editWywiadR :: EditHandler
+editWywiadR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-postKopalniaEditRodzicR :: Handler Text
-postKopalniaEditRodzicR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editRodzicR :: EditHandler
+editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-postKopalniaEditWydawcaR :: Handler Text
-postKopalniaEditWydawcaR = processXEditable1 vald upd where
+editWydawcaR :: EditHandler
+editWydawcaR params = processXEditable1 params vald upd where
     vald v | T.length v == 0 = return $ Success Nothing
            | otherwise = parseId v
     parseId v = case (maybeRead $ Just v) of
@@ -194,8 +189,8 @@ postKopalniaEditWydawcaR = processXEditable1 vald upd where
     upd value = [KopalniaWydawcaId =. value]
 
 -- TODO: Add the new publisher to the drop-down in the XEditable on the page.
-postKopalniaAddWydawcaR :: Handler Text
-postKopalniaAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
+editAddWydawcaR :: EditHandler
+editAddWydawcaR params = processXEditable params (valdMap ["nazwa", "url"] vald) upd where
     -- TODO: verify this logic
     vald [Just tNazwa, Just tUrl]
         | T.length tNazwa == 0 && T.length tUrl == 0 = return $ Success Nothing
@@ -216,8 +211,8 @@ postKopalniaAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd w
                 return $ Success "OK"
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
-postKopalniaEditDataWydR :: Handler Text
-postKopalniaEditDataWydR = processXEditable (valdMap ["year", "month"] vald) upd where
+editDataWydaniaR :: EditHandler
+editDataWydaniaR params = processXEditable params (valdMap ["year", "month"] vald) upd where
     vald [Just tYear, Just tMonth] = do
         curDate <- liftIO (getCurrentTime >>= return . toGregorian . utctDay)
         curYear <- return $ fromIntegral $ fst3 curDate
@@ -243,8 +238,8 @@ postKopalniaEditDataWydR = processXEditable (valdMap ["year", "month"] vald) upd
         return $ Success "OK"
 
 -- TODO: add regex validation
-postKopalniaEditIsbnR :: Handler Text
-postKopalniaEditIsbnR = processXEditable1 vald upd where
+editIsbnR :: EditHandler
+editIsbnR params = processXEditable1 params vald upd where
     vald = return . vald'
     vald' v | T.length v == 0 = Success Nothing
             | T.length v < 10 = Error "Za krótki kod"
@@ -252,31 +247,31 @@ postKopalniaEditIsbnR = processXEditable1 vald upd where
             | otherwise = Success $ Just v
     upd value = [KopalniaIsbn =. value]
 
-postKopalniaEditStrR :: Handler Text
-postKopalniaEditStrR = processXEditable1 vald upd where
+editStronyR :: EditHandler
+editStronyR params = processXEditable1 params vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaStrony =. value]
 
-postKopalniaEditObjR :: Handler Text
-postKopalniaEditObjR = processXEditable1 vald upd where
+editObjetoscR :: EditHandler
+editObjetoscR params = processXEditable1 params vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaObjetosc =. value]
 
-postKopalniaEditJezykR :: Handler Text
-postKopalniaEditJezykR = processXEditable1 vald upd where
+editJezykR :: EditHandler
+editJezykR params = processXEditable1 params vald upd where
     vald = return . readJezyk
     upd value = [KopalniaJezyk =. value]
 
-postKopalniaEditOpisR :: Handler Text
-postKopalniaEditOpisR = processXEditable1 vald upd where
+editOpisR :: EditHandler
+editOpisR params = processXEditable1 params vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaOpis =. value]
 
-postKopalniaEditHaslaR :: Handler Text
-postKopalniaEditHaslaR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editHaslaR :: EditHandler
+editHaslaR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-postKopalniaEditSlowaKluczR :: Handler Text
-postKopalniaEditSlowaKluczR = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editSlowaKluczR :: EditHandler
+editSlowaKluczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 -- This function is sort of a combination of map, zip and filter.
 -- It walks both input lists in parallel and retains only Autor records that are not Nothing
