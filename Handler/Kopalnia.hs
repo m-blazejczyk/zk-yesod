@@ -158,9 +158,26 @@ editRodzajR params = processXEditable1 params vald upd where
     vald = return . readRodzaj
     upd value = [KopalniaRodzaj =. value]
 
--- Params: [("name","autorzy"),("value[]","2"),("value[]","1"),("pk","1")]
 editAutorR :: EditHandler
-editAutorR _ = sendResponseStatus status200 ("OK" :: Text)
+editAutorR params = processXEditable params (valdArr vald) upd where
+    vald arr = 
+        -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
+        let arrIds = mapMaybe maybeRead (map Just arr)
+        -- mapMaybe filters out all Nothing values from the list so if any id was invalid
+        -- then the result will be shorter.
+        in if length arrIds == length arr
+            then valdDb arrIds
+            else return $ Error $ systemError "Niepoprawny identyfikator autora"
+    valdDb lookupIds = do
+        -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
+        mAutorzy <- mapM (\l -> runDB $ getBy $ UniqueAutor l) lookupIds  -- mAutorzy :: [Maybe (Entity x y)]
+        let ids = mapMaybe extractAutorId mAutorzy  -- ids :: [x] (see annotation in the line above)
+        if length ids == length lookupIds
+            then return $ Success $ ids
+            else return $ Error $ systemError "Niezdefiniowany identyfikator autora"
+    extractAutorId (Just (Entity autorId _)) = Just autorId
+    extractAutorId Nothing = Nothing
+    upd criterion ids = return $ Success "OK"
 
 editTlumaczR :: EditHandler
 editTlumaczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)

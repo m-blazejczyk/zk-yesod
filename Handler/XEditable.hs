@@ -5,7 +5,8 @@ module Handler.XEditable (
     lookupEditHandler,
     processXEditable,
     processXEditable1,
-    valdMap
+    valdMap,
+    valdArr
     ) where
 
 import Import
@@ -124,4 +125,13 @@ valdMap :: [T.Text] -> ([Maybe T.Text] -> Handler (Result a)) -> (XEdVal -> Hand
 valdMap names vald = wrapper
     where 
         wrapper (XEdValMap vMap) = vald $ lookupParams names vMap
+        wrapper _ = return $ Error $ systemError "Niepoprawna forma parametrów"
+
+-- This function simplifies the construction of the validation function for processXEditable
+-- when the expected POST values are an array.
+-- The argument is a function that takes an array of parameter values and validates them.
+valdArr :: ([T.Text] -> Handler (Result a)) -> (XEdVal -> Handler (Result a))
+valdArr vald = wrapper
+    where
+        wrapper (XEdValArr vArr) = vald vArr
         wrapper _ = return $ Error $ systemError "Niepoprawna forma parametrów"
