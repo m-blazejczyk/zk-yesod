@@ -177,7 +177,10 @@ editAutorR params = processXEditable params (valdArr vald) upd where
             else return $ Error $ systemError "Niezdefiniowany identyfikator autora"
     extractAutorId (Just (Entity autorId _)) = Just autorId
     extractAutorId Nothing = Nothing
-    upd criterion ids = return $ Success "OK"
+    upd lookupId ids = do
+        -- runDB $ deleteWhere 
+        -- runDB $ updateWhere [KopalniaLookupId ==. lookupId] (upd vals)
+        return $ Success "OK"
 
 editTlumaczR :: EditHandler
 editTlumaczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
@@ -217,13 +220,13 @@ editAddWydawcaR params = processXEditable params (valdMap ["nazwa", "url"] vald)
     vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
     upd _ Nothing = return $ Success "IGNORE"  -- If both parameters were empty, simply ignore the request.
                                                -- Don't change this text without changing the JS file.
-    upd criterion (Just (nazwa, url)) = do
+    upd lookupId (Just (nazwa, url)) = do
         mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
         case mNast of
             Just (Entity _ nast) -> do
                 wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
                 runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
-                runDB $ updateWhere [criterion] [KopalniaWydawcaId =. (Just wydawca)]
+                runDB $ updateWhere [KopalniaLookupId ==. lookupId] [KopalniaWydawcaId =. (Just wydawca)]
                 return $ Success "OK"
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
@@ -248,7 +251,8 @@ editDataWydaniaR params = processXEditable params (valdMap ["year", "month"] val
         Nothing -> Error "Miesiąc nie jest liczbą"
     crossValidate v@[Success Nothing, Success (Just _)] = v ++ [Error "Rok jest wymagany, jeśli podajesz miesiąc"]
     crossValidate v = v
-    upd criterion value = do
+    upd lookupId value = do
+        let criterion = KopalniaLookupId ==. lookupId
         runDB $ updateWhere [criterion] [KopalniaPubRok =. fst value]
         runDB $ updateWhere [criterion] [KopalniaPubMiesiac =. snd value]
         return $ Success "OK"

@@ -51,8 +51,8 @@ processXEditable1 params vald upd = processXEditable params vald' upd'
     where
         vald' (XEdValOne val) = vald val
         vald' _ = return $ Error $ systemError "Brakuje parametru"
-        upd' criterion vals = do
-            runDB $ updateWhere [criterion] (upd vals)
+        upd' lookupId vals = do
+            runDB $ updateWhere [KopalniaLookupId ==. lookupId] (upd vals)
             return $ Success "OK"
 
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should
@@ -64,7 +64,7 @@ processXEditable1 params vald upd = processXEditable params vald' upd'
 --   returned by vald in the database.
 processXEditable :: [(T.Text, T.Text)]
                  -> (XEdVal -> Handler (Result a))
-                 -> (Filter Kopalnia -> a -> Handler (Result Text))
+                 -> (Int64 -> a -> Handler (Result Text))
                  -> Handler Text
 processXEditable params vald upd = do
     let mLookupIdT = lookup "pk" params
@@ -85,7 +85,7 @@ processXEditable params vald upd = do
                             case cnt of
                                 1 -> do
                                     -- Run the user-provided database update function.
-                                    res <- upd criterion vals
+                                    res <- upd lookupId vals
                                     case res of
                                         Error err -> sendResponseStatus badRequest400 err
                                         Success msg -> sendResponseStatus status200 msg
