@@ -177,10 +177,16 @@ editAutorR params = processXEditable params (valdArr vald) upd where
             else return $ Error $ systemError "Niezdefiniowany identyfikator autora"
     extractAutorId (Just (Entity autorId _)) = Just autorId
     extractAutorId Nothing = Nothing
-    upd lookupId ids = do
-        -- runDB $ deleteWhere 
-        -- runDB $ updateWhere [KopalniaLookupId ==. lookupId] (upd vals)
-        return $ Success "OK"
+    -- 'autorIds' is of type [Key Autor]
+    upd kopalniaLookupId autorIds = do
+        mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
+        case mKopalnia of
+            Just (Entity kopalniaId _) -> do
+                runDB $ deleteWhere [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. AutorAut]
+                _ <- mapM (\autorId -> runDB $ insert $ KopalniaAutor autorId kopalniaId AutorAut) autorIds
+                return $ Success "OK"
+            -- This should NEVER happen!
+            Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
 
 editTlumaczR :: EditHandler
 editTlumaczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
