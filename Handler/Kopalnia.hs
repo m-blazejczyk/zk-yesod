@@ -453,3 +453,29 @@ getBiblioFooterW = toWidget [hamlet|
         <div class="col-md-2">
           Projekt realizowany we współpracy z Fundacją Instytut Kultury Popularnej.
     |]
+
+getAutorW :: Bool -> Int64 -> [Autor] -> KopalniaField -> Text -> Text -> Text -> Widget
+getAutorW isEdit lookupId autorzy field style label popupLabel = toWidget [hamlet|
+    $if isEdit
+      <p>
+        <span class="inobtrusive">#{label}
+        <span style="#{style}">
+          <span id="#{lookupEditParam field fields}" data-type="select2" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
+            $if length autorzy > 0
+              $forall autor <- autorzy
+                $maybe imiona <- autorImiona autor
+                  #{imiona} #
+                #{autorNazwisko autor} #
+            $else
+              [brak]
+    $else
+      $if length autorzy > 0
+        <p>
+          <span class="inobtrusive">#{label}
+          $forall autor <- autorzy
+            <span style="#{style}">
+              <a href=@{AutorR (autorLookupId autor)} class="link1">
+                $maybe imiona <- autorImiona autor
+                  #{imiona} #
+                #{autorNazwisko autor} #
+    |]

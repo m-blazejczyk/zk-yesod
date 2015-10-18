@@ -125,32 +125,39 @@ if(#{isEdit}) {
       }
     });
 
-    $('#autorzy').editable({
-      select2: {
-        multiple: true,
-        placeholder: 'wybierz autorów',
-        allowClear: true,
-        width: 300,
-        minimumInputLength: 2,
-        quietMillis: 250,
-        ajax: {
-          url: '@{FindAutorR}',
-          dataType: 'json',
-          data: function (term, page) {
-            return { q: term };
+    var initAuthors = function(id, placeholder) {
+      $('#'+id).editable({
+        select2: {
+          multiple: true,
+          placeholder: placeholder,
+          allowClear: true,
+          width: 300,
+          minimumInputLength: 2,
+          quietMillis: 250,
+          ajax: {
+            url: '@{FindAutorR}',
+            dataType: 'json',
+            data: function (term, page) {
+              return { q: term };
+            },
+            results: function (data, page) {
+              return data;
+            }
           },
-          results: function (data, page) {
-            return data;
-          }
-        },
-        initSelection: function (element, callback) {
-          // the input tag has a value attribute preloaded that points to a preselected repository's id
-          // this function resolves that id attribute to an object that select2 can render
-          // using its formatResult renderer - that way the repository name is shown preselected
-          console.log("initSelection: " + $(element).val());
-        } 
-      }  
-    });
+          initSelection: function (element, callback) {
+            // the input tag has a value attribute preloaded that points to a preselected repository's id
+            // this function resolves that id attribute to an object that select2 can render
+            // using its formatResult renderer - that way the repository name is shown preselected
+            console.log("initSelection: " + $(element).val());
+          } 
+        }  
+      });
+    }
+
+    initAuthors('#{rawJS $ lookupEditParam FldAutor fields}', 'wybierz autorów');
+    initAuthors('#{rawJS $ lookupEditParam FldTlumacz fields}', 'wybierz tłumaczy');
+    initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
+    initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
 
   });
 }

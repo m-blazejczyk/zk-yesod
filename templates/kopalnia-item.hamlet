@@ -26,54 +26,15 @@
 
   <div class="kopalnia-top-div">
 
-    $if isEdit
-      <p>
-        <b id="#{lookupEditParam FldAutor fields}" data-type="select2" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Autorzy">
-          $if length autorzy > 0
-            $forall autor <- autorzy
-              $maybe imiona <- autorImiona autor
-                #{imiona} #
-              #{autorNazwisko autor} #
-          $else
-            [brak]
-    $else
-      $if length autorzy > 0
-        <p>
-          $forall autor <- autorzy
-            <b>
-              <a href=@{AutorR (autorLookupId autor)} class="link1">
-                $maybe imiona <- autorImiona autor
-                  #{imiona} #
-                #{autorNazwisko autor} #
+    ^{getAutorW isEdit lookupId autorzy FldAutor "font-weight: bold;" "" "Autorzy"}
 
-    $if length tlumacze > 0
-      <p>
-        <span class="inobtrusive">Tłumaczenie:
-        $forall tlumacz <- tlumacze
-          <a href=@{AutorR (autorLookupId tlumacz)} class="link1">
-            $maybe imiona <- autorImiona tlumacz
-              #{imiona} #
-            #{autorNazwisko tlumacz} #
+    ^{getAutorW isEdit lookupId tlumacze FldTlumacz "" "Tłumaczenie:" "Tłumacze"}
 
-    $if length wywiadowcy > 0
-      <p>
-        <span class="inobtrusive">Pytania zadawane przez:
-        $forall wywiadowca <- wywiadowcy
-          <a href=@{AutorR (autorLookupId wywiadowca)} class="link1">
-            $maybe imiona <- autorImiona wywiadowca
-              #{imiona} #
-            #{autorNazwisko wywiadowca} #
+    ^{getAutorW isEdit lookupId wywiadowcy FldWywiad "" "Pytania zadawane przez:" "Osoby zadające pytania"}
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
-    $if length redaktorzy > 0
-      <p>
-        <span class="inobtrusive">Redakcja:
-        $forall redaktor <- redaktorzy
-          <a href=@{AutorR (autorLookupId redaktor)} class="link1">
-            $maybe imiona <- autorImiona redaktor
-              #{imiona} #
-            #{autorNazwisko redaktor} #
+    ^{getAutorW isEdit lookupId redaktorzy FldRedaktor "" "Redakcja:" "Redaktorzy"}
 
     $if isEdit
       <p>
