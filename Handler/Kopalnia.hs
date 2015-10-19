@@ -159,7 +159,19 @@ editRodzajR params = processXEditable1 params vald upd where
     upd value = [KopalniaRodzaj =. value]
 
 editAutorR :: EditHandler
-editAutorR params = processXEditable params (valdArr vald) upd where
+editAutorR = editAutorGenericR AutorAut
+
+editTlumaczR :: EditHandler
+editTlumaczR = editAutorGenericR AutorTlum
+
+editRedaktorR :: EditHandler
+editRedaktorR = editAutorGenericR AutorRed
+
+editWywiadR :: EditHandler
+editWywiadR = editAutorGenericR AutorWyw
+
+editAutorGenericR :: TypAutora -> EditHandler
+editAutorGenericR typAutora params = processXEditable params (valdArr vald) upd where
     vald arr = 
         -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
         let arrIds = mapMaybe maybeRead (map Just arr)
@@ -182,20 +194,11 @@ editAutorR params = processXEditable params (valdArr vald) upd where
         mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
         case mKopalnia of
             Just (Entity kopalniaId _) -> do
-                runDB $ deleteWhere [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. AutorAut]
-                _ <- mapM (\autorId -> runDB $ insert $ KopalniaAutor autorId kopalniaId AutorAut) autorIds
+                runDB $ deleteWhere [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. typAutora]
+                _ <- mapM (\autorId -> runDB $ insert $ KopalniaAutor autorId kopalniaId typAutora) autorIds
                 return $ Success "OK"
             -- This should NEVER happen!
             Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
-
-editTlumaczR :: EditHandler
-editTlumaczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
-
-editRedaktorR :: EditHandler
-editRedaktorR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
-
-editWywiadR :: EditHandler
-editWywiadR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 editRodzicR :: EditHandler
 editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
