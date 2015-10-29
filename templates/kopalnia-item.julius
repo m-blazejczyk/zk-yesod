@@ -1,6 +1,16 @@
 if(#{isEdit}) {
   $(document).ready(function() {
 
+    $('#rodzaj').editableZK();
+    $('#url').editableZK({
+      // display: function(value, response) {
+      //   if (value.trim() == '') {
+      //     $(this).html('link do zawartości [brak]')
+      //   } else $(this).html('link do zawartości [ustawiony]')
+      // }
+    });
+
+    /*
     $('#tytul').editable();
 
     $('#rodzaj').editable(#{rawJS $ decodeUtf8 rodzajeToJson});
@@ -143,14 +153,15 @@ if(#{isEdit}) {
             results: function (data, page) {
               return data;
             }
-          },
-          initSelection: function (element, callback) {
-            // the input tag has a value attribute preloaded that points to a preselected repository's id
-            // this function resolves that id attribute to an object that select2 can render
-            // using its formatResult renderer - that way the repository name is shown preselected
-            console.log("initSelection: " + $(element).val());
-          } 
-        }  
+          }
+        },
+        initSelection: function(element, callback) {
+          // the input tag has a value attribute preloaded that points to a preselected repository's id
+          // this function resolves that id attribute to an object that select2 can render
+          // using its formatResult renderer - that way the repository name is shown preselected
+          var id = $(element).val();
+          console.log("id: " + id);
+        }
       });
     }
 
@@ -158,6 +169,7 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldTlumacz fields}', 'wybierz tłumaczy');
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
+    */
 
   });
 }

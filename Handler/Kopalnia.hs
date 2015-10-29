@@ -463,12 +463,12 @@ getAutorW isEdit lookupId autorzy field style label popupLabel = toWidget [hamle
       <p>
         <span class="inobtrusive">#{label}
         <span style="#{style}">
-          <span id="#{lookupEditParam field fields}" data-type="select2" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
+          <span id="#{lookupEditParam field fields}" data-type="select2" data-value="2,3" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
             $if length autorzy > 0
               $forall autor <- autorzy
                 $maybe imiona <- autorImiona autor
                   #{imiona} #
-                #{autorNazwisko autor} #
+                #{autorNazwisko autor}, #
             $else
               [brak]
     $else

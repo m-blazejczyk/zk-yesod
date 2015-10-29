@@ -8,11 +8,10 @@ $newline never
     <meta name="description" content="ABC">
     <meta name="keywords" content="ABC">
 
-    <link rel="stylesheet" media="screen" href=@{StaticR slimbox2_css_slimbox2_css}>
     <link rel="stylesheet" href=@{StaticR bootstrap_3_3_5_css_bootstrap_min_css}>
-    <link rel="stylesheet" href=@{StaticR bootstrap3_editable_1_5_1_bootstrap3_editable_css_bootstrap_editable_css}/>
     <link rel="stylesheet" href=@{StaticR select2_3_5_2_select2_css}>
     <link rel="stylesheet" href=@{StaticR select2_3_5_2_select2_bootstrap_css}>
+    <link rel="stylesheet" href=@{StaticR slimbox2_css_slimbox2_css} media="screen">
 
     <!-- JQuery has to be included here otherwise it won't be possible to use it in Julius files of inner templates -->
     <script src=@{StaticR slimbox2_js_jquery_1_9_1_min_js}></script>
@@ -72,9 +71,7 @@ $newline never
           <a href="/o_stronie">
             O stronie
 
-  <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
   <script src=@{StaticR bootstrap_3_3_5_js_bootstrap_min_js}></script>
-  <script src=@{StaticR bootstrap3_editable_1_5_1_bootstrap3_editable_js_bootstrap_editable_min_js}></script>
   <script src=@{StaticR select2_3_5_2_select2_min_js}></script>
-  <script src=@{StaticR js_monthyear_js}></script>
-  <script src=@{StaticR js_add_wydawce_js}></script>
+  <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
+  <script src=@{StaticR js_editable_zk_js}></script>
