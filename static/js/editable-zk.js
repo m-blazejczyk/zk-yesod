@@ -9,11 +9,22 @@
           // Merge with options from attributes.
           var settings = $.extend({
               type: this.attr('data-type'),
-              pk: this.attr('data-pk'),
-              url: this.attr('data-url'),
-              title: this.attr('data-title') || '',
-              value: this.attr('data-value')
+              pk: this.attr('data-pk'),                         // primary key in the database
+              url: this.attr('data-url'),                       // url to send the POST request to
+              title: this.attr('data-title') || '',             // title of the popup (will default to 'name')
+              name: this.attr('data-name') || '',               // name of the field (if single input)
+              value: this.attr('data-value'),                   // raw value (if single input)
+              placeholder: this.attr('data-placeholder') || ''  // placeholder (if single input; will default to 'title')
           }, options);
+
+          // TODO: Sanitize inputs!
+
+          if (settings.name == '' && settings.fields === undefined)
+            settings.name = 'dummy';
+          if (settings.title == '')
+            settings.title = settings.name;
+          if (settings.placeholder == '')
+            settings.placeholder = settings.title;
 
           this.addClass('editable editable-click');
           this.attr('data-toggle', 'modal');
@@ -31,12 +42,30 @@
           htmlArr.push('      </div>');
           htmlArr.push('      <div class="modal-body">');
           htmlArr.push('        <div class="row">');
-          htmlArr.push('          <div class="col-md-4">');
-          htmlArr.push('            <label for="exampleInputEmail1">Obrazek</label>');
-          htmlArr.push('          </div>');
-          htmlArr.push('          <div class="col-md-8">');
-          htmlArr.push('            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Obrazek">');
-          htmlArr.push('          </div>');
+
+          if (settings.fields === undefined) {
+            // No fields definition - create a simple editor
+            htmlArr.push('          <div class="col-md-12">');
+            htmlArr.push('            <input type="text" class="form-control" id="' + modalId + settings.name
+              + '" placeholder="' + settings.placeholder + '">');
+            htmlArr.push('          </div>');
+          } else {
+            // Fields definition present - create an editor with labels
+            for (var key in settings.fields) {
+              var fieldId = modalId + key;
+
+              if (settings.fields[key].placeholder === undefined)
+                settings.fields[key].placeholder = '';
+
+              htmlArr.push('          <div class="col-md-4">');
+              htmlArr.push('            <label for="' + fieldId + '">' + settings.fields[key].label + '</label>');
+              htmlArr.push('          </div>');
+              htmlArr.push('          <div class="col-md-8">');
+              htmlArr.push('            <input type="text" class="form-control" id="' + fieldId + '" placeholder="' + settings.fields[key].placeholder + '">');
+              htmlArr.push('          </div>');
+            }
+          }
+
           htmlArr.push('        </div>');
           htmlArr.push('      </div>');
           htmlArr.push('      <div class="modal-footer">');

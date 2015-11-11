@@ -3,11 +3,9 @@ if(#{isEdit}) {
 
     $('#rodzaj').editableZK();
     $('#url').editableZK({
-      // display: function(value, response) {
-      //   if (value.trim() == '') {
-      //     $(this).html('link do zawartości [brak]')
-      //   } else $(this).html('link do zawartości [ustawiony]')
-      // }
+      fields: {
+        url: { label: "Etykietka", placeholder: "Wpisz coś" }
+      }
     });
 
     /*
