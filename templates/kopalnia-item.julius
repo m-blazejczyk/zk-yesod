@@ -3,8 +3,17 @@ if(#{isEdit}) {
 
     $('#rodzaj').editableZK();
     $('#url').editableZK({
+      display: function(value) {
+        if (value.trim() == '')
+          return 'link do zawartości [brak]';
+        else
+          return 'link do zawartości [ustawiony]';
+      },
       fields: {
-        url: { label: "Etykietka", placeholder: "Wpisz coś" }
+        url: {
+          label: "Etykietka",
+          placeholder: "Wpisz coś"
+        }
       }
     });
 

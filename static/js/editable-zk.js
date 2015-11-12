@@ -17,6 +17,19 @@
               placeholder: this.attr('data-placeholder') || ''  // placeholder (if single input; will default to 'title')
           }, options);
 
+          var formatInput = function(type, id, value, settings) {
+            if (type === "text") {
+              if (settings.placeholder !== undefined)
+                var ph = ' placeholder="' + settings.placeholder + '"';
+              else
+                var ph = '';
+              if (typeof(settings.toInput) === 'function')
+                value = settings.toInput(value);
+              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>'
+            }
+            return '';
+          }
+
           // TODO: Sanitize inputs!
 
           if (settings.name == '' && settings.fields === undefined)
@@ -29,6 +42,11 @@
           this.addClass('editable editable-click');
           this.attr('data-toggle', 'modal');
           this.attr('data-target', '#' + modalId);
+
+          if (typeof(settings.display) === 'function')
+            this.html(settings.display(settings.value));
+          else
+            this.html(settings.value);
 
           var okBtnId = field + '-ok-btn';
 
@@ -46,8 +64,7 @@
           if (settings.fields === undefined) {
             // No fields definition - create a simple editor
             htmlArr.push('          <div class="col-md-12">');
-            htmlArr.push('            <input type="text" class="form-control" id="' + modalId + settings.name
-              + '" placeholder="' + settings.placeholder + '">');
+            htmlArr.push('            ' + formatInput(settings.type, modalId + settings.name, settings.value, settings));
             htmlArr.push('          </div>');
           } else {
             // Fields definition present - create an editor with labels
@@ -61,7 +78,10 @@
               htmlArr.push('            <label for="' + fieldId + '">' + settings.fields[key].label + '</label>');
               htmlArr.push('          </div>');
               htmlArr.push('          <div class="col-md-8">');
-              htmlArr.push('            <input type="text" class="form-control" id="' + fieldId + '" placeholder="' + settings.fields[key].placeholder + '">');
+              htmlArr.push('            ' + formatInput(settings.fields[key].type || settings.type,
+                                                        fieldId,
+                                                        settings.fields[key].value || settings.value,
+                                                        settings.fields[key]));
               htmlArr.push('          </div>');
             }
           }
