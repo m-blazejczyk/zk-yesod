@@ -2,17 +2,76 @@ if(#{isEdit}) {
   $(document).ready(function() {
 
     $('#rodzaj').editableZK();
+
     $('#url').editableZK({
+      name: 'url',
+      label: "Etykietka",
+      placeholder: "Wpisz coś",
       display: function(value) {
         if (value.trim() == '')
           return 'link do zawartości [brak]';
         else
           return 'link do zawartości [ustawiony]';
-      },
+      }
+    });
+
+    $('#datapub').editable({
       fields: {
-        url: {
-          label: "Etykietka",
-          placeholder: "Wpisz coś"
+        year: {
+          type: 'text',
+          label: 'Rok',
+          placeholder: 'rok'
+        },
+        month: {
+          type: 'text',
+          label: 'Miesiąc',
+          placeholder: 'miesiąc (np. 2 albo 11)'
+        }
+      },
+      value: {
+        year: '#{rawJS $ fst dataWyd}',
+        month: '#{rawJS $ snd dataWyd}'
+      },
+      validate: function(value) {
+        if(value) {
+          if(value.year) {
+            var year = parseInt(value.year);
+            if(isNaN(year) || year < 1800 || year > (new Date()).getFullYear() + 1)
+              return 'Niepoprawny rok';
+          }
+          if(value.month) {
+            var month = parseInt(value.month);
+            if(isNaN(month) || month < 1 || month > 12)
+              return 'Niepoprawny miesiąc';
+          }
+          if(!value.year && value.month) 
+            return 'Rok jest wymagany, jeśli podajesz miesiąc';
+        }
+      },
+      display: function(value, response) {
+        if (!value || (!value.month && !value.year)) {
+          return '[brak]';
+        } else {
+          if(value.month) {
+            var month = parseInt(value.month), monthStr = value.month;
+
+            if(month == 1) monthStr = "styczeń";
+            else if(month == 2) monthStr = "luty";
+            else if(month == 3) monthStr = "marzec";
+            else if(month == 4) monthStr = "kwiecień";
+            else if(month == 5) monthStr = "maj";
+            else if(month == 6) monthStr = "czerwiec";
+            else if(month == 7) monthStr = "lipiec";
+            else if(month == 8) monthStr = "sierpień";
+            else if(month == 9) monthStr = "wrzesień";
+            else if(month == 10) monthStr = "październik";
+            else if(month == 11) monthStr = "listopad";
+            else if(month == 12) monthStr = "grudzień";
+
+            return monthStr + " " + value.year;
+          } else {
+            return value.year;
+          }
         }
       }
     });
@@ -57,65 +116,6 @@ if(#{isEdit}) {
       }
     };
     $('#wydawca').editable(wydConf);
-
-    $('#url').editable({
-      display: function(value, response) {
-        if(value.trim()=='') {
-          $(this).html('link do zawartości [brak]');
-        } else {
-          $(this).html('link do zawartości [ustawiony]'); 
-        }
-      }
-    });
-
-    $('#datapub').editable({
-      value: {
-        year: '#{rawJS $ fst dataWyd}',
-        month: '#{rawJS $ snd dataWyd}'
-      },
-      validate: function(value) {
-        if(value) {
-          if(value.year) {
-            var year = parseInt(value.year);
-            if(isNaN(year) || year < 1800 || year > (new Date()).getFullYear() + 1)
-              return 'Niepoprawny rok';
-          }
-          if(value.month) {
-            var month = parseInt(value.month);
-            if(isNaN(month) || month < 1 || month > 12)
-              return 'Niepoprawny miesiąc';
-          }
-          if(!value.year && value.month) 
-            return 'Rok jest wymagany, jeśli podajesz miesiąc';
-        }
-      },
-      display: function(value, response) {
-        if (!value || (!value.month && !value.year)) {
-          $(this).html('[brak]');
-        } else {
-          if(value.month) {
-            var month = parseInt(value.month), monthStr = value.month;
-
-            if(month == 1) monthStr = "styczeń";
-            else if(month == 2) monthStr = "luty";
-            else if(month == 3) monthStr = "marzec";
-            else if(month == 4) monthStr = "kwiecień";
-            else if(month == 5) monthStr = "maj";
-            else if(month == 6) monthStr = "czerwiec";
-            else if(month == 7) monthStr = "lipiec";
-            else if(month == 8) monthStr = "sierpień";
-            else if(month == 9) monthStr = "wrzesień";
-            else if(month == 10) monthStr = "październik";
-            else if(month == 11) monthStr = "listopad";
-            else if(month == 12) monthStr = "grudzień";
-
-            $(this).html(monthStr + " " + value.year);
-          } else {
-            $(this).html(value.year);
-          }
-        }
-      }
-    });
 
     // This editable is configured differently because it's purpose is to *add* new publisher records.
     $('#addWydawce').editable({
