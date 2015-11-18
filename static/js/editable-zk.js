@@ -15,6 +15,8 @@
               value: this.attr('data-value')     // raw value (if single input)
           }, options);
 
+          // TODO: Sanitize inputs!
+
           var formatInput = function(type, id, value, settings) {
             if (type === "text") {
               if (settings.placeholder !== undefined)
@@ -27,8 +29,6 @@
             }
             return '';
           }
-
-          // TODO: Sanitize inputs!
 
           if (!settings.title)
             settings.title = field;
@@ -55,8 +55,10 @@
           htmlArr.push('      <div class="modal-body">');
           htmlArr.push('        <div class="row">');
 
+          var firstFieldId = undefined;
           if (!settings.fields) {
             // No fields definition - create a simple editor
+            firstFieldId = modalId + '-edit';
             htmlArr.push('          <div class="col-md-12">');
             htmlArr.push('            ' + formatInput(settings.type, modalId + '-edit', settings.value, settings));
             htmlArr.push('          </div>');
@@ -64,6 +66,9 @@
             // Fields definition present - create an editor with labels
             for (var key in settings.fields) {
               var fieldId = modalId + '-' + key;
+
+              if (firstFieldId === undefined)
+                firstFieldId = fieldId;
 
               if (settings.fields[key].placeholder === undefined)
                 settings.fields[key].placeholder = '';
@@ -93,7 +98,15 @@
           $('body').append(htmlArr.join(''));
 
           $('#' + modalId).on('shown.bs.modal', function () {
-            $('#exampleInputEmail1').focus()
+            $('#' + firstFieldId).focus()
+          });
+
+          $('#' + okBtnId).click(function (){
+            // TODO: Write this code!
+            // 1. get value
+            // 2. validate value
+            // 3. change element on page using display()
+            $('#' + modalId).modal('hide');
           });
         }
 
