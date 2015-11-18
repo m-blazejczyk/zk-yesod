@@ -17,8 +17,11 @@
 
           // TODO: Sanitize inputs!
 
+          var select2Fields = new Array();
+
           var formatInput = function(type, id, value, settings) {
             if (type === "text") {
+
               if (settings.placeholder !== undefined)
                 var ph = ' placeholder="' + settings.placeholder + '"';
               else
@@ -26,6 +29,19 @@
               if (typeof(settings.toInput) === 'function')
                 value = settings.toInput(value);
               return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>'
+
+            } else if (type === "select") {
+
+              select2Fields.push(id);
+
+              var htmlArr = new Array();
+              htmlArr.push('<select class="form-control" id="' + id + '">');
+              for (var i = 0; i < settings.source.length; i++) {
+                var selected = (settings.source[i].value == value ? ' selected' : '');
+                htmlArr.push('<option value="' + settings.source[i].value + '"' + selected + '>' + settings.source[i].text + '</option>');
+              };
+              htmlArr.push('</select>');
+              return htmlArr.join('');
             }
             return '';
           }
@@ -97,8 +113,17 @@
 
           $('body').append(htmlArr.join(''));
 
+          if (select2Fields.length > 0) {
+            $('#' + modalId).on('show.bs.modal', function () {
+              // TODO: Initialize the value, especially on reentry (and remove the surrounding IF then)!
+              for (var i = select2Fields.length - 1; i >= 0; i--) {
+                $("#" + select2Fields[i]).select2();
+              };
+            });
+          }
+
           $('#' + modalId).on('shown.bs.modal', function () {
-            $('#' + firstFieldId).focus()
+            $('#' + firstFieldId).focus();
           });
 
           $('#' + okBtnId).click(function (){
