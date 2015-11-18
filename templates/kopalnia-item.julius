@@ -3,6 +3,8 @@ if(#{isEdit}) {
 
     $('#rodzaj').editableZK();
 
+    $('#tytul').editableZK();
+
     $('#url').editableZK({
       name: 'url',
       label: "Etykietka",
