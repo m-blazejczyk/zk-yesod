@@ -53,12 +53,18 @@
           this.attr('data-toggle', 'modal');
           this.attr('data-target', '#' + modalId);
 
-          if (typeof(settings.display) === 'function')
+          if (typeof(settings.display) === 'function') {
             this.html(settings.display(settings.value));
-          else if (typeof settings.emptytext == 'string' && settings.value === '')
+          } else if (typeof settings.emptytext == 'string' && settings.value === '') {
             this.html(settings.emptytext);
-          else
+          } else if (settings.source != undefined && settings.source.length != undefined) {
+            for (var i = settings.source.length - 1; i >= 0; i--) {
+              if (settings.source[i].value == settings.value)
+                this.html(settings.source[i].text);
+            }
+          } else {
             this.html(settings.value);
+          }
 
           var okBtnId = field + '-ok-btn';
 
