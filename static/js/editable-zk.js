@@ -55,6 +55,8 @@
 
           if (typeof(settings.display) === 'function')
             this.html(settings.display(settings.value));
+          else if (typeof settings.emptytext == 'string' && settings.value === '')
+            this.html(settings.emptytext);
           else
             this.html(settings.value);
 

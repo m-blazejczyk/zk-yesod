@@ -5,6 +5,8 @@ if(#{isEdit}) {
 
     $('#rodzaj').editableZK(#{rawJS $ decodeUtf8 rodzajeToJson});
 
+    $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
+
     $('#url').editableZK({
       name: 'url',
       label: "Etykietka",
@@ -78,9 +80,6 @@ if(#{isEdit}) {
       }
     });
 
-    /*
-    $('#jezyk').editable(#{rawJS $ decodeUtf8 jezykiToJson});
-
     $('#isbn').editable({ emptytext: '[brak]' });
 
     $('#objetosc').editable({ emptytext: '[brak]' });
@@ -89,6 +88,7 @@ if(#{isEdit}) {
 
     $('#opis').editable({ emptytext: '[brak]' });
 
+    /*
     // The source is obtained from Haskell, but the configuration is easier to provide directly here.
     var wydConf = #{rawJS $ decodeUtf8 wydawcyJson};
     wydConf.select2 = {
