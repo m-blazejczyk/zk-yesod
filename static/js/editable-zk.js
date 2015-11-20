@@ -9,10 +9,13 @@
           // Merge with options from attributes.
           var settings = $.extend({
               type: this.attr('data-type'),
-              pk: this.attr('data-pk'),          // primary key in the database
-              url: this.attr('data-url'),        // url to send the POST request to
-              title: this.attr('data-title'),    // title of the popup (will default to 'id')
-              value: this.attr('data-value')     // raw value (if single input)
+              pk: this.attr('data-pk'),                    // primary key in the database
+              url: this.attr('data-url'),                  // url to send the POST request to
+              title: this.attr('data-title'),              // title of the popup (will default to 'id')
+              value: this.attr('data-value'),              // raw value (if single input)
+              emptytext: this.attr('data-emptytext'),      // text to display when the value is empty
+              placeholder: this.attr('data-placeholder'),  // placeholder for text values
+              rows: this.attr('data-rows')                 // number of rows for text areas
           }, options);
 
           // TODO: Sanitize inputs!
@@ -20,14 +23,16 @@
           var select2Fields = new Array();
 
           var formatInput = function(type, id, value, settings) {
+            return formatInputImpl(type, id, typeof(settings.toInput) === 'function' ? settings.toInput(value) : value, settings);
+          }
+
+          var formatInputImpl = function(type, id, value, settings) {
             if (type === "text") {
 
               if (settings.placeholder !== undefined)
                 var ph = ' placeholder="' + settings.placeholder + '"';
               else
                 var ph = '';
-              if (typeof(settings.toInput) === 'function')
-                value = settings.toInput(value);
               return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>'
 
             } else if (type === "select") {
@@ -42,8 +47,20 @@
               };
               htmlArr.push('</select>');
               return htmlArr.join('');
+
+            } else if (type === "textarea") {
+
+              if (settings.rows !== undefined)
+                var rows = ' rows="' + settings.rows + '"';
+              else
+                var rows = '';
+               return '<textarea class="form-control" id="' + id + '"' + rows + '>' + value + '</textarea>';
+
+            } else {
+
+              return '';
+
             }
-            return '';
           }
 
           if (!settings.title)

@@ -82,11 +82,11 @@ if(#{isEdit}) {
 
     $('#isbn').editable({ emptytext: '[brak]' });
 
-    $('#objetosc').editable({ emptytext: '[brak]' });
+    $('#objetosc').editable({ emptytext: '[brak]', placeholder: 'np. 12 stron' });
 
-    $('#strony').editable({ emptytext: '[brak]' });
+    $('#strony').editable({ emptytext: '[brak]', placeholder: 'np. 18-22' });
 
-    $('#opis').editable({ emptytext: '[brak]' });
+    $('#opis').editable({ emptytext: '[brak]', rows: 5 });
 
     /*
     // The source is obtained from Haskell, but the configuration is easier to provide directly here.
