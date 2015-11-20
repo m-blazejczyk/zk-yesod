@@ -36,7 +36,7 @@ prefixRegex q = (,) (T.concat ["^", q]) "i"
 -- Returns all publishers as JSON, in the following format suitable for the select2 control:
 -- {
 --   "source": [
---     { "text": "Timof i cisi wspólnicy", "id": 1 },
+--     { "text": "Timof i cisi wspólnicy", "value": 1 },
 --     ...
 --   ]
 -- }
@@ -44,4 +44,4 @@ wydawcyToJson :: Handler Data.ByteString.Lazy.Internal.ByteString
 wydawcyToJson = do
     wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
-    return $ encode $ tuplesToRawJson "source" "id" "text" wydawcy
+    return $ encode $ tuplesToRawJson "source" "value" "text" wydawcy
