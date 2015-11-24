@@ -90,6 +90,43 @@ if(#{isEdit}) {
 
     $('#wydawca').editable(#{rawJS $ decodeUtf8 wydawcyJson});
 
+    var initAuthors = function(id, placeholder) {
+      $('#' + id).editableZK({
+        select2: {
+          multiple: true,
+          placeholder: placeholder,
+          allowClear: true,
+          width: '100%',
+          minimumInputLength: 2,
+          quietMillis: 250,
+          ajax: {
+            url: '@{FindAutorR}',
+            dataType: 'json',
+            data: function(term, page) {
+              return {
+                q: term
+              }
+            },
+            results: function(data, page) {
+              return data
+            }
+          },
+          initSelection: function(element, callback) {
+            var values = element.val().split("||");
+            var data = new Array;
+            for (var i = values.length - 1; i >= 0; i -= 2) {
+              data.push({id: values[i-1], text: values[i]});
+            };
+            callback (data);
+          }
+        }
+      })
+    };
+    initAuthors('#{rawJS $ lookupEditParam FldAutor fields}', 'wybierz autorów');
+    initAuthors('#{rawJS $ lookupEditParam FldTlumacz fields}', 'wybierz tłumaczy');
+    initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
+    initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
+
     /*
     // This editable is configured differently because it's purpose is to *add* new publisher records.
     $('#addWydawce').editable({
@@ -115,41 +152,6 @@ if(#{isEdit}) {
         $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
-
-    var initAuthors = function(id, placeholder) {
-      $('#'+id).editable({
-        select2: {
-          multiple: true,
-          placeholder: placeholder,
-          allowClear: true,
-          width: 300,
-          minimumInputLength: 2,
-          quietMillis: 250,
-          ajax: {
-            url: '@{FindAutorR}',
-            dataType: 'json',
-            data: function (term, page) {
-              return { q: term };
-            },
-            results: function (data, page) {
-              return data;
-            }
-          }
-        },
-        initSelection: function(element, callback) {
-          // the input tag has a value attribute preloaded that points to a preselected repository's id
-          // this function resolves that id attribute to an object that select2 can render
-          // using its formatResult renderer - that way the repository name is shown preselected
-          var id = $(element).val();
-          console.log("id: " + id);
-        }
-      });
-    }
-
-    initAuthors('#{rawJS $ lookupEditParam FldAutor fields}', 'wybierz autorów');
-    initAuthors('#{rawJS $ lookupEditParam FldTlumacz fields}', 'wybierz tłumaczy');
-    initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
-    initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
     */
 
   });

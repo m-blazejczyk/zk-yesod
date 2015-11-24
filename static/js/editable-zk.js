@@ -27,20 +27,20 @@
           }
 
           var formatInputImpl = function(type, id, value, settings) {
-            if (type === "text") {
+            if (type === 'text') {
 
               if (settings.placeholder !== undefined)
                 var ph = ' placeholder="' + settings.placeholder + '"';
               else
                 var ph = '';
-              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>'
+              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>';
 
-            } else if (type === "select") {
+            } else if (type === 'select') {
 
-              select2Fields.push(id);
+              select2Fields.push({id: id});
 
               var htmlArr = new Array();
-              htmlArr.push('<select class="form-control" id="' + id + '">');
+              htmlArr.push('<select class="form-control" id="' + id + '" style="width: 100%">');
               for (var i = 0; i < settings.source.length; i++) {
                 var selected = (settings.source[i].value == value ? ' selected' : '');
                 htmlArr.push('<option value="' + settings.source[i].value + '"' + selected + '>' + settings.source[i].text + '</option>');
@@ -48,7 +48,13 @@
               htmlArr.push('</select>');
               return htmlArr.join('');
 
-            } else if (type === "textarea") {
+            } else if (type === 'select2') {
+
+              select2Fields.push({id: id, options: settings.select2});
+
+              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '">';
+
+            } else if (type === 'textarea') {
 
               if (settings.rows !== undefined)
                 var rows = ' rows="' + settings.rows + '"';
@@ -79,6 +85,13 @@
               if (settings.source[i].value == settings.value)
                 this.html(settings.source[i].text);
             }
+          } else if (settings.select2 != undefined) {
+            var values = settings.value.split("||");
+            var data = new Array;
+            for (var i = values.length - 1; i >= 0; i -= 2) {
+              data.push(values[i]);
+            };
+            this.html(data.join(', '));
           } else {
             this.html(settings.value);
           }
@@ -140,9 +153,11 @@
 
           if (select2Fields.length > 0) {
             $('#' + modalId).on('show.bs.modal', function () {
-              // TODO: Initialize the value, especially on reentry (and remove the surrounding IF then)!
               for (var i = select2Fields.length - 1; i >= 0; i--) {
-                $("#" + select2Fields[i]).select2();
+                if (select2Fields[i].options !== undefined)
+                  $("#" + select2Fields[i].id).select2(select2Fields[i].options);
+                else
+                  $("#" + select2Fields[i].id).select2();
               };
             });
           }
