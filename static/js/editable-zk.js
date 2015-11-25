@@ -46,6 +46,7 @@
                 htmlArr.push('<option value="' + settings.source[i].value + '"' + selected + '>' + settings.source[i].text + '</option>');
               };
               htmlArr.push('</select>');
+
               return htmlArr.join('');
 
             } else if (type === 'select2') {
@@ -109,20 +110,20 @@
           htmlArr.push('      <div class="modal-body">');
           htmlArr.push('        <div class="row">');
 
-          var firstFieldId = undefined;
+          var fieldIds = new Array;
+          var fieldNames = new Array;
           if (!settings.fields) {
             // No fields definition - create a simple editor
-            firstFieldId = modalId + '-edit';
+            fieldIds.push(modalId + '-edit');
             htmlArr.push('          <div class="col-md-12">');
-            htmlArr.push('            ' + formatInput(settings.type, modalId + '-edit', settings.value, settings));
+            htmlArr.push('            ' + formatInput(settings.type, fieldIds[0], settings.value, settings));
             htmlArr.push('          </div>');
           } else {
             // Fields definition present - create an editor with labels
             for (var key in settings.fields) {
               var fieldId = modalId + '-' + key;
-
-              if (firstFieldId === undefined)
-                firstFieldId = fieldId;
+              fieldIds.push(fieldId);
+              fieldNames.push(key);
 
               if (settings.fields[key].placeholder === undefined)
                 settings.fields[key].placeholder = '';
@@ -154,23 +155,35 @@
           if (select2Fields.length > 0) {
             $('#' + modalId).on('show.bs.modal', function () {
               for (var i = select2Fields.length - 1; i >= 0; i--) {
+                // Initialize the select2 control.
+                var q = '#' + select2Fields[i].id;
                 if (select2Fields[i].options !== undefined)
-                  $("#" + select2Fields[i].id).select2(select2Fields[i].options);
+                  $(q).select2(select2Fields[i].options);
                 else
-                  $("#" + select2Fields[i].id).select2();
-              };
+                  $(q).select2();
+              }
             });
           }
 
           $('#' + modalId).on('shown.bs.modal', function () {
-            $('#' + firstFieldId).focus();
+            $('#' + fieldIds[0]).focus();
           });
 
           $('#' + okBtnId).click(function (){
-            // TODO: Write this code!
-            // 1. get value
+            // 1. Get the value
+            if (fieldIds.length > 1) {
+              var rawVal = {};
+              for (var i = fieldIds.length - 1; i >= 0; i--) {
+                rawVal[fieldNames[i]] = $('#' + fieldIds[i]).val();
+              }
+            } else {
+              var rawVal = $('#' + fieldIds[0]).val();
+              // Current value from select2: $('#' + fieldIds[0]).select2('data').text
+            }
+
             // 2. validate value
             // 3. change element on page using display()
+
             $('#' + modalId).modal('hide');
           });
         }

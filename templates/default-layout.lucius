@@ -546,18 +546,22 @@ p.inobtrusive {
 /* ------------ X-EDITABLE ------------ */
 
 .editable-multi {
-    display: block;
-    margin-bottom: 5px;  
+  display: block;
+  margin-bottom: 5px;  
 }
 
 .editable-multi span {
-    width: 70px;  
-    display: inline-block;
+  width: 70px;  
+  display: inline-block;
 }
 
 /* Copy of an X-Editable style used for buttons to get rid of the blue dotted line underneath. */
 .editable-click-btn, 
 a.editable-click-btn, 
 a.editable-click-btn:hover {
-    border-bottom: none !important;
+  border-bottom: none !important;
+}
+
+.hidden {
+  display: none;
 }
