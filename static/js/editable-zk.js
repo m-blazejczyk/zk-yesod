@@ -110,20 +110,21 @@
           htmlArr.push('      <div class="modal-body">');
           htmlArr.push('        <div class="row">');
 
-          var fieldIds = new Array;
-          var fieldNames = new Array;
+          var fieldInfo = new Array;
           if (!settings.fields) {
             // No fields definition - create a simple editor
-            fieldIds.push(modalId + '-edit');
+            fieldInfo.push({id: modalId + '-edit', type: settings.type});
+
             htmlArr.push('          <div class="col-md-12">');
-            htmlArr.push('            ' + formatInput(settings.type, fieldIds[0], settings.value, settings));
+            htmlArr.push('            ' + formatInput(settings.type, fieldInfo[0].id, settings.value, settings));
             htmlArr.push('          </div>');
           } else {
             // Fields definition present - create an editor with labels
             for (var key in settings.fields) {
               var fieldId = modalId + '-' + key;
-              fieldIds.push(fieldId);
-              fieldNames.push(key);
+              var fieldType = settings.fields[key].type || settings.type;
+
+              fieldInfo.push({id: fieldId, name: key, type: fieldType});
 
               if (settings.fields[key].placeholder === undefined)
                 settings.fields[key].placeholder = '';
@@ -132,7 +133,7 @@
               htmlArr.push('            <label for="' + fieldId + '">' + settings.fields[key].label + '</label>');
               htmlArr.push('          </div>');
               htmlArr.push('          <div class="col-md-8">');
-              htmlArr.push('            ' + formatInput(settings.fields[key].type || settings.type,
+              htmlArr.push('            ' + formatInput(fieldType,
                                                         fieldId,
                                                         typeof settings.value[key] == 'string' ? settings.value[key] : settings.value,
                                                         settings.fields[key]));
@@ -166,24 +167,55 @@
           }
 
           $('#' + modalId).on('shown.bs.modal', function () {
-            $('#' + fieldIds[0]).focus();
+            $('#' + fieldInfo[0].id).focus();
           });
 
           $('#' + okBtnId).click(function (){
             // 1. Get the value
-            if (fieldIds.length > 1) {
-              var rawVal = {};
-              for (var i = fieldIds.length - 1; i >= 0; i--) {
-                rawVal[fieldNames[i]] = $('#' + fieldIds[i]).val();
+            var getRawVal = function(fieldInfo) {
+              return $('#' + fieldInfo.id).val();
+            }
+            var getTextVal = function(fieldInfo, rawVal) {
+              if (fieldInfo.type == 'select') {
+                return $('#' + fieldInfo.id).select2('data').text;
+              } else if (fieldInfo.type == 'select2') {
+                var arr = new Array;
+                var selData = $('#' + fieldInfo.id).select2('data');
+                for (var i = 0; i < selData.length; i++) {
+                  arr.push(selData[i].text);
+                };
+                return arr.join(', ');
+              } else {
+                return rawVal;
               }
-            } else {
-              var rawVal = $('#' + fieldIds[0]).val();
-              // Current value from select2: $('#' + fieldIds[0]).select2('data').text
             }
 
-            // 2. validate value
-            // 3. change element on page using display()
+            if (fieldInfo.length > 1) {
+              var rawVal = {};
+              var textVal = {};
+              for (var i = fieldInfo.length - 1; i >= 0; i--) {
+                var thisRawVal = getRawVal(fieldInfo[i]);
+                rawVal[fieldInfo[i].name] = thisRawVal;
+                textVal[fieldInfo[i].name] = getTextVal(fieldInfo[i], thisRawVal);
+              }
+            } else {
+              var thisRawVal = getRawVal(fieldInfo[0]);
+              rawVal = thisRawVal;
+              textVal = getTextVal(fieldInfo[0], thisRawVal);
+            }
 
+            // 2. translate (if required) and validate value
+            // var rawVal2 = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
+            // var valOk = typeof(settings.validate) === 'function' ? settings.validate(rawVal2) : true;
+
+            // if (varOk) {
+              // 3. send request to the server
+              // TODO
+
+              // 4. change element on page using display()
+            // }
+
+            // 5. hide the modal
             $('#' + modalId).modal('hide');
           });
         }
