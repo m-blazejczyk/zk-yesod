@@ -179,6 +179,15 @@
             }
           });
 
+          var enterHandler = function(e) {
+            if (e.which == 13) {
+              $('#' + okBtnId).click();
+            }
+          };
+          for (var i = fieldInfo.length - 1; i >= 0; i--) {
+            $('#' + fieldInfo[i].id).keypress(enterHandler);
+          };
+
           $('#' + okBtnId).click(function (){
             // 1. Get the value
             var getRawVal = function(fieldInfo) {
