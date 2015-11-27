@@ -156,17 +156,20 @@
 
           $('body').append(htmlArr.join(''));
 
+          var initHandler = function () {
+            // Initialize select2 controls.
+            for (var i = select2Fields.length - 1; i >= 0; i--) {
+              var q = '#' + select2Fields[i].id;
+              if (select2Fields[i].options !== undefined)
+                $(q).select2(select2Fields[i].options);
+              else
+                $(q).select2();
+            }
+            // Only do it the first time around.
+            $('#' + modalId).unbind('show.bs.modal', initHandler);
+          };
           if (select2Fields.length > 0) {
-            $('#' + modalId).on('show.bs.modal', function () {
-              for (var i = select2Fields.length - 1; i >= 0; i--) {
-                // Initialize the select2 control.
-                var q = '#' + select2Fields[i].id;
-                if (select2Fields[i].options !== undefined)
-                  $(q).select2(select2Fields[i].options);
-                else
-                  $(q).select2();
-              }
-            });
+            $('#' + modalId).on('show.bs.modal', initHandler);
           }
 
           $('#' + modalId).on('shown.bs.modal', function () {
