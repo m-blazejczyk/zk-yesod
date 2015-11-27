@@ -174,6 +174,9 @@
 
           $('#' + modalId).on('shown.bs.modal', function () {
             $('#' + fieldInfo[0].id).focus();
+            if (fieldInfo[0].type.indexOf('select') == 0) {
+              $('#' + fieldInfo[0].id).select2("open");
+            }
           });
 
           $('#' + okBtnId).click(function (){
