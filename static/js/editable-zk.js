@@ -180,12 +180,13 @@
           });
 
           var enterHandler = function(e) {
-            if (e.which == 13) {
+            if (e.which == 13)
               $('#' + okBtnId).click();
-            }
           };
           for (var i = fieldInfo.length - 1; i >= 0; i--) {
-            $('#' + fieldInfo[i].id).keypress(enterHandler);
+            // select2 controls automatically open on Enter
+            if (fieldInfo[i].type.indexOf('select') == -1)
+              $('#' + fieldInfo[i].id).keypress(enterHandler);
           };
 
           $('#' + okBtnId).click(function (){
