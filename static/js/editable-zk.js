@@ -4,18 +4,20 @@
 
         var field = this.attr('id') || 'dummy';
         var modalId = field + '-modal';
+        var errorId = field + '-error';
+        var target = this;
 
         if ($('#' + modalId).length == 0) {
           // Merge with options from attributes.
           var settings = $.extend({
-              type: this.attr('data-type'),
-              pk: this.attr('data-pk'),                    // primary key in the database
-              url: this.attr('data-url'),                  // url to send the POST request to
-              title: this.attr('data-title'),              // title of the popup (will default to 'id')
-              value: this.attr('data-value'),              // raw value (if single input)
-              emptytext: this.attr('data-emptytext'),      // text to display when the value is empty
-              placeholder: this.attr('data-placeholder'),  // placeholder for text values
-              rows: this.attr('data-rows')                 // number of rows for text areas
+              type: target.attr('data-type'),
+              pk: target.attr('data-pk'),                    // primary key in the database
+              url: target.attr('data-url'),                  // url to send the POST request to
+              title: target.attr('data-title'),              // title of the popup (will default to 'id')
+              value: target.attr('data-value'),              // raw value (if single input)
+              emptytext: target.attr('data-emptytext'),      // text to display when the value is empty
+              placeholder: target.attr('data-placeholder'),  // placeholder for text values
+              rows: target.attr('data-rows')                 // number of rows for text areas
           }, options);
 
           // TODO: Sanitize inputs!
@@ -73,18 +75,18 @@
           if (!settings.title)
             settings.title = field;
 
-          this.addClass('editable editable-click');
-          this.attr('data-toggle', 'modal');
-          this.attr('data-target', '#' + modalId);
+          target.addClass('editable editable-click');
+          target.attr('data-toggle', 'modal');
+          target.attr('data-target', '#' + modalId);
 
           if (typeof(settings.display) === 'function') {
-            this.html(settings.display(settings.value));
+            target.html(settings.display(settings.value));
           } else if (typeof settings.emptytext == 'string' && settings.value === '') {
-            this.html(settings.emptytext);
+            target.html(settings.emptytext);
           } else if (settings.source != undefined && settings.source.length != undefined) {
             for (var i = settings.source.length - 1; i >= 0; i--) {
               if (settings.source[i].value == settings.value)
-                this.html(settings.source[i].text);
+                target.html(settings.source[i].text);
             }
           } else if (settings.select2 != undefined) {
             var values = settings.value.split("||");
@@ -92,9 +94,9 @@
             for (var i = values.length - 1; i >= 0; i -= 2) {
               data.push(values[i]);
             };
-            this.html(data.join(', '));
+            target.html(data.join(', '));
           } else {
-            this.html(settings.value);
+            target.html(settings.value);
           }
 
           var okBtnId = field + '-ok-btn';
@@ -107,6 +109,7 @@
           htmlArr.push('        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>');
           htmlArr.push('        <h4 class="modal-title" id="' + modalId + '-label">' + settings.title + '</h4>');
           htmlArr.push('      </div>');
+          htmlArr.push('      <div id="' + errorId + '" class="alert alert-danger" role="alert" style="display: none;"></div>');
           htmlArr.push('      <div class="modal-body">');
           htmlArr.push('        <div class="row">');
 
@@ -185,6 +188,8 @@
                   arr.push(selData[i].text);
                 };
                 return arr.join(', ');
+              } else if (fieldInfo.type == 'textarea') {
+                return rawVal.replace('\n', '<br>');
               } else {
                 return rawVal;
               }
@@ -205,18 +210,28 @@
             }
 
             // 2. translate (if required) and validate value
-            // var rawVal2 = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
-            // var valOk = typeof(settings.validate) === 'function' ? settings.validate(rawVal2) : true;
+            var rawVal2 = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
+            var errorMsg = typeof(settings.validate) === 'function' ? settings.validate(rawVal2) : '';
 
-            // if (varOk) {
-              // 3. send request to the server
-              // TODO
+            if (typeof errorMsg === 'string' && errorMsg != '') {
+              // Display the error message
+              $('#' + errorId).html(errorMsg).show();
+            } else {
+              // 3. TODO: send request to the server
 
               // 4. change element on page using display()
-            // }
+              if(typeof(settings.display) === 'function') {
+                target.html(settings.display(rawVal2, textVal));
+              } else {
+                // This won't work properly if this is a multi-field editor - and that's what we want
+                // because in such cases the user should provide the display() function.
+                target.html(textVal);
+              }
 
-            // 5. hide the modal
-            $('#' + modalId).modal('hide');
+              // 5. hide the modal
+              $('#' + modalId).modal('hide');
+              $('#' + errorId).hide();
+            }
           });
         }
 
