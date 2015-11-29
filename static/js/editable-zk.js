@@ -5,6 +5,7 @@
         var field = this.attr('id') || 'dummy';
         var modalId = field + '-modal';
         var errorId = field + '-error';
+        var okBtnId = field + '-ok-btn';
         var target = this;
 
         if ($('#' + modalId).length == 0) {
@@ -76,12 +77,8 @@
             settings.title = field;
 
           target.addClass('editable editable-click');
-
-          target.click(function() {
-            $('#' + modalId).modal({
-              keyboard: false   // We need to handle Esc ourselves by calling the Cancel button's click handler
-            });
-          });
+          target.attr('data-toggle', 'modal');
+          target.attr('data-target', '#' + modalId);
 
           if (typeof(settings.display) === 'function') {
             target.html(settings.display(settings.value));
@@ -100,12 +97,8 @@
             };
             target.html(data.join(', '));
           } else {
-            console.log('Setting html to ' + settings.value);
             target.html(settings.value);
           }
-
-          var okBtnId = field + '-ok-btn';
-          var cancelBtnId = field + '-cancel-btn';
 
           var htmlArr = new Array();
           htmlArr.push('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="' + modalId + '-label" aria-hidden="true">');
@@ -153,7 +146,7 @@
           htmlArr.push('        </div>');
           htmlArr.push('      </div>');
           htmlArr.push('      <div class="modal-footer">');
-          htmlArr.push('        <button type="button" class="btn btn-xs btn-default" id="' + cancelBtnId + '">Anuluj</button>');
+          htmlArr.push('        <button type="button" class="btn btn-xs btn-default" data-dismiss="modal">Anuluj</button>');
           htmlArr.push('        <button type="button" class="btn btn-xs btn-zk" id="' + okBtnId + '">OK</button>');
           htmlArr.push('      </div>');
           htmlArr.push('    </div>');
@@ -179,21 +172,47 @@
           }
 
           $('#' + modalId).on('shown.bs.modal', function () {
+            $('#' + modalId).data('okFlag', false);
+
             $('#' + fieldInfo[0].id).focus();
+
             if (fieldInfo[0].type.indexOf('select') == 0) {
               $('#' + fieldInfo[0].id).select2("open");
             }
           });
 
-          $('#' + modalId).on('hide.bs.modal', function (e) {
-            console.log(e);
+          $('#' + modalId).on('hidden.bs.modal', function () {
+            if ($('#' + modalId).data('okFlag') === false) {
+              var setInput = function(type, id, value) {
+                if (type === 'text' || type === 'textarea') {
+                  $('#' + id).val(value);
+                } else if (type === 'select') {
+                  $('#' + id).select2('data', { value: 'Kolekcja', text: 'Kolekcja wydawnicza' });
+                  $('#' + id).val('Kolekcja');
+                } else if (type === 'select2') {
+                  $('#' + id).select2('data', [{value: '2', text: 'Lolek'}, {value: '3', text: 'Bolek'}]);
+                  $('#' + id).val('2,3');
+                }
+              };
+
+              if (!settings.fields) {
+                setInput(settings.type, fieldInfo[0].id, settings.value);
+              } else {
+                for (var i = fieldInfo.length - 1; i >= 0; i--) {
+                  var key = fieldInfo[i].name;
+                  setInput(fieldInfo[i].type,
+                           fieldInfo[i].id,
+                           typeof settings.value[key] == 'string' ? settings.value[key] : settings.value);
+                }
+              }
+            }
+
+            $('#' + modalId).data('okFlag', false);
           });
 
           var enterHandler = function(e) {
             if (e.which == 13)
               $('#' + okBtnId).click();
-            else if (e.which == 27)
-              $('#' + cancelBtnId).click();
           };
           for (var i = fieldInfo.length - 1; i >= 0; i--) {
             // select2 controls automatically open on Enter - and prevents the Esc key from being caught...
@@ -256,38 +275,10 @@
                 target.html(textVal);
               }
 
-              // 5. hide the modal; when the user opens it again, the value will still be there
+              // 5. hide the modal
+              $('#' + modalId).data('okFlag', true);
               $('#' + modalId).modal('hide');
               $('#' + errorId).hide();
-            }
-          });
-
-          $('#' + cancelBtnId).click(function (){
-            $('#' + modalId).modal('hide');
-            $('#' + errorId).hide();
-
-            var setInput = function(type, id, value, settings) {
-              if (type === 'text' || type === 'textarea') {
-                $('#' + id).val(value);
-              } else if (type === 'select') {
-                $('#' + id).select2('data', { value: 'Kolekcja', text: 'Kolekcja wydawnicza' });
-                $('#' + id).val('Kolekcja');
-              } else if (type === 'select2') {
-                $('#' + id).select2('data', [{value: '2', text: 'Lolek'}, {value: '3', text: 'Bolek'}]);
-                $('#' + id).val('2,3');
-              }
-            };
-
-            if (!settings.fields) {
-              setInput(settings.type, fieldInfo[0].id, settings.value, settings);
-            } else {
-              for (var i = fieldInfo.length - 1; i >= 0; i--) {
-                var key = fieldInfo[i].name;
-                setInput(fieldInfo[i].type,
-                         fieldInfo[i].id,
-                         typeof settings.value[key] == 'string' ? settings.value[key] : settings.value,
-                         settings.fields[key]);
-              }
             }
           });
         }
