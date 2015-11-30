@@ -25,46 +25,49 @@
 
           var select2Fields = new Array();
 
-          var formatInput = function(type, id, value, settings) {
-            return formatInputImpl(type, id, typeof(settings.toInput) === 'function' ? settings.toInput(value) : value, settings);
-          }
+          function formatInput(type, id, value, settings) {
+            function formatInputImpl(type, id, value, settings) {
+              if (type === 'text') {
 
-          var formatInputImpl = function(type, id, value, settings) {
-            if (type === 'text') {
+                var ph = settings.placeholder !== undefined ? ' placeholder="' + settings.placeholder + '"' : '';
+                return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>';
 
-              var ph = settings.placeholder !== undefined ? ' placeholder="' + settings.placeholder + '"' : '';
-              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>';
+              } else if (type === 'select') {
 
-            } else if (type === 'select') {
+                select2Fields.push({id: id});
 
-              select2Fields.push({id: id});
+                var htmlArr = new Array();
+                htmlArr.push('<select class="form-control" id="' + id + '" style="width: 100%">');
+                for (var i = 0; i < settings.source.length; i++) {
+                  var selected = (settings.source[i].value == value ? ' selected' : '');
+                  htmlArr.push('<option value="' + settings.source[i].value + '"' + selected + '>' + settings.source[i].text + '</option>');
+                };
+                htmlArr.push('</select>');
 
-              var htmlArr = new Array();
-              htmlArr.push('<select class="form-control" id="' + id + '" style="width: 100%">');
-              for (var i = 0; i < settings.source.length; i++) {
-                var selected = (settings.source[i].value == value ? ' selected' : '');
-                htmlArr.push('<option value="' + settings.source[i].value + '"' + selected + '>' + settings.source[i].text + '</option>');
-              };
-              htmlArr.push('</select>');
+                return htmlArr.join('');
 
-              return htmlArr.join('');
+              } else if (type === 'select2') {
 
-            } else if (type === 'select2') {
+                select2Fields.push({id: id, options: settings.select2});
 
-              select2Fields.push({id: id, options: settings.select2});
+                return '<input type="text" class="form-control" id="' + id + '" value="' + value + '">';
 
-              return '<input type="text" class="form-control" id="' + id + '" value="' + value + '">';
+              } else if (type === 'textarea') {
 
-            } else if (type === 'textarea') {
+                var rows = settings.rows !== undefined ? ' rows="' + settings.rows + '"' : '';
+                return '<textarea class="form-control" id="' + id + '"' + rows + '>' + value + '</textarea>';
 
-              var rows = settings.rows !== undefined ? ' rows="' + settings.rows + '"' : '';
-              return '<textarea class="form-control" id="' + id + '"' + rows + '>' + value + '</textarea>';
+              } else {
 
-            } else {
+                return '';
 
-              return '';
-
+              }
             }
+
+            return formatInputImpl(type,
+                                   id,
+                                   typeof(settings.toInput) === 'function' ? settings.toInput(value) : value,
+                                   settings);
           }
 
           // This function returns an array of data values grabbed from edit fields.
@@ -87,7 +90,7 @@
           }
 
           // This function uses data values previously grabbed from edit fields to reset the latter.
-          var pushData = function(data) {
+          function pushData(data) {
             function setInput(type, id, value) {
               if (type === 'text' || type === 'textarea') {
                 $('#' + id).val(value);
@@ -183,7 +186,7 @@
 
           $('body').append(htmlArr.join(''));
 
-          var initHandler = function () {
+          function initHandler() {
             // Initialize select2 controls if there are any.
             if (select2Fields.length > 0) {
               for (var i = select2Fields.length - 1; i >= 0; i--) {
@@ -225,7 +228,7 @@
             $('#' + modalId).data('okFlag', false);
           });
 
-          var enterHandler = function(e) {
+          function enterHandler(e) {
             if (e.which == 13)
               $('#' + okBtnId).click();
           };
@@ -237,10 +240,10 @@
 
           $('#' + okBtnId).click(function (){
             // 1. Get the value
-            var getRawVal = function(fieldInfo) {
+            function getRawVal(fieldInfo) {
               return $('#' + fieldInfo.id).val();
             }
-            var getTextVal = function(fieldInfo, rawVal) {
+            function getTextVal(fieldInfo, rawVal) {
               if (fieldInfo.type == 'select') {
                 return $('#' + fieldInfo.id).select2('data').text;
               } else if (fieldInfo.type == 'select2') {
