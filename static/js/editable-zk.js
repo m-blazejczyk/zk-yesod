@@ -32,10 +32,7 @@
           var formatInputImpl = function(type, id, value, settings) {
             if (type === 'text') {
 
-              if (settings.placeholder !== undefined)
-                var ph = ' placeholder="' + settings.placeholder + '"';
-              else
-                var ph = '';
+              var ph = settings.placeholder !== undefined ? ' placeholder="' + settings.placeholder + '"' : '';
               return '<input type="text" class="form-control" id="' + id + '" value="' + value + '"' + ph + '>';
 
             } else if (type === 'select') {
@@ -60,11 +57,8 @@
 
             } else if (type === 'textarea') {
 
-              if (settings.rows !== undefined)
-                var rows = ' rows="' + settings.rows + '"';
-              else
-                var rows = '';
-               return '<textarea class="form-control" id="' + id + '"' + rows + '>' + value + '</textarea>';
+              var rows = settings.rows !== undefined ? ' rows="' + settings.rows + '"' : '';
+              return '<textarea class="form-control" id="' + id + '"' + rows + '>' + value + '</textarea>';
 
             } else {
 
