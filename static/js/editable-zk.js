@@ -245,8 +245,9 @@
               $('#' + okBtnId).click();
           };
           for (var i = fieldInfo.length - 1; i >= 0; i--) {
-            // select2 controls automatically open on Enter - and prevents the Esc key from being caught...
-            if (fieldInfo[i].type.indexOf('select') == -1)
+            // select2 controls automatically open on Enter so there is no point in setting the handler.
+            // And we don't want this handler for multiline editors.
+            if (fieldInfo[i].type == 'text')
               $('#' + fieldInfo[i].id).keyup(enterHandler);
           };
 
@@ -266,7 +267,7 @@
                 };
                 return arr.join(', ');
               } else if (fieldInfo.type == 'textarea') {
-                return rawVal.replace('\n', '<br>');
+                return rawVal.replace(/\n/g, '<br>');
               } else {
                 return rawVal;
               }
