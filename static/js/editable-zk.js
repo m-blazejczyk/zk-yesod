@@ -48,7 +48,19 @@
 
               } else if (type === 'select2') {
 
-                select2Fields.push({id: id, options: settings.select2});
+                var sel2Opts = settings.select2;
+
+                sel2Opts.initSelection = function(element, callback) {
+                  var values = element.val().split("||");
+                  var data = new Array;
+                  for (var i = values.length - 1; i >= 0; i -= 2) {
+                    data.push({id: values[i-1], text: values[i]});
+                  };
+                  element.val('');
+                  callback (data);
+                };
+
+                select2Fields.push({ id: id, options: sel2Opts });
 
                 return '<input type="text" class="form-control" id="' + id + '" value="' + value + '">';
 
