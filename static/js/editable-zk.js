@@ -67,6 +67,40 @@
             }
           }
 
+          // This function returns an array of data values grabbed from edit fields.
+          function grabData() {
+            function getInput(type, id) {
+              if (type === 'text' || type === 'textarea') {
+                return $('#' + id).val();
+              } else if (type === 'select2' || type === 'select') {
+                return $('#' + id).select2('data');
+              }
+            };
+
+            var data = [];
+            for (var i = fieldInfo.length - 1; i >= 0; i--) {
+              data.push({ id: fieldInfo[i].id,
+                          type: fieldInfo[i].type,
+                          value: getInput(fieldInfo[i].type, fieldInfo[i].id) });
+            }
+            return data;
+          }
+
+          // This function uses data values previously grabbed from edit fields to reset the latter.
+          var pushData = function(data) {
+            function setInput(type, id, value) {
+              if (type === 'text' || type === 'textarea') {
+                $('#' + id).val(value);
+              } else if (type === 'select' || type === 'select2') {
+                $('#' + id).select2('data', value);
+              }
+            };
+
+            for (var i = data.length - 1; i >= 0; i--) {
+              setInput(data[i].type, data[i].id, data[i].value);
+            }
+          }
+
           if (!settings.title)
             settings.title = field;
 
@@ -149,9 +183,9 @@
 
           $('body').append(htmlArr.join(''));
 
-          if (select2Fields.length > 0) {
-            var initHandler = function () {
-              // Initialize select2 controls.
+          var initHandler = function () {
+            // Initialize select2 controls if there are any.
+            if (select2Fields.length > 0) {
               for (var i = select2Fields.length - 1; i >= 0; i--) {
                 var q = '#' + select2Fields[i].id;
                 if (select2Fields[i].options !== undefined)
@@ -159,17 +193,24 @@
                 else
                   $(q).select2();
               }
-              // Only do it the first time around.
-              $('#' + modalId).unbind('show.bs.modal', initHandler);
-            };
-            $('#' + modalId).on('show.bs.modal', initHandler);
-          }
+            }
+
+            // Grab initial data - it's easier to do it here where we can reuse code.
+            $('#' + modalId).data('data', grabData());
+
+            // Only call this handler the first time around.
+            $('#' + modalId).unbind('show.bs.modal', initHandler);
+          };
+          $('#' + modalId).on('show.bs.modal', initHandler);
 
           $('#' + modalId).on('shown.bs.modal', function () {
+            // Reset the OK flag that is used to know if the popup was canceled or not.
             $('#' + modalId).data('okFlag', false);
 
+            // Focus the first field.
             $('#' + fieldInfo[0].id).focus();
 
+            // Open the select2 field if it is focused.
             if (fieldInfo[0].type.indexOf('select') == 0) {
               $('#' + fieldInfo[0].id).select2("open");
             }
@@ -177,28 +218,8 @@
 
           $('#' + modalId).on('hidden.bs.modal', function () {
             if ($('#' + modalId).data('okFlag') === false) {
-              var setInput = function(type, id, value) {
-                if (type === 'text' || type === 'textarea') {
-                  $('#' + id).val(value);
-                } else if (type === 'select') {
-                  $('#' + id).select2('data', { value: 'Kolekcja', text: 'Kolekcja wydawnicza' });
-                  $('#' + id).val('Kolekcja');
-                } else if (type === 'select2') {
-                  $('#' + id).select2('data', [{value: '2', text: 'Lolek'}, {value: '3', text: 'Bolek'}]);
-                  $('#' + id).val('2,3');
-                }
-              };
-
-              if (!settings.fields) {
-                setInput(settings.type, fieldInfo[0].id, settings.value);
-              } else {
-                for (var i = fieldInfo.length - 1; i >= 0; i--) {
-                  var key = fieldInfo[i].name;
-                  setInput(fieldInfo[i].type,
-                           fieldInfo[i].id,
-                           typeof settings.value[key] == 'string' ? settings.value[key] : settings.value);
-                }
-              }
+              // Popup was canceled - push saved data back into the controls.
+              pushData($('#' + modalId).data('data'));
             }
 
             $('#' + modalId).data('okFlag', false);
@@ -273,6 +294,9 @@
               $('#' + modalId).data('okFlag', true);
               $('#' + modalId).modal('hide');
               $('#' + errorId).hide();
+
+              // 6. Reset the initialization data we're keeping around.
+              $('#' + modalId).data('data', grabData());
             }
           });
         }
