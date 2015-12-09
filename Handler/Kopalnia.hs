@@ -87,6 +87,8 @@ getKopalniaItemCommon isEdit lookupId = do
     dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
                        , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))
     let prefix = if isEdit then "Edycja fiszki" else "Fiszka"
+    -- Putting this code in the template does not compile
+    let wydText = maybe "" (T.pack . show . wydawcaLookupId) mWydawca
     defaultLayout $ do
         setTitle $ prefix ++ " publikacji - " ++ defaultTitle
         $(widgetFile "kopalnia-item")
@@ -463,14 +465,7 @@ getAutorW isEdit lookupId autorzy field style label popupLabel = toWidget [hamle
       <p>
         <span class="inobtrusive">#{label}
         <span style="#{style}">
-          <span id="#{lookupEditParam field fields}" data-type="select2" data-value="2,3" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
-            $if length autorzy > 0
-              $forall autor <- autorzy
-                $maybe imiona <- autorImiona autor
-                  #{imiona} #
-                #{autorNazwisko autor}, #
-            $else
-              [brak]
+          <span id="#{lookupEditParam field fields}" data-type="select2" data-value="1||Tomasz Marciniak||4||Piotr Marczewski" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
     $else
       $if length autorzy > 0
         <p>

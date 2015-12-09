@@ -5,15 +5,13 @@
 
   <h2 id="title">
     $if isEdit
-      <span id="#{lookupEditParam FldTytul fields}" data-type="text" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Tytuł publikacji">
-        #{kopalniaTytul kopalnia}
+      <span id="#{lookupEditParam FldTytul fields}" data-type="text" data-value="#{kopalniaTytul kopalnia}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Tytuł publikacji">
     $else
       #{kopalniaTytul kopalnia}
     <br>
     <small>
       $if isEdit
-        <span class="inobtrusive" id="#{lookupEditParam FldRodzaj fields}" data-type="select" data-value=#{show $ kopalniaRodzaj kopalnia} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Rodzaj publikacji">
-          #{showRodzaj $ kopalniaRodzaj kopalnia}#
+        <span class="inobtrusive" id="#{lookupEditParam FldRodzaj fields}" data-type="select" data-value=#{show $ kopalniaRodzaj kopalnia} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Rodzaj publikacji">#
         \;
         <span id="#{lookupEditParam FldLinkGlowny fields}" data-type="text" data-value=#{maybe "" id (kopalniaUrl kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Link do zawartości">
       $else
@@ -39,12 +37,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Wydawca:
-        $maybe wydawca <- mWydawca
-          <b id="#{lookupEditParam FldWydawca fields}" data-type="select2" data-value=#{wydawcaLookupId wydawca} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawca">
-            #{wydawcaNazwa wydawca}
-        $nothing
-          <b id="#{lookupEditParam FldWydawca fields}" data-type="select2" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawca">
-            [brak]
+        <b id="#{lookupEditParam FldWydawca fields}" data-type="select" data-value=#{wydText} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawca">
         <a class="btn btn-default btn-xs">
           <span class="glyphicon glyphicon-plus-sign editable-click-btn" id="#{lookupEditParam FldAddWydawca fields}" data-type="addWydawce" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Nowy wydawca" aria-hidden="true">
       <p>
@@ -55,7 +48,7 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Data publikacji:
-        <span id="#{lookupEditParam FldDataWydania fields}" data-type="yearmonth" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Data publikacji">
+        <span id="#{lookupEditParam FldDataWydania fields}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Data publikacji">
     $else
       $maybe rok <- kopalniaPubRok kopalnia
         <p>

@@ -123,25 +123,28 @@
           target.attr('data-toggle', 'modal');
           target.attr('data-target', '#' + modalId);
 
-          if (typeof(settings.display) === 'function') {
-            target.html(settings.display(settings.value));
-          } else if (typeof settings.emptytext == 'string' && settings.value === '') {
-            target.html(settings.emptytext);
-          } else if (settings.source != undefined && settings.source.length != undefined) {
-            for (var i = settings.source.length - 1; i >= 0; i--) {
-              if (settings.source[i].value == settings.value)
-                target.html(settings.source[i].text);
-            }
-          } else if (settings.select2 != undefined) {
+          var htmlText = settings.value;
+
+          if (settings.select2 != undefined) {
             var values = settings.value.split("||");
             var data = new Array;
             for (var i = values.length - 1; i >= 0; i -= 2) {
               data.push(values[i]);
-            };
-            target.html(data.join(', '));
-          } else {
-            target.html(settings.value);
+            }
+            htmlText = data.join(', ');
+          } else if (typeof settings.emptytext == 'string' && settings.value === '') {
+            htmlText = settings.emptytext;
+          } else if (settings.source != undefined && settings.source.length != undefined) {
+            for (var i = settings.source.length - 1; i >= 0; i--) {
+              if (settings.source[i].value == settings.value)
+                htmlText = settings.source[i].text;
+            }
           }
+
+          if (typeof(settings.display) === 'function')
+            htmlText = settings.display(htmlText);
+
+          target.html(htmlText);
 
           var htmlArr = new Array();
           htmlArr.push('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="' + modalId + '-label" aria-hidden="true">');
