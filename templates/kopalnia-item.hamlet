@@ -24,15 +24,15 @@
 
   <div class="kopalnia-top-div">
 
-    ^{getAutorW isEdit lookupId autorzy FldAutor "font-weight: bold;" "" "Autorzy"}
+    ^{getAutorW isEdit lookupId autorzy (lookupEditParam FldAutor fields) "font-weight: bold;" "" "Autorzy"}
 
-    ^{getAutorW isEdit lookupId tlumacze FldTlumacz "" "Tłumaczenie:" "Tłumacze"}
+    ^{getAutorW isEdit lookupId tlumacze (lookupEditParam FldTlumacz fields) "" "Tłumaczenie:" "Tłumacze"}
 
-    ^{getAutorW isEdit lookupId wywiadowcy FldWywiad "" "Pytania zadawane przez:" "Osoby zadające pytania"}
+    ^{getAutorW isEdit lookupId wywiadowcy (lookupEditParam FldWywiad fields) "" "Pytania zadawane przez:" "Osoby zadające pytania"}
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
-    ^{getAutorW isEdit lookupId redaktorzy FldRedaktor "" "Redakcja:" "Redaktorzy"}
+    ^{getAutorW isEdit lookupId redaktorzy (lookupEditParam FldRedaktor fields) "" "Redakcja:" "Redaktorzy"}
 
     $if isEdit
       <p>

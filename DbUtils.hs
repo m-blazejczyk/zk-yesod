@@ -4,7 +4,8 @@ module DbUtils (
     getMaybe,
     getListM,
     prefixRegex,
-    wydawcyToJson
+    wydawcyToJson,
+    autorzyToFieldValue
     ) where
 
 import Import
@@ -45,3 +46,6 @@ wydawcyToJson = do
     wydawcyDb <- runDB $ selectList [] [Asc WydawcaNazwa]  -- returns [(Key val, val)]
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
     return $ encode $ tuplesToRawJson "source" "value" "text" wydawcy
+
+autorzyToFieldValue :: [Autor] -> T.Text
+autorzyToFieldValue _ = ""

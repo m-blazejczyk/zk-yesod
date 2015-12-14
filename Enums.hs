@@ -110,3 +110,24 @@ rodzajeToJson = enumToJson [Pismo ..] showRodzaj
 
 jezykiToJson :: ByteString
 jezykiToJson = enumToJson [JezykPL ..] showJezyk
+
+data KopalniaField = 
+     FldTytul
+   | FldRodzaj
+   | FldLinkGlowny
+   | FldAutor
+   | FldTlumacz
+   | FldRedaktor
+   | FldWywiad
+   | FldRodzic
+   | FldWydawca
+   | FldAddWydawca
+   | FldDataWydania
+   | FldIsbn
+   | FldStrony
+   | FldObjetosc
+   | FldJezyk
+   | FldOpis
+   | FldHasla
+   | FldSlowaKlucz
+   deriving (Eq)
