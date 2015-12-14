@@ -543,6 +543,10 @@ p.inobtrusive {
   margin-bottom: 6px;
 }
 
+.hidden {
+  display: none;
+}
+
 /* ------------ X-EDITABLE ------------ */
 
 .editable-multi {
@@ -562,6 +566,87 @@ a.editable-click-btn:hover {
   border-bottom: none !important;
 }
 
-.hidden {
-  display: none;
+.editable-click, 
+a.editable-click, 
+a.editable-click:hover {
+    text-decoration: none;
+    border-bottom: dashed 1px #0088cc;
+}
+
+.editable-empty,
+.editable-empty:hover,
+.editable-empty:focus{
+  font-style: italic; 
+  color: #DD1144;  
+  text-decoration: none;
+}
+
+/* ------------ BOOTSTRAP-LIKE BUTTON ------------ */
+
+.btn-zk { 
+  color: #d63f2b; 
+  background-color: #FFFFFF; 
+  border-color: #d63f2b;
+  font: 12px Verdana, sans-serif;
+  text-decoration: none;
+} 
+ 
+.btn-zk:hover, 
+.btn-zk:focus, 
+.btn-zk:active, 
+.btn-zk.active, 
+.open .dropdown-toggle.btn-zk { 
+  color: #d63f2b; 
+  background-color: #F7D9D5; 
+  border-color: #d63f2b; 
+  text-decoration: none;
+} 
+ 
+.btn-zk:active, 
+.btn-zk.active, 
+.open .dropdown-toggle.btn-zk { 
+  background-image: none; 
+} 
+ 
+.btn-zk.disabled, 
+.btn-zk[disabled], 
+fieldset[disabled] .btn-zk, 
+.btn-zk.disabled:hover, 
+.btn-zk[disabled]:hover, 
+fieldset[disabled] .btn-zk:hover, 
+.btn-zk.disabled:focus, 
+.btn-zk[disabled]:focus, 
+fieldset[disabled] .btn-zk:focus, 
+.btn-zk.disabled:active, 
+.btn-zk[disabled]:active, 
+fieldset[disabled] .btn-zk:active, 
+.btn-zk.disabled.active, 
+.btn-zk[disabled].active, 
+fieldset[disabled] .btn-zk.active { 
+  background-color: #FFFFFF; 
+  border-color: #d63f2b; 
+} 
+ 
+.btn-zk .badge { 
+  color: #FFFFFF; 
+  background-color: #d63f2b; 
+}
+
+.alert-on-top {
+  position:fixed;
+  width:500px;
+  margin:auto auto auto -150px;
+  top:20px;
+  left:50%;
+  z-index: 100001;
+}
+
+/* Make modal dialogs appear below the ZK logo - adjust a Bootstrap CSS class. */
+.modal-dialog {
+  margin-top: 150px;
+}
+
+/* Overwrite Bootstrap to make the small modal dialog wider */
+.modal-sm {
+  width: 500px;
 }

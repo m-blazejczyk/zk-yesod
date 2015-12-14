@@ -132,13 +132,15 @@
               data.push(values[i]);
             }
             htmlText = data.join(', ');
-          } else if (typeof settings.emptytext == 'string' && settings.value === '') {
-            htmlText = settings.emptytext;
           } else if (settings.source != undefined && settings.source.length != undefined) {
             for (var i = settings.source.length - 1; i >= 0; i--) {
               if (settings.source[i].value == settings.value)
                 htmlText = settings.source[i].text;
             }
+          }
+
+          if (typeof settings.emptytext == 'string' && settings.value === '') {
+            htmlText = settings.emptytext;
           }
 
           if (typeof(settings.display) === 'function')
