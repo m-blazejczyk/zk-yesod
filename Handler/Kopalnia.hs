@@ -98,15 +98,11 @@ getKopalniaItemCommon isEdit lookupId = do
 -- It walks both input lists in parallel and retains only Autor records that are not Nothing
 -- and whose corresponding KopalniaAutor have the 'typ' field equal to the first argument.
 keepOnly :: TypAutora -> [Entity KopalniaAutor] -> [Maybe Autor] -> [Autor]
-keepOnly typ' kas' auts' = keepOnly' typ' kas' auts' []
-    where
-        -- First make sure that missing authors are skipped.
-        keepOnly' typ (_:kas) (Nothing:auts) output = keepOnly' typ kas auts output
-        -- Then look inside the KopalniaAutor record to see if the types match or not.
-        keepOnly' typ ((Entity _ ka):kas) ((Just aut):auts) output
-            | typ == kopalniaAutorTyp ka = keepOnly' typ kas auts (aut:output)
-            | otherwise = keepOnly' typ kas auts output
-        keepOnly' _ _ _ output = output
+keepOnly typ kas auts = (catMaybes . map snd . filter flt . zip kas) auts
+    where flt (_, Nothing) = False
+          flt ((Entity _ ka), _)
+              | typ == kopalniaAutorTyp ka = True
+              | otherwise = False
 
 postKopalniaItemUpdateR :: Handler Text
 postKopalniaItemUpdateR = do
