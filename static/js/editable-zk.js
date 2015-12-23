@@ -126,20 +126,22 @@
           var htmlText = settings.value;
 
           if (settings.select2 != undefined) {
+            console.log('Found values: ' + settings.value);
             var values = settings.value.split("||");
             var data = new Array;
             for (var i = values.length - 1; i >= 0; i -= 2) {
               data.push(values[i]);
             }
             htmlText = data.join(', ');
-          } else if (typeof settings.emptytext == 'string' && settings.value === '') {
-            htmlText = settings.emptytext;
           } else if (settings.source != undefined && settings.source.length != undefined) {
             for (var i = settings.source.length - 1; i >= 0; i--) {
               if (settings.source[i].value == settings.value)
                 htmlText = settings.source[i].text;
             }
           }
+
+          if (typeof settings.emptytext == 'string' && htmlText === '')
+            htmlText = settings.emptytext;
 
           if (typeof(settings.display) === 'function')
             htmlText = settings.display(htmlText);

@@ -18,7 +18,7 @@ import Import
 import Language.Haskell.TH.Syntax           (qLocation)
 import Network.Wai.Handler.Warp             (Settings, defaultSettings,
                                              defaultShouldDisplayException,
-                                             runSettings, setHost,
+                                             runSettings, setHost, setFdCacheDuration,
                                              setOnException, setPort, getPort)
 import Network.Wai.Middleware.RequestLogger (Destination (Logger),
                                              IPAddrSource (..),
@@ -83,6 +83,7 @@ warpSettings :: App -> Settings
 warpSettings foundation =
       setPort (appPort $ appSettings foundation)
     $ setHost (appHost $ appSettings foundation)
+    $ setFdCacheDuration 0
     $ setOnException (\_req e ->
         when (defaultShouldDisplayException e) $ messageLoggerSource
             foundation
