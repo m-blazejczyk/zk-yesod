@@ -1,13 +1,15 @@
 if(#{isEdit}) {
   $(document).ready(function() {
 
-    $('#tytul').editableZK();
+    $('#' + '#{rawJS $ lookupEditParam FldTytul fields}').editableZK();
 
-    $('#rodzaj').editableZK(#{rawJS $ decodeUtf8 rodzajeToJson});
+    $('#' + '#{rawJS $ lookupEditParam FldRodzaj fields}').editableZK(
+      #{rawJS $ decodeUtf8 rodzajeToJson});
 
-    $('#jezyk').editableZK(#{rawJS $ decodeUtf8 jezykiToJson});
+    $('#' + '#{rawJS $ lookupEditParam FldJezyk fields}').editableZK(
+      #{rawJS $ decodeUtf8 jezykiToJson});
 
-    $('#url').editableZK({
+    $('#' + '#{rawJS $ lookupEditParam FldLinkGlowny fields}').editableZK({
       name: 'url',
       label: "Etykietka",
       placeholder: "Wpisz coś",
@@ -19,7 +21,7 @@ if(#{isEdit}) {
       }
     });
 
-    $('#datapub').editableZK({
+    $('#' + '#{rawJS $ lookupEditParam FldDataWydania fields}').editableZK({
       fields: {
         year: {
           type: 'text',
@@ -80,13 +82,17 @@ if(#{isEdit}) {
       }
     });
 
-    $('#isbn').editableZK({ emptytext: '[brak]' });
+    $('#' + '#{rawJS $ lookupEditParam FldIsbn fields}').editableZK(
+      { emptytext: '[brak]' });
 
-    $('#objetosc').editableZK({ emptytext: '[brak]', placeholder: 'np. 12 stron' });
+    $('#' + '#{rawJS $ lookupEditParam FldObjetosc fields}').editableZK(
+      { emptytext: '[brak]', placeholder: 'np. 12 stron' });
 
-    $('#strony').editableZK({ emptytext: '[brak]', placeholder: 'np. 18-22' });
+    $('#' + '#{rawJS $ lookupEditParam FldStrony fields}').editableZK(
+      { emptytext: '[brak]', placeholder: 'np. 18-22' });
 
-    $('#opis').editableZK({ emptytext: '[brak]', rows: 5 });
+    $('#' + '#{rawJS $ lookupEditParam FldOpis fields}').editableZK(
+      { emptytext: '[brak]', rows: 5 });
 
     var wydawca = #{rawJS $ decodeUtf8 wydawcyJson};
     wydawca.emptytext = '[brak]';
