@@ -48,4 +48,7 @@ wydawcyToJson = do
     return $ encode $ tuplesToRawJson "source" "value" "text" wydawcy
 
 autorzyToFieldValue :: [Autor] -> T.Text
-autorzyToFieldValue _ = ""
+autorzyToFieldValue auts = T.intercalate "||" (map processAutor auts)
+    where processAutor aut = T.intercalate "||" [lookupId', name']
+              where lookupId' = (T.pack . show) $ autorLookupId aut
+                    name' = T.intercalate " " (catMaybes [autorImiona aut, Just (autorNazwisko aut)])

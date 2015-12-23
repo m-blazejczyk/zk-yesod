@@ -7,6 +7,7 @@ module Handler.KopalniaWidgets (
 
 import Import
 import Enums (showRodzaj)
+import DbUtils (autorzyToFieldValue)
 
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.
@@ -155,7 +156,7 @@ getAutorW isEdit lookupId autorzy param style label popupLabel = toWidget [hamle
       <p>
         <span class="inobtrusive">#{label}
         <span style="#{style}">
-          <span id="#{param}" data-type="select2" data-value="1||Tomasz Marciniak||4||Piotr Marczewski" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
+          <span id="#{param}" data-type="select2" data-value="#{autorzyToFieldValue autorzy}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="#{popupLabel}">
     $else
       $if length autorzy > 0
         <p>
