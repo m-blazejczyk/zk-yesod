@@ -88,7 +88,9 @@ if(#{isEdit}) {
 
     $('#opis').editableZK({ emptytext: '[brak]', rows: 5 });
 
-    $('#wydawca').editable(#{rawJS $ decodeUtf8 wydawcyJson});
+    var wydawca = #{rawJS $ decodeUtf8 wydawcyJson};
+    wydawca.emptytext = '[brak]';
+    $('#' + '#{rawJS $ lookupEditParam FldWydawca fields}').editableZK(wydawca);
 
     var initAuthors = function(id, placeholder) {
       $('#' + id).editableZK({
