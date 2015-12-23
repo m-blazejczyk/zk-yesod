@@ -120,7 +120,7 @@ data KopalniaField =
    | FldRedaktor
    | FldWywiad
    | FldRodzic
-   | FldWydawca
+   | FldWydawcy
    | FldAddWydawca
    | FldDataWydania
    | FldIsbn

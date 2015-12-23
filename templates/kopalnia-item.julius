@@ -94,9 +94,9 @@ if(#{isEdit}) {
     $('#' + '#{rawJS $ lookupEditParam FldOpis fields}').editableZK(
       { emptytext: '[brak]', rows: 5 });
 
-    var wydawca = #{rawJS $ decodeUtf8 wydawcyJson};
-    wydawca.emptytext = '[brak]';
-    $('#' + '#{rawJS $ lookupEditParam FldWydawca fields}').editableZK(wydawca);
+    //var wydawca = #{rawJS $ decodeUtf8 wydawcyJson};
+    //wydawca.emptytext = '[brak]';
+    //$('#' + '#{rawJS $ lookupEditParam FldWydawcy fields}').editableZK(wydawca);
 
     var initAuthors = function(id, placeholder) {
       $('#' + id).editableZK({

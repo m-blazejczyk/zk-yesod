@@ -38,21 +38,25 @@ getKopalniaInitR = do
     klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
     haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
     haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
-    wydawca <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
+    wydawca1 <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
+    wydawca2 <- runDB $ insert $ Wydawca 2 "Biblioteka Uniwersytecka" Nothing
     link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
     link2 <- runDB $ insert $ KopalniaLink "http://www.google.com" (Just "Google") Nothing
     link3 <- runDB $ insert $ KopalniaLink "http://www.pgx.ca" Nothing (Just "Strona PGx")
-    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Nothing Artykul Nothing JezykPL [] [] [] now now
-    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just wydawca) (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1] now now
-    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just wydawca) (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3] now now
+    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Artykul Nothing JezykPL [] [] [] now now
+    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1] now now
+    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3] now now
     _ <- runDB $ insert $ KopalniaAutor autor1 item1 AutorAut
     _ <- runDB $ insert $ KopalniaAutor autor2 item2 AutorRed
     _ <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
     _ <- runDB $ insert $ KopalniaAutor autor4 item3 AutorWyw
+    _ <- runDB $ insert $ KopalniaWyd wydawca2 item1
+    _ <- runDB $ insert $ KopalniaWyd wydawca1 item3
+    _ <- runDB $ insert $ KopalniaWyd wydawca2 item3
     _ <- runDB $ insert $ IntProp "kopalnia" 4
     _ <- runDB $ insert $ IntProp "nkPub" 2
     _ <- runDB $ insert $ IntProp "autor" 5
-    _ <- runDB $ insert $ IntProp "wydawca" 2
+    _ <- runDB $ insert $ IntProp "wydawca" 3
     sendResponseStatus status200 ("Baza danych została zainicjalizowana." :: Text)
 
 getKopalniaItemR :: Int64 -> Handler Html
@@ -71,7 +75,6 @@ getKopalniaItemCommon isEdit lookupId = do
     mDzial <- case mRodzic of
         Just _ -> getMaybe $ kopalniaDzialId kopalnia
         Nothing -> return Nothing
-    mWydawca <- getMaybe $ kopalniaWydawcaId kopalnia
     slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
     haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
     linki <- getListM $ kopalniaLinki kopalnia
@@ -88,8 +91,6 @@ getKopalniaItemCommon isEdit lookupId = do
     dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
                        , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))
     let prefix = if isEdit then "Edycja fiszki" else "Fiszka"
-    -- Putting this code in the template does not compile
-    let wydText = maybe "" (T.pack . show . wydawcaLookupId) mWydawca
     defaultLayout $ do
         setTitle $ prefix ++ " publikacji - " ++ defaultTitle
         $(widgetFile "kopalnia-item")

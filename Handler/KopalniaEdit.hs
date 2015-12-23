@@ -18,7 +18,7 @@ fields = [(FldTytul,       ("tytul",      editTytulR)),
           (FldRedaktor,    ("redaktorzy", editRedaktorR)),
           (FldWywiad,      ("wywiadowcy", editWywiadR)),
           (FldRodzic,      ("rodzic",     editRodzicR)),
-          (FldWydawca,     ("wydawca",    editWydawcaR)),
+          (FldWydawcy,     ("wydawcy",    editWydawcyR)),
           (FldAddWydawca,  ("addWydawce", editAddWydawcaR)),
           (FldDataWydania, ("dataWyd",    editDataWydaniaR)),
           (FldIsbn,        ("isbn",       editIsbnR)),
@@ -92,18 +92,8 @@ editAutorGenericR typAutora params = processXEditable params (valdArr vald) upd 
 editRodzicR :: EditHandler
 editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
-editWydawcaR :: EditHandler
-editWydawcaR params = processXEditable1 params vald upd where
-    vald v | T.length v == 0 = return $ Success Nothing
-           | otherwise = parseId v
-    parseId v = case (maybeRead $ Just v) of
-        Just iden -> do
-            mWyd <- runDB $ getBy $ UniqueWydawca iden
-            processWyd mWyd
-        Nothing -> return $ Error $ systemError "Identyfikator wydawcy nie jest liczbą"
-    processWyd (Just (Entity wydId _)) = return $ Success $ Just wydId
-    processWyd Nothing = return $ Error $ systemError "Niezdefiniowany identyfikator wydawcy"
-    upd value = [KopalniaWydawcaId =. value]
+editWydawcyR :: EditHandler
+editWydawcyR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 -- TODO: Add the new publisher to the drop-down in the XEditable on the page.
 editAddWydawcaR :: EditHandler
@@ -121,11 +111,11 @@ editAddWydawcaR params = processXEditable params (valdMap ["nazwa", "url"] vald)
     upd lookupId (Just (nazwa, url)) = do
         mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
         case mNast of
-            Just (Entity _ nast) -> do
-                wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
-                runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
-                runDB $ updateWhere [KopalniaLookupId ==. lookupId] [KopalniaWydawcaId =. (Just wydawca)]
-                return $ Success "OK"
+            Just (Entity _ nast) -> return $ Error $ systemError "Not implemented..." -- do
+                -- wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
+                -- runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
+                -- runDB $ updateWhere [KopalniaLookupId ==. lookupId] [KopalniaWydawcaId =. (Just wydawca)]
+                -- return $ Success "OK"
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
 editDataWydaniaR :: EditHandler
