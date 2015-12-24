@@ -43,7 +43,8 @@
       <p>
         <span class="inobtrusive">Miejsce wydania:
     $else
-      getWydawcaW mWydawca (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)
+      <p>
+        ^{getWydawcaW mWydawcy (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
 
     $if isEdit
       <p>

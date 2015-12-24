@@ -87,6 +87,11 @@ getKopalniaItemCommon isEdit lookupId = do
     redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
     tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
     wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
+    -- This call return a List of [Entity KopalniaWyd]
+    kopWydawcy <- runDB $ selectList [KopalniaWydKopalniaId ==. kopalniaId] []
+    -- This call returns a List of Maybe Wydawca
+    mWydawcy' <- mapM (\(Entity _ kopWyd) -> runDB $ get $ kopalniaWydWydawcaId kopWyd) kopWydawcy
+    mWydawcy <- return $ catMaybes mWydawcy'
     wydawcyJson <- wydawcyToJson
     dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
                        , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))

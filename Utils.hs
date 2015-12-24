@@ -54,6 +54,12 @@ maybeRead :: Maybe T.Text -> Maybe Int64
 maybeRead (Just txt) = (fmap fst . listToMaybe . reads . T.unpack) txt
 maybeRead _ = Nothing
 
+-- Empty text gets converted to Nothing; non-empty one to Just Text.
+textToMaybe :: T.Text -> Maybe T.Text
+textToMaybe txt
+    | T.length txt > 0 = Just txt
+    | otherwise = Nothing
+
 -- Access to elements of a 3-element tuple.
 fst3 :: (a, b, c) -> a
 fst3 (val, _, _) = val

@@ -83,54 +83,50 @@ getRodzicW Nothing     Nothing       Nothing      Nothing =
 getRodzicW _ _ _ _ = 
     return ()  -- This is an error condition
 
+getOnlyWydawcyW :: [Wydawca] -> Widget
+getOnlyWydawcyW wydawcy =
+    toWidget [hamlet|
+    $forall wydawca <- wydawcy
+        <a href="#" class="link1">#{wydawcaNazwa wydawca}</a>
+    |]
+
 -- Format:
---   <b>Wydawca</b>, MiejsceWyd PubRok
+--   <b>Wydawcy</b>, MiejsceWyd PubRok
 -- Opcje:
---   Wydawca, Miejsce Rok
---   Wydawca, Miejsce
---   Wydawca Rok
---   Wydawca
+--   Wydawcy, Miejsce Rok
+--   Wydawcy, Miejsce
+--   Wydawcy Rok
+--   Wydawcy
 --   Miejsce Rok
 --   Miejsce
-getWydawcaW :: Maybe Wydawca -> Maybe Text -> Maybe Int64 -> Widget
-getWydawcaW (Just wydawca) (Just miejsce) (Just rok) = 
+getWydawcaW :: [Wydawca] -> Maybe Text -> Maybe Int64 -> Widget
+getWydawcaW [] (Just miejsce) (Just rok) = 
     toWidget [hamlet|
-    <p>
-        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>#
-        \, #{miejsce} #{show rok}
-    |]
-getWydawcaW (Just wydawca) (Just miejsce) Nothing = 
-    toWidget [hamlet|
-    <p>
-    <p>
-        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>#
-        \, #{miejsce}
-    |]
-getWydawcaW (Just wydawca) Nothing (Just rok) = 
-    toWidget [hamlet|
-    <p>
-    <p>
-        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>
-        #{show rok}
-    |]
-getWydawcaW (Just wydawca) Nothing Nothing = 
-    toWidget [hamlet|
-    <p>
-    <p>
-        <b><a href="#" class="link1">#{wydawcaNazwa wydawca}</a>
-    |]
-getWydawcaW Nothing (Just miejsce) (Just rok) = 
-    toWidget [hamlet|
-    <p>
         #{miejsce} #{show rok}
     |]
-getWydawcaW Nothing (Just miejsce) Nothing = 
+getWydawcaW wydawcy (Just miejsce) (Just rok) = 
+    toWidget [whamlet|
+        <b>^{getOnlyWydawcyW wydawcy}#
+        \, #{miejsce} #{show rok}
+    |]
+getWydawcaW [] (Just miejsce) Nothing = 
     toWidget [hamlet|
-    <p>
         #{miejsce}
     |]
-getWydawcaW _ _ _ = 
-    return ()
+getWydawcaW wydawcy (Just miejsce) Nothing = 
+    toWidget [whamlet|
+        <b>^{getOnlyWydawcyW wydawcy}#
+        \, #{miejsce}
+    |]
+getWydawcaW wydawcy Nothing (Just rok) = 
+    toWidget [whamlet|
+        <b>^{getOnlyWydawcyW wydawcy}
+        #{show rok}
+    |]
+getWydawcaW wydawcy Nothing Nothing = 
+    toWidget [whamlet|
+        <b>^{getOnlyWydawcyW wydawcy}
+    |]
 
 getBiblioFooterW :: Widget
 getBiblioFooterW = toWidget [hamlet|
