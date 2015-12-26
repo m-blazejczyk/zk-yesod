@@ -89,11 +89,38 @@ editAutorGenericR typAutora = processXEditable (valdArr vald) upd where
             -- This should NEVER happen!
             Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
 
+editWydawcyR :: EditHandler
+editWydawcyR = processXEditable (valdArr vald) upd where
+    vald arr = 
+        -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
+        let arrIds = mapMaybe maybeRead (map Just arr)
+        -- mapMaybe filters out all Nothing values from the list so if any id was invalid
+        -- then the result will be shorter.
+        in if length arrIds == length arr
+            then valdDb arrIds
+            else return $ Error $ systemError "Niepoprawny identyfikator wydawcy"
+    valdDb lookupIds = do
+        -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
+        mWydawcy <- mapM (\l -> runDB $ getBy $ UniqueWydawca l) lookupIds  -- mWydawcy :: [Maybe (Entity x y)]
+        let ids = mapMaybe extractWydawcaId mWydawcy  -- ids :: [x] (see annotation in the line above)
+        if length ids == length lookupIds
+            then return $ Success $ ids
+            else return $ Error $ systemError "Niezdefiniowany identyfikator wydawcy"
+    extractWydawcaId (Just (Entity wydawcaId _)) = Just wydawcaId
+    extractWydawcaId Nothing = Nothing
+    -- 'wydawcaIds' is of type [Key Wydawca]
+    upd kopalniaLookupId wydawcaIds = do
+        mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
+        case mKopalnia of
+            Just (Entity kopalniaId _) -> do
+                runDB $ deleteWhere [KopalniaWydKopalniaId ==. kopalniaId]
+                _ <- mapM (\wydawcaId -> runDB $ insert $ KopalniaWyd wydawcaId kopalniaId) wydawcaIds
+                return $ Success "OK"
+            -- This should NEVER happen!
+            Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
+
 editRodzicR :: EditHandler
 editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
-
-editWydawcyR :: EditHandler
-editWydawcyR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 -- TODO: Add the new publisher to the drop-down in the XEditable on the page.
 editAddWydawcaR :: EditHandler
