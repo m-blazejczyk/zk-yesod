@@ -55,7 +55,7 @@
                   var data = new Array;
                   for (var i = values.length - 1; i >= 0; i -= 2) {
                     data.push({id: values[i-1], text: values[i]});
-                  };
+                  }
                   element.val('');
                   callback (data);
                 };
@@ -123,10 +123,10 @@
           target.attr('data-toggle', 'modal');
           target.attr('data-target', '#' + modalId);
 
+          // Format the text to be displayed inside the element on the page.
           var htmlText = settings.value;
 
           if (settings.select2 != undefined) {
-            console.log('Found values: ' + settings.value);
             var values = settings.value.split("||");
             var data = new Array;
             for (var i = values.length - 1; i >= 0; i -= 2) {
@@ -148,6 +148,7 @@
 
           target.html(htmlText);
 
+          // Format the DIV to contain the pop-up.
           var htmlArr = new Array();
           htmlArr.push('<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="' + modalId + '-label" aria-hidden="true">');
           htmlArr.push('  <div class="modal-dialog modal-sm">');

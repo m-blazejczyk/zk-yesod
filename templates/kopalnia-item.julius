@@ -94,9 +94,22 @@ if(#{isEdit}) {
     $('#' + '#{rawJS $ lookupEditParam FldOpis fields}').editableZK(
       { emptytext: '[brak]', rows: 5 });
 
-    //var wydawca = #{rawJS $ decodeUtf8 wydawcyJson};
-    //wydawca.emptytext = '[brak]';
-    //$('#' + '#{rawJS $ lookupEditParam FldWydawcy fields}').editableZK(wydawca);
+    var wydawcaData = #{rawJS $ decodeUtf8 wydawcyJson};
+    var wydawca = {
+      emptytext: "[brak]",
+      select2: {
+        multiple: true,
+        placeholder: "wybierz wydawcę",
+        allowClear: true,
+        width: '100%',
+        minimumInputLength: 2,
+        quietMillis: 250
+      }
+    };
+    wydawca.select2.data = wydawcaData.data;
+    $('#' + '#{rawJS $ lookupEditParam FldWydawcy fields}').editableZK(wydawca);
+
+    data:[{id:0,text:'enhancement'},{id:1,text:'bug'},{id:2,text:'duplicate'},{id:3,text:'invalid'},{id:4,text:'wontfix'}]
 
     var initAuthors = function(id, placeholder) {
       $('#' + id).editableZK({
