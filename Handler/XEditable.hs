@@ -43,11 +43,11 @@ data XEdVal = XEdNone                       -- No "value*" parameter was found a
 -- This is a version of processXEditable for POST requests requiring a single parameter value.
 -- The upd function in this case should simply return a value that will be passed to a call
 --   to runDb $ updateWhere.
-processXEditable1 :: [(T.Text, T.Text)]
-                  -> (Text -> Handler (Result a))
+processXEditable1 :: (Text -> Handler (Result a))
                   -> (a -> [Update Kopalnia])
+                  -> [(T.Text, T.Text)]
                   -> Handler Text
-processXEditable1 params vald upd = processXEditable params vald' upd'
+processXEditable1 vald upd = processXEditable vald' upd'
     where
         vald' (XEdValOne val) = vald val
         vald' _ = return $ Error $ systemError "Brakuje parametru"
@@ -62,11 +62,11 @@ processXEditable1 params vald upd = processXEditable params vald' upd'
 --   Result <converted value> in the Handler monad (to allow for database validation lookups).
 -- If everything succeeds then the third argument function (upd) will be called to store the values
 --   returned by vald in the database.
-processXEditable :: [(T.Text, T.Text)]
-                 -> (XEdVal -> Handler (Result a))
+processXEditable :: (XEdVal -> Handler (Result a))
                  -> (Int64 -> a -> Handler (Result Text))
+                 -> [(T.Text, T.Text)]
                  -> Handler Text
-processXEditable params vald upd = do
+processXEditable vald upd params = do
     let mLookupIdT = lookup "pk" params
     let mLookupIdI = maybeRead mLookupIdT
     case mLookupIdI of

@@ -30,20 +30,20 @@ fields = [(FldTytul,       ("tytul",      editTytulR)),
           (FldSlowaKlucz,  ("slowa",      editSlowaKluczR))]
 
 editTytulR :: EditHandler
-editTytulR params = processXEditable1 params vald upd where
+editTytulR = processXEditable1 vald upd where
     vald v | T.length v > 0 = return $ Success v
            | otherwise = return $ Error "Tytuł nie może być pusty"
     upd value = [KopalniaTytul =. value]
 
 editLinkGlownyR :: EditHandler
-editLinkGlownyR params = processXEditable1 params vald upd where
+editLinkGlownyR = processXEditable1 vald upd where
     vald v | T.length v == 0 = return $ Success Nothing
            | isURI $ unpack v = return $ Success $ Just v
            | otherwise = return $ Error "Niepoprawny adres"
     upd value = [KopalniaUrl =. value]
 
 editRodzajR :: EditHandler
-editRodzajR params = processXEditable1 params vald upd where
+editRodzajR = processXEditable1 vald upd where
     vald = return . readRodzaj
     upd value = [KopalniaRodzaj =. value]
 
@@ -60,7 +60,7 @@ editWywiadR :: EditHandler
 editWywiadR = editAutorGenericR AutorWyw
 
 editAutorGenericR :: TypAutora -> EditHandler
-editAutorGenericR typAutora params = processXEditable params (valdArr vald) upd where
+editAutorGenericR typAutora = processXEditable (valdArr vald) upd where
     vald arr = 
         -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
         let arrIds = mapMaybe maybeRead (map Just arr)
@@ -97,7 +97,7 @@ editWydawcyR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
 -- TODO: Add the new publisher to the drop-down in the XEditable on the page.
 editAddWydawcaR :: EditHandler
-editAddWydawcaR params = processXEditable params (valdMap ["nazwa", "url"] vald) upd where
+editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     -- TODO: verify this logic
     vald [Just tNazwa, Just tUrl]
         | T.length tNazwa == 0 && T.length tUrl == 0 = return $ Success Nothing
@@ -119,7 +119,7 @@ editAddWydawcaR params = processXEditable params (valdMap ["nazwa", "url"] vald)
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
 
 editDataWydaniaR :: EditHandler
-editDataWydaniaR params = processXEditable params (valdMap ["year", "month"] vald) upd where
+editDataWydaniaR = processXEditable (valdMap ["year", "month"] vald) upd where
     vald [Just tYear, Just tMonth] = do
         curDate <- liftIO (getCurrentTime >>= return . toGregorian . utctDay)
         curYear <- return $ fromIntegral $ fst3 curDate
@@ -147,7 +147,7 @@ editDataWydaniaR params = processXEditable params (valdMap ["year", "month"] val
 
 -- TODO: add regex validation
 editIsbnR :: EditHandler
-editIsbnR params = processXEditable1 params vald upd where
+editIsbnR = processXEditable1 vald upd where
     vald = return . vald'
     vald' v | T.length v == 0 = Success Nothing
             | T.length v < 10 = Error "Za krótki kod"
@@ -156,22 +156,22 @@ editIsbnR params = processXEditable1 params vald upd where
     upd value = [KopalniaIsbn =. value]
 
 editStronyR :: EditHandler
-editStronyR params = processXEditable1 params vald upd where
+editStronyR = processXEditable1 vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaStrony =. value]
 
 editObjetoscR :: EditHandler
-editObjetoscR params = processXEditable1 params vald upd where
+editObjetoscR = processXEditable1 vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaObjetosc =. value]
 
 editJezykR :: EditHandler
-editJezykR params = processXEditable1 params vald upd where
+editJezykR = processXEditable1 vald upd where
     vald = return . readJezyk
     upd value = [KopalniaJezyk =. value]
 
 editOpisR :: EditHandler
-editOpisR params = processXEditable1 params vald upd where
+editOpisR = processXEditable1 vald upd where
     vald v = return $ if T.length v == 0 then Success Nothing else Success $ Just v
     upd value = [KopalniaOpis =. value]
 
