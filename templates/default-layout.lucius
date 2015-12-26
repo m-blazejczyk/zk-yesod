@@ -86,7 +86,7 @@ body a:hover {
     height: 150px;
     top: -5px;
     left: 375px;
-    z-index: 9900;
+    z-index: 10;
 }
 
 #logo-centrala {
@@ -95,7 +95,7 @@ body a:hover {
     height: 31px;
     top: -140px;
     left: 780px;
-    z-index: 9900;
+    z-index: 10;
 }
 
 #nav-menu ul {
