@@ -109,8 +109,6 @@ if(#{isEdit}) {
     wydawca.select2.data = wydawcaData.data;
     $('#' + '#{rawJS $ lookupEditParam FldWydawcy fields}').editableZK(wydawca);
 
-    data:[{id:0,text:'enhancement'},{id:1,text:'bug'},{id:2,text:'duplicate'},{id:3,text:'invalid'},{id:4,text:'wontfix'}]
-
     var initAuthors = function(id, placeholder) {
       $('#' + id).editableZK({
         emptytext: "[brak]",
