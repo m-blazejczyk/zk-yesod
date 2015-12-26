@@ -306,6 +306,8 @@
               // 4. change element on page using display()
               if(typeof(settings.display) === 'function') {
                 target.html(settings.display(rawVal2, textVal));
+              } else if(textVal == '' && typeof settings.emptytext == 'string') {
+                target.html(settings.emptytext);
               } else {
                 // This won't work properly if this is a multi-field editor - and that's what we want
                 // because in such cases the user should provide the display() function.
