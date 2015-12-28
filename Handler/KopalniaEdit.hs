@@ -60,64 +60,20 @@ editWywiadR :: EditHandler
 editWywiadR = editAutorGenericR AutorWyw
 
 editAutorGenericR :: TypAutora -> EditHandler
-editAutorGenericR typAutora = processXEditable (valdArr vald) upd where
-    vald arr = 
-        -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
-        let arrIds = mapMaybe maybeRead (map Just arr)
-        -- mapMaybe filters out all Nothing values from the list so if any id was invalid
-        -- then the result will be shorter.
-        in if length arrIds == length arr
-            then valdDb arrIds
-            else return $ Error $ systemError "Niepoprawny identyfikator autora"
-    valdDb lookupIds = do
-        -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
-        mAutorzy <- mapM (\l -> runDB $ getBy $ UniqueAutor l) lookupIds  -- mAutorzy :: [Maybe (Entity x y)]
-        let ids = mapMaybe extractAutorId mAutorzy  -- ids :: [x] (see annotation in the line above)
-        if length ids == length lookupIds
-            then return $ Success $ ids
-            else return $ Error $ systemError "Niezdefiniowany identyfikator autora"
-    extractAutorId (Just (Entity autorId _)) = Just autorId
-    extractAutorId Nothing = Nothing
-    -- 'autorIds' is of type [Key Autor]
-    upd kopalniaLookupId autorIds = do
-        mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
-        case mKopalnia of
-            Just (Entity kopalniaId _) -> do
-                runDB $ deleteWhere [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. typAutora]
-                _ <- mapM (\autorId -> runDB $ insert $ KopalniaAutor autorId kopalniaId typAutora) autorIds
-                return $ Success "OK"
-            -- This should NEVER happen!
-            Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
+editAutorGenericR typAutora = processXEditableMulti getUnique extractId delFilter insRecord "Autor" where
+    getUnique = UniqueAutor
+    extractId (Just (Entity autorId _)) = Just autorId
+    extractId Nothing = Nothing
+    delFilter kopalniaId = [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. typAutora]
+    insRecord autorId kopalniaId = KopalniaAutor autorId kopalniaId typAutora
 
 editWydawcyR :: EditHandler
-editWydawcyR = processXEditable (valdArr vald) upd where
-    vald arr = 
-        -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
-        let arrIds = mapMaybe maybeRead (map Just arr)
-        -- mapMaybe filters out all Nothing values from the list so if any id was invalid
-        -- then the result will be shorter.
-        in if length arrIds == length arr
-            then valdDb arrIds
-            else return $ Error $ systemError "Niepoprawny identyfikator wydawcy"
-    valdDb lookupIds = do
-        -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
-        mWydawcy <- mapM (\l -> runDB $ getBy $ UniqueWydawca l) lookupIds  -- mWydawcy :: [Maybe (Entity x y)]
-        let ids = mapMaybe extractWydawcaId mWydawcy  -- ids :: [x] (see annotation in the line above)
-        if length ids == length lookupIds
-            then return $ Success $ ids
-            else return $ Error $ systemError "Niezdefiniowany identyfikator wydawcy"
-    extractWydawcaId (Just (Entity wydawcaId _)) = Just wydawcaId
-    extractWydawcaId Nothing = Nothing
-    -- 'wydawcaIds' is of type [Key Wydawca]
-    upd kopalniaLookupId wydawcaIds = do
-        mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
-        case mKopalnia of
-            Just (Entity kopalniaId _) -> do
-                runDB $ deleteWhere [KopalniaWydKopalniaId ==. kopalniaId]
-                _ <- mapM (\wydawcaId -> runDB $ insert $ KopalniaWyd wydawcaId kopalniaId) wydawcaIds
-                return $ Success "OK"
-            -- This should NEVER happen!
-            Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
+editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord "Wydawca" where
+    getUnique = UniqueWydawca
+    extractId (Just (Entity wydawcaId _)) = Just wydawcaId
+    extractId Nothing = Nothing
+    delFilter kopalniaId = [KopalniaWydKopalniaId ==. kopalniaId]
+    insRecord = KopalniaWyd
 
 editRodzicR :: EditHandler
 editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
