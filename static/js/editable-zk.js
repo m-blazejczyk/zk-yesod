@@ -278,6 +278,9 @@
                 return rawVal;
               }
             }
+            function getPostData(val) {
+              return {};
+            }
 
             if (fieldInfo.length > 1) {
               var rawVal = {};
@@ -301,7 +304,17 @@
               // Display the error message
               $('#' + errorId).html(errorMsg).show();
             } else {
-              // 3. TODO: send request to the server
+              // 3. send request to the server
+              var postData = getPostData(rawVal2);
+              postData.pk = settings.pk;
+              console.log(settings.url);
+              $.post(settings.url, postData, null, 'text')
+                .done(function( data ) {
+                  alert( "Data Loaded: " + data );
+                })
+                .fail(function() {
+                  alert( "Nie udało się wykonać zapytania AJAX." );
+                });
 
               // 4. change element on page using display()
               if(typeof(settings.display) === 'function') {
