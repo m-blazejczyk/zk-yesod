@@ -11,6 +11,7 @@
         if ($('#' + modalId).length == 0) {
           // Merge with options from attributes.
           var settings = $.extend({
+              name: target.attr('id'),
               type: target.attr('data-type'),
               pk: target.attr('data-pk'),                    // primary key in the database
               url: target.attr('data-url'),                  // url to send the POST request to
@@ -307,33 +308,31 @@
               // 3. send request to the server
               var postData = getPostData(rawVal2);
               postData.pk = settings.pk;
-              console.log(settings.url);
+              postData.name = settings.name;
               $.post(settings.url, postData, null, 'text')
                 .done(function( data ) {
-                  alert( "Data Loaded: " + data );
+                  // 4. change element on page using display()
+                  if(typeof(settings.display) === 'function') {
+                    target.html(settings.display(rawVal2, textVal));
+                  } else if(textVal == '' && typeof settings.emptytext == 'string') {
+                    target.html(settings.emptytext);
+                  } else {
+                    // This won't work properly if this is a multi-field editor - and that's what we want
+                    // because in such cases the user should provide the display() function.
+                    target.html(textVal);
+                  }
+
+                  // 5. hide the modal
+                  $('#' + modalId).data('okFlag', true);
+                  $('#' + modalId).modal('hide');
+                  $('#' + errorId).hide();
+
+                  // 6. Reset the initialization data we're keeping around.
+                  $('#' + modalId).data('data', grabData());
                 })
-                .fail(function() {
-                  alert( "Nie udało się wykonać zapytania AJAX." );
+                .fail(function(xhr, status, error) {
+                  $('#' + errorId).html(xhr.responseText).show();
                 });
-
-              // 4. change element on page using display()
-              if(typeof(settings.display) === 'function') {
-                target.html(settings.display(rawVal2, textVal));
-              } else if(textVal == '' && typeof settings.emptytext == 'string') {
-                target.html(settings.emptytext);
-              } else {
-                // This won't work properly if this is a multi-field editor - and that's what we want
-                // because in such cases the user should provide the display() function.
-                target.html(textVal);
-              }
-
-              // 5. hide the modal
-              $('#' + modalId).data('okFlag', true);
-              $('#' + modalId).modal('hide');
-              $('#' + errorId).hide();
-
-              // 6. Reset the initialization data we're keeping around.
-              $('#' + modalId).data('data', grabData());
             }
           });
         }
