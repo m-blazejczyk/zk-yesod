@@ -259,61 +259,79 @@
           };
 
           $('#' + okBtnId).click(function (){
-            // 1. Get the value
-            function getRawVal(fieldInfo) {
-              return $('#' + fieldInfo.id).val();
-            }
-            function getTextVal(fieldInfo, rawVal) {
-              if (fieldInfo.type == 'select') {
-                return $('#' + fieldInfo.id).select2('data').text;
-              } else if (fieldInfo.type == 'select2') {
-                var arr = new Array;
-                var selData = $('#' + fieldInfo.id).select2('data');
-                for (var i = 0; i < selData.length; i++) {
-                  arr.push(selData[i].text);
-                };
-                return arr.join(', ');
-              } else if (fieldInfo.type == 'textarea') {
-                return rawVal.replace(/\n/g, '<br>');
-              } else {
-                return rawVal;
-              }
-            }
-            function getPostData(val) {
-              return {};
-            }
-
+            // 1. Get the raw value
             if (fieldInfo.length > 1) {
               var rawVal = {};
-              var textVal = {};
               for (var i = fieldInfo.length - 1; i >= 0; i--) {
-                var thisRawVal = getRawVal(fieldInfo[i]);
-                rawVal[fieldInfo[i].name] = thisRawVal;
-                textVal[fieldInfo[i].name] = getTextVal(fieldInfo[i], thisRawVal);
+                rawVal[fieldInfo[i].name] = $('#' + fieldInfo[i].id).val();
               }
             } else {
-              var thisRawVal = getRawVal(fieldInfo[0]);
-              rawVal = thisRawVal;
-              textVal = getTextVal(fieldInfo[0], thisRawVal);
+              var rawVal = $('#' + fieldInfo[0].id).val();
             }
 
-            // 2. translate (if required) and validate value
-            var rawVal2 = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
-            var errorMsg = typeof(settings.validate) === 'function' ? settings.validate(rawVal2) : '';
+            // 2. translate (if required) and validate the raw value
+            var rawVal = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
+            var errorMsg = typeof(settings.validate) === 'function' ? settings.validate(rawVal) : '';
+            console.log(rawVal);
 
             if (typeof errorMsg === 'string' && errorMsg != '') {
-              // Display the error message
+              // 3. display the error message
               $('#' + errorId).html(errorMsg).show();
             } else {
-              // 3. send request to the server
-              var postData = getPostData(rawVal2);
-              postData.pk = settings.pk;
-              postData.name = settings.name;
-              $.post(settings.url, postData, null, 'text')
+              // 3. get the text value and the POST value
+              function getAllVals(rawVal, fieldInfo) {
+                if (fieldInfo.type == 'select') {
+                  var textVal = $('#' + fieldInfo.id).select2('data').text;
+                  var postVal = { value: rawVal };
+                } else if (fieldInfo.type == 'select2') {
+                  var arrText = [];
+                  var arrPost = [];
+                  var selData = $('#' + fieldInfo.id).select2('data');
+                  for (var i = 0; i < selData.length; i++) {
+                    arrText.push(selData[i].text);
+                    arrPost.push(selData[i].id);
+                  };
+                  var textVal = arrText.join(', ');
+                  var postVal = { value: arrPost };
+                } else if (fieldInfo.type == 'textarea') {
+                  var textVal = rawVal.replace(/\n/g, '<br>');
+                  var postVal = { value: rawVal };
+                } else {
+                  var textVal = rawVal;
+                  var postVal = { value: rawVal };
+                }
+
+                return {
+                  text: textVal,
+                  post: postVal
+                };
+              }
+
+              if (fieldInfo.length > 1) {
+                var textVal = {};
+                for (var i = fieldInfo.length - 1; i >= 0; i--) {
+                  var fldName = fieldInfo[i].name;
+                  var vals = getAllVals(rawVal[fldName], fieldInfo[i]);
+                  textVal[fldName] = vals.text;
+                }
+
+                postVal = { value: rawVal };
+              } else {
+                var vals = getAllVals(rawVal, fieldInfo[0]);
+                var textVal = vals.text;
+                var postVal = vals.post;
+              }
+              console.log(textVal);
+              console.log(postVal);
+
+              // 4. send request to the server
+              postVal.pk = settings.pk;
+              postVal.name = settings.name;
+              $.post(settings.url, postVal, null, 'text')
                 .done(function( data ) {
-                  // 4. change element on page using display()
+                  // 5. change element on page using display()
                   if(typeof(settings.display) === 'function') {
-                    target.html(settings.display(rawVal2, textVal));
+                    target.html(settings.display(rawVal, textVal));
                   } else if(textVal == '' && typeof settings.emptytext == 'string') {
                     target.html(settings.emptytext);
                   } else {
@@ -322,7 +340,7 @@
                     target.html(textVal);
                   }
 
-                  // 5. hide the modal
+                  // 6. hide the modal
                   $('#' + modalId).data('okFlag', true);
                   $('#' + modalId).modal('hide');
                   $('#' + errorId).hide();
