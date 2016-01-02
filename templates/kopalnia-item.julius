@@ -139,9 +139,20 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
 
-    /*
     // This editable is configured differently because it's purpose is to *add* new publisher records.
-    $('#addWydawce').editable({
+    $('#' + '#{rawJS $ lookupEditParam FldAddWydawca fields}').editableZK({
+      fields: {
+        nazwa: {
+          type: 'text',
+          label: 'Nazwa',
+          placeholder: 'nazwa'
+        },
+        url: {
+          type: 'text',
+          label: 'Strona WWW',
+          placeholder: 'adres strony www'
+        }
+      },
       value: {
         nazwa: '',
         url: ''
@@ -153,18 +164,8 @@ if(#{isEdit}) {
           }
           // TODO: validate the url
         }
-      },
-      display: function(value, response) {
-        $(this).html('<span></span>');
-      },
-      success: function(response, newValue) {
-        // TODO: The contents of the fields in the pop-up don't actually reset.
-        // TODO: The new item is not added to the available options in the "wydawcy" editable.
-        $('#addWydawce').editable('setValue', { nazwa: '', url: '' });
-        $('#wydawca').editable('setValue', newValue.nazwa);
       }
     });
-    */
 
   });
 }

@@ -39,7 +39,7 @@
         <span class="inobtrusive">Wydawcy:
         <b id="#{lookupEditParam FldWydawcy fields}" data-type="select2" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawcy">
         <a class="btn btn-default btn-xs">
-          <span class="glyphicon glyphicon-plus-sign editable-click-btn" id="#{lookupEditParam FldAddWydawca fields}" data-type="addWydawce" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Nowy wydawca" aria-hidden="true">
+          <span class="glyphicon glyphicon-plus-sign editable-click-btn" data-add-new id="#{lookupEditParam FldAddWydawca fields}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Nowy wydawca" aria-hidden="true">
       <p>
         <span class="inobtrusive">Miejsce wydania:
     $else

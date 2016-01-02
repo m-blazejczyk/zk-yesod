@@ -19,7 +19,8 @@
               value: target.attr('data-value'),              // raw value (if single input)
               emptytext: target.attr('data-emptytext'),      // text to display when the value is empty
               placeholder: target.attr('data-placeholder'),  // placeholder for text values
-              rows: target.attr('data-rows')                 // number of rows for text areas
+              rows: target.attr('data-rows'),                // number of rows for text areas
+              isAdd: target.attr('data-add-new') !== undefined
           }, options);
 
           // TODO: Sanitize inputs!
@@ -125,29 +126,31 @@
           target.attr('data-target', '#' + modalId);
 
           // Format the text to be displayed inside the element on the page.
-          var htmlText = settings.value;
+          if (!settings.isAdd) {
+            var htmlText = settings.value;
 
-          if (settings.select2 != undefined) {
-            var values = settings.value.split("||");
-            var data = new Array;
-            for (var i = values.length - 1; i >= 0; i -= 2) {
-              data.push(values[i]);
+            if (settings.select2 != undefined) {
+              var values = settings.value.split("||");
+              var data = new Array;
+              for (var i = values.length - 1; i >= 0; i -= 2) {
+                data.push(values[i]);
+              }
+              htmlText = data.join(', ');
+            } else if (settings.source != undefined && settings.source.length != undefined) {
+              for (var i = settings.source.length - 1; i >= 0; i--) {
+                if (settings.source[i].value == settings.value)
+                  htmlText = settings.source[i].text;
+              }
             }
-            htmlText = data.join(', ');
-          } else if (settings.source != undefined && settings.source.length != undefined) {
-            for (var i = settings.source.length - 1; i >= 0; i--) {
-              if (settings.source[i].value == settings.value)
-                htmlText = settings.source[i].text;
-            }
+
+            if (typeof settings.emptytext == 'string' && htmlText === '')
+              htmlText = settings.emptytext;
+
+            if (typeof(settings.display) === 'function')
+              htmlText = settings.display(htmlText);
+
+            target.html(htmlText);
           }
-
-          if (typeof settings.emptytext == 'string' && htmlText === '')
-            htmlText = settings.emptytext;
-
-          if (typeof(settings.display) === 'function')
-            htmlText = settings.display(htmlText);
-
-          target.html(htmlText);
 
           // Format the DIV to contain the pop-up.
           var htmlArr = new Array();
@@ -272,7 +275,6 @@
             // 2. translate (if required) and validate the raw value
             var rawVal = typeof(settings.fromInput) === 'function' ? settings.fromInput(rawVal) : rawVal;
             var errorMsg = typeof(settings.validate) === 'function' ? settings.validate(rawVal) : '';
-            console.log(rawVal);
 
             if (typeof errorMsg === 'string' && errorMsg != '') {
               // 3. display the error message
@@ -290,7 +292,7 @@
                   for (var i = 0; i < selData.length; i++) {
                     arrText.push(selData[i].text);
                     arrPost.push(selData[i].id);
-                  };
+                  }
                   var textVal = arrText.join(', ');
                   var postVal = { value: arrPost };
                 } else if (fieldInfo.type == 'textarea') {
@@ -321,23 +323,23 @@
                 var textVal = vals.text;
                 var postVal = vals.post;
               }
-              console.log(textVal);
-              console.log(postVal);
 
               // 4. send request to the server
               postVal.pk = settings.pk;
               postVal.name = settings.name;
               $.post(settings.url, postVal, null, 'text')
-                .done(function( data ) {
-                  // 5. change element on page using display()
-                  if(typeof(settings.display) === 'function') {
-                    target.html(settings.display(rawVal, textVal));
-                  } else if(textVal == '' && typeof settings.emptytext == 'string') {
-                    target.html(settings.emptytext);
-                  } else {
-                    // This won't work properly if this is a multi-field editor - and that's what we want
-                    // because in such cases the user should provide the display() function.
-                    target.html(textVal);
+                .done(function(data) {
+                  if (!settings.isAdd) {
+                    // 5. change element on page using display()
+                    if(typeof(settings.display) === 'function') {
+                      target.html(settings.display(rawVal, textVal));
+                    } else if(textVal == '' && typeof settings.emptytext == 'string') {
+                      target.html(settings.emptytext);
+                    } else {
+                      // This won't work properly if this is a multi-field editor - and that's what we want
+                      // because in such cases the user should provide the display() function.
+                      target.html(textVal);
+                    }
                   }
 
                   // 6. hide the modal
@@ -345,8 +347,17 @@
                   $('#' + modalId).modal('hide');
                   $('#' + errorId).hide();
 
-                  // 6. Reset the initialization data we're keeping around.
-                  $('#' + modalId).data('data', grabData());
+                  if (settings.isAdd) {
+                    // 6. For 'Add' popups - push saved data back into the controls.
+                    pushData($('#' + modalId).data('data'));
+
+                    // 7. Call the custom onAdd callback.
+                    if(typeof(settings.onAdd) === 'function')
+                      settings.onAdd(rawVal);
+                  } else {
+                    // 6. Reset the initialization data we're keeping around.
+                    $('#' + modalId).data('data', grabData());
+                  }
                 })
                 .fail(function(xhr, status, error) {
                   $('#' + errorId).html(xhr.responseText).show();
