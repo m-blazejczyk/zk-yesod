@@ -106,8 +106,51 @@ if(#{isEdit}) {
         quietMillis: 250
       }
     };
-    wydawca.select2.data = wydawcaData.data;
-    $('#' + '#{rawJS $ lookupEditParam FldWydawcy fields}').editableZK(wydawca);
+
+    var wydawcyId = '#' + '#{rawJS $ lookupEditParam FldWydawcy fields}';
+    var wydawcyArr = wydawcaData.data;
+    wydawca.select2.data = function() { return { results: wydawcyArr }; };
+    $(wydawcyId).editableZK(wydawca);
+
+    // This editable is configured differently because it's purpose is to *add* new publisher records.
+    $('#' + '#{rawJS $ lookupEditParam FldAddWydawca fields}').editableZK({
+      fields: {
+        nazwa: {
+          type: 'text',
+          label: 'Nazwa',
+          placeholder: 'nazwa'
+        },
+        url: {
+          type: 'text',
+          label: 'Strona WWW',
+          placeholder: 'adres strony www'
+        }
+      },
+      value: {
+        nazwa: '',
+        url: ''
+      },
+      validate: function(value) {
+        if(value) {
+          if(value.url && !value.nazwa) {
+            return 'Nazwa wydawcy jest wymagana';
+          }
+          // TODO: validate the url
+        }
+      },
+      onAdd: function(value, postResult) {
+        // This will make the newly added item available in the select2 dropdown for publishers.
+        wydawcyArr.push({ id: postResult, text: value.nazwa });
+        // Add the name of the newly added item to the html of FldWydawcy.
+        $(wydawcyId).html($(wydawcyId).html() + ', ' + value.nazwa);
+        // Add the new item to the field editor for FldWydawcy and to its previously grabbed data
+        // as if it was always part of the publishers' list.
+        $(wydawcyId).changeEditableDataZK(function(editData) {
+          editData[0].value.push({ id: postResult, text: value.nazwa });
+          return editData;
+        });
+      }
+    });
 
     var initAuthors = function(id, placeholder) {
       $('#' + id).editableZK({
@@ -138,34 +181,6 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldTlumacz fields}', 'wybierz tłumaczy');
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
-
-    // This editable is configured differently because it's purpose is to *add* new publisher records.
-    $('#' + '#{rawJS $ lookupEditParam FldAddWydawca fields}').editableZK({
-      fields: {
-        nazwa: {
-          type: 'text',
-          label: 'Nazwa',
-          placeholder: 'nazwa'
-        },
-        url: {
-          type: 'text',
-          label: 'Strona WWW',
-          placeholder: 'adres strony www'
-        }
-      },
-      value: {
-        nazwa: '',
-        url: ''
-      },
-      validate: function(value) {
-        if(value) {
-          if(value.url && !value.nazwa) {
-            return 'Nazwa wydawcy jest wymagana';
-          }
-          // TODO: validate the url
-        }
-      }
-    });
 
   });
 }

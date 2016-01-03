@@ -94,7 +94,7 @@ editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     upd lookupId (Just (nazwa, url)) = do
         mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
         case mNast of
-            Just (Entity _ nast) -> return $ Error $ systemError "Not implemented..." -- do
+            Just (Entity _ nast) -> return $ Success "3" -- do
                 -- wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
                 -- runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
                 -- runDB $ updateWhere [KopalniaLookupId ==. lookupId] [KopalniaWydawcaId =. (Just wydawca)]
