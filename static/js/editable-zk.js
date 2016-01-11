@@ -227,7 +227,8 @@
           }
 
           // Grab initial data - it's easier to do it here where we can reuse code.
-          $('#' + modalId).data('data', grabDataZK(fieldInfo));
+          var zkData = grabDataZK(fieldInfo);
+          $('#' + modalId).data('data', zkData);
 
           // Only call this handler the first time around.
           $('#' + modalId).unbind('show.bs.modal', initHandler);
@@ -300,7 +301,9 @@
                   arrPost.push(selData[i].id);
                 }
                 var textVal = arrText.join(', ');
-                var postVal = { value: arrPost };
+                // Sometimes the raw value is an empty array.  The POST request then doe not contain
+                // the 'value' parameter.
+                var postVal = { value: (selData.length > 0 ? arrPost : ['']) };
               } else if (fieldInfo.type == 'textarea') {
                 var textVal = rawVal.replace(/\n/g, '<br>');
                 var postVal = { value: rawVal };
