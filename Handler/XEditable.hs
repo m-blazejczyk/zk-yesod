@@ -60,6 +60,9 @@ processXEditable1 vald upd = processXEditable vald' upd'
 -- This function processes an Ajax POST request coming from X-Editable that contains a select2
 -- field for a many-to-many relationship with Kopalnia with Int64 identifiers as values.
 --
+-- Important: when sending the request that contains no ids (or, an empty list of ids),
+-- there should be a simple "value[]" parameter with the value of "".
+--
 -- 'rec' is the entity linked to Kopalnia via intermediate table 'm2m'.
 --
 -- getUnique is usually just the constructor of the 'Unique' datatype for 'rec'.
@@ -78,6 +81,8 @@ processXEditableMulti :: (PersistEntity rec, PersistEntity m2m,
                        -> [(Text, Text)]
                        -> Handler Text
 processXEditableMulti getUnique extractId delFilter insRecord tableName = processXEditable (valdArr vald) upd where
+    -- Handling of the ("value[]","") parameter (no ids).
+    vald [""] = return $ Success $ []
     vald arr = 
         -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
         let arrIds = mapMaybe maybeRead (map Just arr)

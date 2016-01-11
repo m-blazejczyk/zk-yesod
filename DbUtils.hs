@@ -5,7 +5,8 @@ module DbUtils (
     getListM,
     prefixRegex,
     wydawcyToJson,
-    autorzyToFieldValue
+    autorzyToFieldValue,
+    wydawcyToFieldValue
     ) where
 
 import Import
@@ -47,8 +48,13 @@ wydawcyToJson = do
     wydawcy <- mapM (\(Entity _ wyd) -> return (wydawcaLookupId wyd, wydawcaNazwa wyd)) wydawcyDb  -- now we have [(Int64, Text)]
     return $ encode $ tuplesToRawJson "data" "id" "text" wydawcy
 
+itemsToFieldValue :: (a -> Int64) -> (a -> T.Text) -> [a] -> T.Text
+itemsToFieldValue lookupFun nameFun items = T.intercalate "||" (map processItem items)
+    where processItem item = T.intercalate "||" [(T.pack . show) (lookupFun item), nameFun item]
+
 autorzyToFieldValue :: [Autor] -> T.Text
-autorzyToFieldValue auts = T.intercalate "||" (map processAutor auts)
-    where processAutor aut = T.intercalate "||" [lookupId', name']
-              where lookupId' = (T.pack . show) $ autorLookupId aut
-                    name' = T.intercalate " " (catMaybes [autorImiona aut, Just (autorNazwisko aut)])
+autorzyToFieldValue = itemsToFieldValue autorLookupId autorNazwa
+    where autorNazwa aut = T.intercalate " " (catMaybes [autorImiona aut, Just (autorNazwisko aut)])
+
+wydawcyToFieldValue :: [Wydawca] -> T.Text
+wydawcyToFieldValue = itemsToFieldValue wydawcaLookupId wydawcaNazwa

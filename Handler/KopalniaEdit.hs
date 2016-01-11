@@ -78,7 +78,6 @@ editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord "Wy
 editRodzicR :: EditHandler
 editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
 
--- TODO: Add the new publisher to the drop-down in the XEditable on the page.
 editAddWydawcaR :: EditHandler
 editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     -- TODO: verify this logic
@@ -94,12 +93,21 @@ editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     upd lookupId (Just (nazwa, url)) = do
         mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
         case mNast of
-            Just (Entity _ nast) -> return $ Success "3" -- do
-                -- wydawca <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
-                -- runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
-                -- runDB $ updateWhere [KopalniaLookupId ==. lookupId] [KopalniaWydawcaId =. (Just wydawca)]
-                -- return $ Success "OK"
+            Just (Entity _ nast) -> do
+                mKopalnia <- runDB $ getBy $ UniqueKopalnia lookupId
+                case mKopalnia of
+                    Just (Entity kopalniaId _) -> updateKopalniaWyd nast kopalniaId
+                    -- This should NEVER happen!
+                    Nothing -> return $ Error $ systemError "Niepoprawny identyfikator kopalni"
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
+        where 
+            updateKopalniaWyd nast kopalniaId = do
+                wydawcaId <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
+                runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
+                _ <- runDB $ insert $ KopalniaWyd wydawcaId kopalniaId
+                -- Important: we need to return the inserted publisher's ID as plain text from the POST request.
+                -- See how onAdd() is called in editable-zk.js.
+                return $ Success $ (T.pack . show) wydawcaId
 
 editDataWydaniaR :: EditHandler
 editDataWydaniaR = processXEditable (valdMap ["year", "month"] vald) upd where

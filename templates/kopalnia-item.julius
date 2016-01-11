@@ -59,22 +59,10 @@ if(#{isEdit}) {
           return '[brak]';
         } else {
           if(value.month) {
+            var months = ['styczeń', 'luty', 'marzec', 'kwiecień', 'maj', 'czerwiec', 'lipiec', 'sierpień',
+                          'wrzesień', 'październik', 'listopad', 'grudzień'];
             var month = parseInt(value.month), monthStr = value.month;
-
-            if(month == 1) monthStr = "styczeń";
-            else if(month == 2) monthStr = "luty";
-            else if(month == 3) monthStr = "marzec";
-            else if(month == 4) monthStr = "kwiecień";
-            else if(month == 5) monthStr = "maj";
-            else if(month == 6) monthStr = "czerwiec";
-            else if(month == 7) monthStr = "lipiec";
-            else if(month == 8) monthStr = "sierpień";
-            else if(month == 9) monthStr = "wrzesień";
-            else if(month == 10) monthStr = "październik";
-            else if(month == 11) monthStr = "listopad";
-            else if(month == 12) monthStr = "grudzień";
-
-            return monthStr + " " + value.year;
+            return (month >= 1 && month <= 12 ? months[month-1] + " " : '') + value.year;
           } else {
             return value.year;
           }
@@ -113,7 +101,8 @@ if(#{isEdit}) {
     $(wydawcyId).editableZK(wydawca);
 
     // This editable is configured differently because it's purpose is to *add* new publisher records.
-    $('#' + '#{rawJS $ lookupEditParam FldAddWydawca fields}').editableZK({
+    var addWydawcyId = '#' + '#{rawJS $ lookupEditParam FldAddWydawca fields}';
+    $(addWydawcyId).editableZK({
       fields: {
         nazwa: {
           type: 'text',
@@ -141,8 +130,9 @@ if(#{isEdit}) {
       onAdd: function(value, postResult) {
         // This will make the newly added item available in the select2 dropdown for publishers.
         wydawcyArr.push({ id: postResult, text: value.nazwa });
-        // Add the name of the newly added item to the html of FldWydawcy.
-        $(wydawcyId).html($(wydawcyId).html() + ', ' + value.nazwa);
+        // Add the name of the newly added item to the html of FldWydawcy - or replace it if it is [brak].
+        var existing = $(wydawcyId).html();
+        $(wydawcyId).html(existing.indexOf('[brak]') > -1 ? value.nazwa : existing + ', ' + value.nazwa);
         // Add the new item to the field editor for FldWydawcy and to its previously grabbed data
         // as if it was always part of the publishers' list.
         $(wydawcyId).changeEditableDataZK(function(editData) {

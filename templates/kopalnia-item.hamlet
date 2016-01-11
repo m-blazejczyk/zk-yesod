@@ -37,14 +37,14 @@
     $if isEdit
       <p>
         <span class="inobtrusive">Wydawcy:
-        <b id="#{lookupEditParam FldWydawcy fields}" data-type="select2" data-value="" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawcy">
+        <b id="#{lookupEditParam FldWydawcy fields}" data-type="select2" data-value="#{wydawcyToFieldValue wydawcy}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Wydawcy">
         <a class="btn btn-default btn-xs">
           <span class="glyphicon glyphicon-plus-sign editable-click-btn" data-add-new id="#{lookupEditParam FldAddWydawca fields}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Nowy wydawca" aria-hidden="true">
       <p>
         <span class="inobtrusive">Miejsce wydania:
     $else
       <p>
-        ^{getWydawcaW mWydawcy (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
+        ^{getWydawcaW wydawcy (kopalniaMiejsceWyd kopalnia) (kopalniaPubRok kopalnia)}
 
     $if isEdit
       <p>
