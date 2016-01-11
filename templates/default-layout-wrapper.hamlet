@@ -74,4 +74,3 @@ $newline never
   <script src=@{StaticR bootstrap_3_3_5_js_bootstrap_min_js}></script>
   <script src=@{StaticR select2_3_5_2_select2_min_js}></script>
   <script src=@{StaticR slimbox2_js_slimbox2_js}></script>
-  <script src=@{StaticR js_editable_zk_js}></script>
