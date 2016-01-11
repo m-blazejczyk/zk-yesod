@@ -172,5 +172,59 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
 
+    $('#{rawJS $ lookupEditParam FldHasla fields}').editableZK({
+      emptytext: "[brak]",
+      select2: {
+        multiple: true,
+        placeholder: placeholder,
+        allowClear: true,
+        width: '100%',
+        minimumInputLength: 2,
+        quietMillis: 250,
+        tags: true,
+        tokenSeparators: [','],
+        createSearchChoice: function (term) {
+          var tterm = $.trim(term);
+          return {
+            id: tterm,
+            text: tterm + ' (new tag)'
+          };
+        },
+        ajax: {
+          url: '@{FindHasloR}',
+          dataType: 'json',
+          data: function(term, page) {
+            return {
+              q: term
+            }
+          },
+          results: function(data, page) {
+            return data
+          }
+        },
+
+        // Take initial tags from the input value
+        initSelection: function (element, callback) {
+          var data = [];
+
+          function splitVal(string, separator) {
+            var val, i, l;
+            if (string === null || string.length < 1) return [];
+            val = string.split(separator);
+            for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+            return val;
+          }
+
+          $(splitVal(element.val(), ",")).each(function () {
+            data.push({
+              id: this,
+              text: this
+            });
+          });
+
+          callback(data);
+        }
+      }
+    });
   });
 }
