@@ -76,7 +76,7 @@ editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord "Wy
     insRecord = KopalniaWyd
 
 editRodzicR :: EditHandler
-editRodzicR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editRodzicR _ = sendResponseStatus badRequest400 ("editRodzicR nie zaimplementowany" :: Text)
 
 editAddWydawcaR :: EditHandler
 editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
@@ -167,7 +167,7 @@ editOpisR = processXEditable1 vald upd where
     upd value = [KopalniaOpis =. value]
 
 editHaslaR :: EditHandler
-editHaslaR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editHaslaR _ = sendResponseStatus badRequest400 ("editHaslaR nie zaimplementowany" :: Text)
 
 editSlowaKluczR :: EditHandler
-editSlowaKluczR _ = sendResponseStatus badRequest400 ("This is a message!" :: Text)
+editSlowaKluczR _ = sendResponseStatus badRequest400 ("editSlowaKluczR nie zaimplementowany" :: Text)

@@ -9,5 +9,6 @@
 /bibliografia/init KopalniaInitR GET
 !/autor/#Int64 AutorR GET
 /autor/szukaj FindAutorR GET
+/haslo/szukaj FindHasloR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic

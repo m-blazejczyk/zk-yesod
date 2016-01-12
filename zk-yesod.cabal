@@ -30,6 +30,7 @@ library
                      Handler.Kopalnia
                      Handler.KopalniaEdit
                      Handler.Autor
+                     Handler.HasloPrzedm
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

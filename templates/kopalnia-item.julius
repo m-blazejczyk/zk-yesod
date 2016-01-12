@@ -172,11 +172,11 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
 
-    $('#{rawJS $ lookupEditParam FldHasla fields}').editableZK({
+    $('#' + '#{rawJS $ lookupEditParam FldHasla fields}').editableZK({
       emptytext: "[brak]",
       select2: {
         multiple: true,
-        placeholder: placeholder,
+        placeholder: "wybierz albo wpisz nowe",
         allowClear: true,
         width: '100%',
         minimumInputLength: 2,
@@ -187,7 +187,7 @@ if(#{isEdit}) {
           var tterm = $.trim(term);
           return {
             id: tterm,
-            text: tterm + ' (new tag)'
+            text: tterm + ' (nowe hasło)'
           };
         },
         ajax: {
@@ -201,7 +201,7 @@ if(#{isEdit}) {
           results: function(data, page) {
             return data
           }
-        },
+        }/*,
 
         // Take initial tags from the input value
         initSelection: function (element, callback) {
@@ -223,7 +223,7 @@ if(#{isEdit}) {
           });
 
           callback(data);
-        }
+        }*/
       }
     });
   });
