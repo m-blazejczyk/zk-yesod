@@ -31,9 +31,19 @@ SlowoKlucz
     UniqueSlowoKlucz slowo
     deriving Typeable
 
+KopalniaSlowo
+    slowoId SlowoKluczId
+    kopalniaId KopalniaId
+    deriving Typeable
+
 HasloPrzedm
     haslo Text
     UniqueHasloPrzedm haslo
+    deriving Typeable
+
+KopalniaHaslo
+    hasloId HasloPrzedmId
+    kopalniaId KopalniaId
     deriving Typeable
 
 Autor
@@ -86,8 +96,6 @@ Kopalnia
     rodzaj Rodzaj default=Artykul
     objetosc Text Maybe
     jezyk Jezyk default=JezykPL
-    slowaKlucz [SlowoKluczId]
-    haslaPrzedm [HasloPrzedmId]
     linki [KopalniaLinkId]
     created UTCTime default=CURRENT_TIME
     updated UTCTime default=CURRENT_TIME

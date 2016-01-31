@@ -34,8 +34,8 @@ getKopalniaInitR = do
     autor4 <- runDB $ insert $ Autor 4 (Just "Tomasz") "Marciniak"
     now <- liftIO $ getCurrentTime
     nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
-    klucz1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
-    klucz2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
+    slowo1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
+    slowo2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
     haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
     haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
     wydawca1 <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
@@ -43,9 +43,9 @@ getKopalniaInitR = do
     link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
     link2 <- runDB $ insert $ KopalniaLink "http://www.google.com" (Just "Google") Nothing
     link3 <- runDB $ insert $ KopalniaLink "http://www.pgx.ca" Nothing (Just "Strona PGx")
-    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Artykul Nothing JezykPL [] [] [] now now
-    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just "Poznań") Pismo (Just "128 str.") JezykPL [klucz1, klucz2] [haslo1, haslo2] [link1] now now
-    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just "Montreal") Artykul (Just "6 str.") JezykPL [klucz2] [haslo1] [link2, link3] now now
+    item1 <- runDB $ insert $ Kopalnia 1 Nothing Nothing (Just nk1) Nothing Nothing Nothing Nothing "Komiks i jego konteksty" (Just "nk") Nothing (Just "Olo") (Just "kk") Nothing (Just "To jest opis") (Just 1999) Nothing True Nothing Artykul Nothing JezykPL [] now now
+    item2 <- runDB $ insert $ Kopalnia 2 Nothing Nothing Nothing Nothing (Just "Rodzic") Nothing (Just "1111-111") "Zeszyty Komiksowe" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2007) (Just 10) False (Just "Poznań") Pismo (Just "128 str.") JezykPL [link1] now now
+    item3 <- runDB $ insert $ Kopalnia 3 (Just "http://www.zeszytykomiksowe.org") (Just item2) Nothing (Just item1) Nothing (Just "22-27") (Just "2222-111") "Dlaczego nie lubię komiksów" Nothing Nothing Nothing Nothing Nothing (Just "To jest opis") (Just 2014) (Just 2) False (Just "Montreal") Artykul (Just "6 str.") JezykPL [link2, link3] now now
     _ <- runDB $ insert $ KopalniaAutor autor1 item1 AutorAut
     _ <- runDB $ insert $ KopalniaAutor autor2 item2 AutorRed
     _ <- runDB $ insert $ KopalniaAutor autor3 item3 AutorTlum
@@ -53,6 +53,13 @@ getKopalniaInitR = do
     _ <- runDB $ insert $ KopalniaWyd wydawca2 item1
     _ <- runDB $ insert $ KopalniaWyd wydawca1 item3
     _ <- runDB $ insert $ KopalniaWyd wydawca2 item3
+    _ <- runDB $ insert $ KopalniaSlowo slowo1 item1
+    _ <- runDB $ insert $ KopalniaSlowo slowo2 item2
+    _ <- runDB $ insert $ KopalniaSlowo slowo1 item3
+    _ <- runDB $ insert $ KopalniaSlowo slowo2 item3
+    _ <- runDB $ insert $ KopalniaHaslo haslo2 item1
+    _ <- runDB $ insert $ KopalniaHaslo haslo1 item2
+    _ <- runDB $ insert $ KopalniaHaslo haslo2 item2
     _ <- runDB $ insert $ IntProp "kopalnia" 4
     _ <- runDB $ insert $ IntProp "nkPub" 2
     _ <- runDB $ insert $ IntProp "autor" 5
@@ -75,23 +82,11 @@ getKopalniaItemCommon isEdit lookupId = do
     mDzial <- case mRodzic of
         Just _ -> getMaybe $ kopalniaDzialId kopalnia
         Nothing -> return Nothing
-    slowaKluczowe <- getListM $ kopalniaSlowaKlucz kopalnia
-    haslaPrzedm <- getListM $ kopalniaHaslaPrzedm kopalnia
+    slowaKluczowe <- getListMany2Many [KopalniaSlowoKopalniaId ==. kopalniaId] kopalniaSlowoSlowoId
+    haslaPrzedm <- getListMany2Many [KopalniaHasloKopalniaId ==. kopalniaId] kopalniaHasloHasloId
+    wydawcy <- getListMany2Many [KopalniaWydKopalniaId ==. kopalniaId] kopalniaWydWydawcaId
+    (kopAuts, allAut) <- getListMany2ManyEx [KopalniaAutorKopalniaId ==. kopalniaId] kopalniaAutorAutorId
     linki <- getListM $ kopalniaLinki kopalnia
-    -- This call return a List of [Entity KopalniaAutor]
-    kopAuts <- runDB $ selectList [KopalniaAutorKopalniaId ==. kopalniaId] []
-    -- This call returns a List of Maybe Autor
-    allAut <- mapM (\(Entity _ kopAut) -> runDB $ get $ kopalniaAutorAutorId kopAut) kopAuts
-    -- Here we walk both lists together and extract only authors of a particular type
-    autorzy <- return $ keepOnly AutorAut kopAuts allAut
-    redaktorzy <- return $ keepOnly AutorRed kopAuts allAut
-    tlumacze <- return $ keepOnly AutorTlum kopAuts allAut
-    wywiadowcy <- return $ keepOnly AutorWyw kopAuts allAut
-    -- This call return a List of [Entity KopalniaWyd]
-    kopWydawcy <- runDB $ selectList [KopalniaWydKopalniaId ==. kopalniaId] []
-    -- This call returns a List of Maybe Wydawca
-    mWydawcy <- mapM (\(Entity _ kopWyd) -> runDB $ get $ kopalniaWydWydawcaId kopWyd) kopWydawcy
-    wydawcy <- return $ catMaybes mWydawcy
     wydawcyJson <- wydawcyToJson
     dataWyd <- return $ (maybe ("" :: String) show (kopalniaPubRok kopalnia)
                        , maybe ("" :: String) show (kopalniaPubMiesiac kopalnia))

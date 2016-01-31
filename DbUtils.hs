@@ -3,6 +3,8 @@
 module DbUtils (
     getMaybe,
     getListM,
+    getListMany2ManyEx,
+    getListMany2Many,
     prefixRegex,
     wydawcyToJson,
     autorzyToFieldValue,
@@ -30,6 +32,29 @@ getListM :: (PersistEntity ent, PersistStore (YesodPersistBackend site),
              PersistEntityBackend ent ~ YesodPersistBackend site) =>
             [Key ent] -> HandlerT site IO [(Maybe ent)]
 getListM = mapM (\key -> runDB $ get key)
+
+getListMany2ManyEx :: (PersistEntity ki, PersistEntity i, YesodPersist site,
+                       PersistStore (YesodPersistBackend site),
+                       PersistQuery (PersistEntityBackend ki),
+                       YesodPersistBackend site ~ PersistEntityBackend ki,
+                       YesodPersistBackend site ~ PersistEntityBackend i) =>
+                      [Filter ki] -> (ki -> Key i) -> HandlerT site IO ([Entity ki], [Maybe i])
+getListMany2ManyEx crit accessor = do
+    -- This call return a List of [Entity KopalniaX]
+    kopItems <- runDB $ selectList crit []
+    -- This call returns a List of Maybe X
+    mItems <- mapM (\(Entity _ k) -> runDB $ get $ accessor k) kopItems
+    return $ (kopItems, mItems)
+
+getListMany2Many :: (PersistEntity ki, PersistEntity i, YesodPersist site,
+                     PersistStore (YesodPersistBackend site),
+                     PersistQuery (PersistEntityBackend ki),
+                     YesodPersistBackend site ~ PersistEntityBackend ki,
+                     YesodPersistBackend site ~ PersistEntityBackend i) =>
+                    [Filter ki] -> (ki -> Key i) -> HandlerT site IO [i]
+getListMany2Many crit accessor = do
+    (_, mItems) <- getListMany2ManyEx crit accessor
+    return $ catMaybes mItems
 
 -- Helper function to create a Regex search term for MongoDB.
 prefixRegex :: Text -> MongoRegex -- i.e. (Text, Text)

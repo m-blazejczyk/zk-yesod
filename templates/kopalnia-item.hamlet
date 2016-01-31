@@ -24,15 +24,15 @@
 
   <div class="kopalnia-top-div">
 
-    ^{getAutorW isEdit lookupId autorzy (lookupEditParam FldAutor fields) "font-weight: bold;" "" "Autorzy"}
+    ^{getAutorW isEdit lookupId (keepOnly AutorAut kopAuts allAut) (lookupEditParam FldAutor fields) "font-weight: bold;" "" "Autorzy"}
 
-    ^{getAutorW isEdit lookupId tlumacze (lookupEditParam FldTlumacz fields) "" "Tłumaczenie:" "Tłumacze"}
+    ^{getAutorW isEdit lookupId (keepOnly AutorTlum kopAuts allAut) (lookupEditParam FldTlumacz fields) "" "Tłumaczenie:" "Tłumacze"}
 
-    ^{getAutorW isEdit lookupId wywiadowcy (lookupEditParam FldWywiad fields) "" "Pytania zadawane przez:" "Osoby zadające pytania"}
+    ^{getAutorW isEdit lookupId (keepOnly AutorWyw kopAuts allAut) (lookupEditParam FldWywiad fields) "" "Pytania zadawane przez:" "Osoby zadające pytania"}
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
-    ^{getAutorW isEdit lookupId redaktorzy (lookupEditParam FldRedaktor fields) "" "Redakcja:" "Redaktorzy"}
+    ^{getAutorW isEdit lookupId (keepOnly AutorRed kopAuts allAut) (lookupEditParam FldRedaktor fields) "" "Redakcja:" "Redaktorzy"}
 
     $if isEdit
       <p>
@@ -113,14 +113,14 @@
       $if not $ null $ haslaPrzedm
         <p class="inobtrusive">Hasła przedmiotowe:
         <p class="blockquote">
-          $forall mHaslo <- haslaPrzedm
-            <a href="#" class="link1">#{maybe "" hasloPrzedmHaslo mHaslo}
+          $forall haslo <- haslaPrzedm
+            <a href="#" class="link1">#{hasloPrzedmHaslo haslo}
 
     $if not $ null $ slowaKluczowe
       <p class="inobtrusive">Słowa kluczowe:
       <p class="blockquote">
-        $forall mSlowo <- slowaKluczowe
-          <a href="#" class="link1">#{maybe "" slowoKluczSlowo mSlowo}
+        $forall slowo <- slowaKluczowe
+          <a href="#" class="link1">#{slowoKluczSlowo slowo}
 
     <p class="inobtrusive">
       Linki:
