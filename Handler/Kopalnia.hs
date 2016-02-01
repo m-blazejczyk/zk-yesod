@@ -34,10 +34,10 @@ getKopalniaInitR = do
     autor4 <- runDB $ insert $ Autor 4 (Just "Tomasz") "Marciniak"
     now <- liftIO $ getCurrentTime
     nk1 <- runDB $ insert $ NkPub 1 "Polityka" Pismo
-    slowo1 <- runDB $ insert $ SlowoKlucz "Klucz 1"
-    slowo2 <- runDB $ insert $ SlowoKlucz "Klucz 2"
-    haslo1 <- runDB $ insert $ HasloPrzedm "Grafika"
-    haslo2 <- runDB $ insert $ HasloPrzedm "Muzyka"
+    slowo1 <- runDB $ insert $ SlowoKlucz 1 "Klucz 1"
+    slowo2 <- runDB $ insert $ SlowoKlucz 2 "Klucz 2"
+    haslo1 <- runDB $ insert $ HasloPrzedm 1 "Grafika"
+    haslo2 <- runDB $ insert $ HasloPrzedm 2 "Muzyka"
     wydawca1 <- runDB $ insert $ Wydawca 1 "Timof i cisi wspólnicy" (Just "http://www.timof.pl")
     wydawca2 <- runDB $ insert $ Wydawca 2 "Biblioteka Uniwersytecka" Nothing
     link1 <- runDB $ insert $ KopalniaLink "http://www.zeszytykomiksowe.org" Nothing Nothing
@@ -64,6 +64,8 @@ getKopalniaInitR = do
     _ <- runDB $ insert $ IntProp "nkPub" 2
     _ <- runDB $ insert $ IntProp "autor" 5
     _ <- runDB $ insert $ IntProp "wydawca" 3
+    _ <- runDB $ insert $ IntProp "slowo" 3
+    _ <- runDB $ insert $ IntProp "haslo" 3
     sendResponseStatus status200 ("Baza danych została zainicjalizowana." :: Text)
 
 getKopalniaItemR :: Int64 -> Handler Html

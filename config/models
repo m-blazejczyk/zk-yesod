@@ -13,6 +13,8 @@ User
 --  * nkPub
 --  * autor
 --  * wydawca
+--  * slowo
+--  * haslo
 IntProp
     key Text
     value Int64
@@ -27,8 +29,9 @@ NkPub                     -- Publikacja niekomiksowa
     deriving Typeable
 
 SlowoKlucz
+    lookupId Int64
     slowo Text
-    UniqueSlowoKlucz slowo
+    UniqueSlowoKlucz lookupId
     deriving Typeable
 
 KopalniaSlowo
@@ -37,8 +40,9 @@ KopalniaSlowo
     deriving Typeable
 
 HasloPrzedm
+    lookupId Int64
     haslo Text
-    UniqueHasloPrzedm haslo
+    UniqueHasloPrzedm lookupId
     deriving Typeable
 
 KopalniaHaslo
