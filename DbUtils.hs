@@ -7,7 +7,7 @@ module DbUtils (
     getListMany2Many,
     prefixRegex,
     wydawcyToJson,
-    autorzyToFieldValue,
+    itemsToFieldValue,
     wydawcyToFieldValue
     ) where
 
@@ -76,10 +76,6 @@ wydawcyToJson = do
 itemsToFieldValue :: (a -> Int64) -> (a -> T.Text) -> [a] -> T.Text
 itemsToFieldValue lookupFun nameFun items = T.intercalate "||" (map processItem items)
     where processItem item = T.intercalate "||" [(T.pack . show) (lookupFun item), nameFun item]
-
-autorzyToFieldValue :: [Autor] -> T.Text
-autorzyToFieldValue = itemsToFieldValue autorLookupId autorNazwa
-    where autorNazwa aut = T.intercalate " " (catMaybes [autorImiona aut, Just (autorNazwisko aut)])
 
 wydawcyToFieldValue :: [Wydawca] -> T.Text
 wydawcyToFieldValue = itemsToFieldValue wydawcaLookupId wydawcaNazwa

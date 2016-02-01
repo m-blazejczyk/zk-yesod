@@ -1,10 +1,12 @@
 module Handler.Autor (getAutorR,
-                      getFindAutorR
+                      getFindAutorR,
+                      autorzyToFieldValue
                       ) where
 
 import Import
 import Database.Persist.MongoDB ((=~.))
 import qualified Data.Text as T
+import DbUtils (itemsToFieldValue)
 import Handler.Common (processSearchQuery)
 
 getAutorR :: Int64 -> Handler Html
@@ -21,3 +23,7 @@ getFindAutorR = processSearchQuery crit transform
         transform (Entity _ autor) = object ["id" .= autorLookupId autor, "text" .= getName autor]
         getName autor = T.concat [getFName autor, autorNazwisko autor]
         getFName autor = maybe "" (\i -> T.concat [i, " "]) (autorImiona autor)
+
+autorzyToFieldValue :: [Autor] -> T.Text
+autorzyToFieldValue = itemsToFieldValue autorLookupId autorNazwa
+    where autorNazwa aut = T.intercalate " " (catMaybes [autorImiona aut, Just (autorNazwisko aut)])

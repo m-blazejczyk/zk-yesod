@@ -108,7 +108,7 @@
     $if isEdit
       <p class="inobtrusive">Hasła przedmiotowe:
       <p class="blockquote">
-        <span id="#{lookupEditParam FldHasla fields}" data-type="select2" data-value="tag1,tag2" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Hasła przedmiotowe">
+        <span id="#{lookupEditParam FldHasla fields}" data-type="select2" data-value="#{haslaToFieldValue haslaPrzedm}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Hasła przedmiotowe">
     $else
       $if not $ null $ haslaPrzedm
         <p class="inobtrusive">Hasła przedmiotowe:

@@ -7,7 +7,7 @@ module Handler.KopalniaWidgets (
 
 import Import
 import Enums (showRodzaj)
-import DbUtils (autorzyToFieldValue)
+import Handler.Autor (autorzyToFieldValue)
 
 -- The approach used in the functions below is not DRY at all, but at the same time it simplifies 
 -- the conditional HTML building a lot.
