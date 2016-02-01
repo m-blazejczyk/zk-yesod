@@ -167,7 +167,12 @@ editOpisR = processXEditable1 vald upd where
     upd value = [KopalniaOpis =. value]
 
 editHaslaR :: EditHandler
-editHaslaR _ = sendResponseStatus badRequest400 ("editHaslaR nie zaimplementowany" :: Text)
+editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord undefined "SlowoKlucz" where
+    getUnique = UniqueSlowoKlucz
+    extractId (Just (Entity slowoId _)) = Just slowoId
+    extractId Nothing = Nothing
+    delFilter slowoId = [KopalniaSlowoKopalniaId ==. slowoId]
+    insRecord = KopalniaSlowo
 
 editSlowaKluczR :: EditHandler
 editSlowaKluczR _ = sendResponseStatus badRequest400 ("editSlowaKluczR nie zaimplementowany" :: Text)
