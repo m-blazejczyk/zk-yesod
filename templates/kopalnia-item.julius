@@ -186,7 +186,7 @@ if(#{isEdit}) {
         createSearchChoice: function (term) {
           var tterm = $.trim(term);
           return {
-            id: tterm,
+            id: 'NEW:' + tterm,  // Don't change 'NEW:' here - see processXEditableMulti in XEditable.hs
             text: tterm + ' (nowe hasło)'
           };
         },

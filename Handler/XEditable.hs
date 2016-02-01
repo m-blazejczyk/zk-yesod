@@ -69,6 +69,7 @@ processXEditable1 vald upd = processXEditable vald' upd'
 -- extractId is a simple extractor of values of type 'Key rec' from 'Entity rec', wrapped in a Maybe.
 -- delFilter is used to delete records from 'm2m' for a given Key Kopalnia.
 -- insRecord is used to insert new records into 'm2m' using two keys.
+-- processNewItem is used to insert new records into 'rec' (for tags).
 -- tableName is the name of the 'rec' table in the database.
 processXEditableMulti :: (PersistEntity rec, PersistEntity m2m,
                           PersistEntityBackend rec ~ Database.MongoDB.Query.MongoContext,
@@ -77,37 +78,41 @@ processXEditableMulti :: (PersistEntity rec, PersistEntity m2m,
                        -> (Maybe (Entity rec) -> Maybe (Key rec))
                        -> (Key Kopalnia -> [Filter m2m])
                        -> (Key rec -> Key Kopalnia -> m2m)
+                       -> (Text -> Handler (Key rec))
                        -> Text
                        -> [(Text, Text)]
                        -> Handler Text
-processXEditableMulti getUnique extractId delFilter insRecord tableName = processXEditable (valdArr vald) upd where
-    -- Handling of the ("value[]","") parameter (no ids).
-    vald [""] = return $ Success $ []
-    vald arr = 
-        -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
-        let arrIds = mapMaybe maybeRead (map Just arr)
-        -- mapMaybe filters out all Nothing values from the list so if any id was invalid
-        -- then the result will be shorter.
-        in if length arrIds == length arr
-            then valdDb arrIds
-            else return $ Error $ systemErrorT "Niepoprawny identyfikator tabeli" tableName
-    valdDb lookupIds = do
-        -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
-        mRecords <- mapM (\iden -> runDB $ getBy $ getUnique iden) lookupIds  -- mRecords :: [Maybe (Entity x y)]
-        let ids = mapMaybe extractId mRecords  -- ids :: [x] (see annotation in the line above)
-        if length ids == length lookupIds
-            then return $ Success $ ids
-            else return $ Error $ systemErrorT "Niezdefiniowany identyfikator tabeli" tableName
-    -- 'recordIds' is of type [Key Autor]
-    upd kopalniaLookupId recordIds = do
-        mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
-        case mKopalnia of
-            Just (Entity kopalniaId _) -> do
-                runDB $ deleteWhere $ delFilter kopalniaId
-                _ <- mapM (\recordId -> runDB $ insert $ insRecord recordId kopalniaId) recordIds
-                return $ Success "OK"
-            -- This should NEVER happen!
-            Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
+processXEditableMulti getUnique extractId delFilter insRecord processNewItem tableName = processXEditable (valdArr vald) upd
+    where
+        -- Handling of the ("value[]","") parameter (no ids, i.e. empty set).
+        vald [""] = return $ Success $ []
+        vald arr = 
+            -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
+            -- mapMaybe filters out all Nothing values from the list so if any id was invalid
+            -- then the result will be shorter.
+            let arrIds = mapMaybe maybeRead (map Just arr)
+                newItems = filter (isPrefixOf "NEW:") arr
+            in if length arrIds + length newItems == length arr
+                then valdDb arrIds (map (drop 4) newItems)
+                else return $ Error $ systemErrorT "Niepoprawny identyfikator tabeli" tableName
+        valdDb lookupIds newItems = do
+            -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
+            mRecords <- mapM (\iden -> runDB $ getBy $ getUnique iden) lookupIds  -- mRecords :: [Maybe (Entity x y)]
+            let ids = mapMaybe extractId mRecords  -- :: [Key rec]
+            newIds <- mapM processNewItem newItems -- :: [Key rec]
+            if length ids == length lookupIds
+                then return $ Success $ (L.nub (ids ++ newIds))
+                else return $ Error $ systemErrorT "Niezdefiniowany identyfikator tabeli" tableName
+        -- 'recordIds' is of type [Key Autor]
+        upd kopalniaLookupId recordIds = do
+            mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
+            case mKopalnia of
+                Just (Entity kopalniaId _) -> do
+                    runDB $ deleteWhere $ delFilter kopalniaId
+                    _ <- mapM (\recordId -> runDB $ insert $ insRecord recordId kopalniaId) recordIds
+                    return $ Success "OK"
+                -- This should NEVER happen!
+                Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
 
 -- This function processes an Ajax POST request coming from X-Editable.  Each such request should
 --   first be validated, and then one or more database fields should be updated.

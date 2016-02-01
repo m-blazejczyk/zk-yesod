@@ -60,7 +60,7 @@ editWywiadR :: EditHandler
 editWywiadR = editAutorGenericR AutorWyw
 
 editAutorGenericR :: TypAutora -> EditHandler
-editAutorGenericR typAutora = processXEditableMulti getUnique extractId delFilter insRecord "Autor" where
+editAutorGenericR typAutora = processXEditableMulti getUnique extractId delFilter insRecord undefined "Autor" where
     getUnique = UniqueAutor
     extractId (Just (Entity autorId _)) = Just autorId
     extractId Nothing = Nothing
@@ -68,7 +68,7 @@ editAutorGenericR typAutora = processXEditableMulti getUnique extractId delFilte
     insRecord autorId kopalniaId = KopalniaAutor autorId kopalniaId typAutora
 
 editWydawcyR :: EditHandler
-editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord "Wydawca" where
+editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord undefined "Wydawca" where
     getUnique = UniqueWydawca
     extractId (Just (Entity wydawcaId _)) = Just wydawcaId
     extractId Nothing = Nothing
