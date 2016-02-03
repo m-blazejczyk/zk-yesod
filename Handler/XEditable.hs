@@ -78,7 +78,7 @@ processXEditableMulti :: (PersistEntity rec, PersistEntity m2m,
                        -> (Maybe (Entity rec) -> Maybe (Key rec))
                        -> (Key Kopalnia -> [Filter m2m])
                        -> (Key rec -> Key Kopalnia -> m2m)
-                       -> (Key Kopalnia -> Text -> Handler (Key rec))
+                       -> (Key Kopalnia -> Text -> Handler (Maybe (Key rec)))
                        -> Text
                        -> [(Text, Text)]
                        -> Handler Text
@@ -107,7 +107,8 @@ processXEditableMulti getUnique extractId delFilter insRecord processNewItem tab
             mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
             case mKopalnia of
                 Just (Entity kopalniaId _) -> do
-                    newIds <- mapM (processNewItem kopalniaId) newItems  -- :: [Key rec]
+                    mNewIds <- mapM (processNewItem kopalniaId) newItems  -- :: Handler [Maybe (Key rec)]
+                    let newIds = catMaybes mNewIds  -- [Key rec]
                     let allIds = L.nub (existingIds ++ newIds)  -- combine new and old ids and eliminate duplicates
                     runDB $ deleteWhere $ delFilter kopalniaId
                     _ <- mapM (\recordId -> runDB $ insert $ insRecord recordId kopalniaId) allIds

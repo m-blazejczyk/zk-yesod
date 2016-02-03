@@ -167,12 +167,23 @@ editOpisR = processXEditable1 vald upd where
     upd value = [KopalniaOpis =. value]
 
 editHaslaR :: EditHandler
-editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord undefined "SlowoKlucz" where
-    getUnique = UniqueSlowoKlucz
-    extractId (Just (Entity slowoId _)) = Just slowoId
+editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord processNewItem "HasloPrzedm" where
+    getUnique = UniqueHasloPrzedm
+    extractId (Just (Entity hasloId _)) = Just hasloId
     extractId Nothing = Nothing
-    delFilter slowoId = [KopalniaSlowoKopalniaId ==. slowoId]
-    insRecord = KopalniaSlowo
+    delFilter hasloId = [KopalniaHasloKopalniaId ==. hasloId]
+    insRecord = KopalniaHaslo
+    processNewItem kopalniaId item = do
+        mNast <- runDB $ getBy $ UniqueIntProp "haslo"
+        case mNast of
+            Just (Entity _ nast) -> updateKopalniaWyd nast
+            Nothing -> return Nothing
+        where 
+            updateKopalniaWyd nast = do
+                hasloId <- runDB $ insert $ HasloPrzedm (intPropValue nast) item
+                runDB $ updateWhere [IntPropKey ==. "haslo"] [IntPropValue =. ((intPropValue nast) + 1)]
+                _ <- runDB $ insert $ KopalniaHaslo hasloId kopalniaId
+                return $ Just hasloId
 
 editSlowaKluczR :: EditHandler
 editSlowaKluczR _ = sendResponseStatus badRequest400 ("editSlowaKluczR nie zaimplementowany" :: Text)
