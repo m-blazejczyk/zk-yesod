@@ -78,14 +78,14 @@ processXEditableMulti :: (PersistEntity rec, PersistEntity m2m,
                        -> (Maybe (Entity rec) -> Maybe (Key rec))
                        -> (Key Kopalnia -> [Filter m2m])
                        -> (Key rec -> Key Kopalnia -> m2m)
-                       -> (Text -> Handler (Key rec))
+                       -> (Key Kopalnia -> Text -> Handler (Key rec))
                        -> Text
                        -> [(Text, Text)]
                        -> Handler Text
 processXEditableMulti getUnique extractId delFilter insRecord processNewItem tableName = processXEditable (valdArr vald) upd
     where
         -- Handling of the ("value[]","") parameter (no ids, i.e. empty set).
-        vald [""] = return $ Success $ []
+        vald [""] = return $ Success $ ([], [])
         vald arr = 
             -- mapMaybe :: (Maybe Text -> Maybe Int64) -> [Maybe Text] -> [Int64]
             -- mapMaybe filters out all Nothing values from the list so if any id was invalid
@@ -98,18 +98,19 @@ processXEditableMulti getUnique extractId delFilter insRecord processNewItem tab
         valdDb lookupIds newItems = do
             -- mapM :: (a -> Handler (Maybe (Entity x y))) -> [a] -> Handler [Maybe (Entity x y)]
             mRecords <- mapM (\iden -> runDB $ getBy $ getUnique iden) lookupIds  -- mRecords :: [Maybe (Entity x y)]
-            let ids = mapMaybe extractId mRecords  -- :: [Key rec]
-            newIds <- mapM processNewItem newItems -- :: [Key rec]
-            if length ids == length lookupIds
-                then return $ Success $ (L.nub (ids ++ newIds))
+            let existingIds = mapMaybe extractId mRecords  -- :: [Key rec]
+            if length existingIds == length lookupIds
+                then return $ Success $ (existingIds, newItems)
                 else return $ Error $ systemErrorT "Niezdefiniowany identyfikator tabeli" tableName
-        -- 'recordIds' is of type [Key Autor]
-        upd kopalniaLookupId recordIds = do
+        -- 'existingIds' is of type [Key Autor]
+        upd kopalniaLookupId (existingIds, newItems) = do
             mKopalnia <- runDB $ getBy $ UniqueKopalnia kopalniaLookupId
             case mKopalnia of
                 Just (Entity kopalniaId _) -> do
+                    newIds <- mapM (processNewItem kopalniaId) newItems  -- :: [Key rec]
+                    let allIds = L.nub (existingIds ++ newIds)  -- combine new and old ids and eliminate duplicates
                     runDB $ deleteWhere $ delFilter kopalniaId
-                    _ <- mapM (\recordId -> runDB $ insert $ insRecord recordId kopalniaId) recordIds
+                    _ <- mapM (\recordId -> runDB $ insert $ insRecord recordId kopalniaId) allIds
                     return $ Success "OK"
                 -- This should NEVER happen!
                 Nothing -> return $ Success $ systemErrorS "Fiszka o tym identyfikatorze nie istnieje" kopalniaLookupId
