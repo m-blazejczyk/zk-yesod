@@ -7,6 +7,7 @@ import Enums
 import qualified Data.Text as T
 import Network.URI (isURI)
 import Utils
+import DbUtils (dbPropWydawca, dbPropHaslo)
 import Handler.XEditable
 
 fields :: [(KopalniaField, (Text, EditHandler))]
@@ -91,7 +92,7 @@ editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
     upd _ Nothing = return $ Success "IGNORE"  -- If both parameters were empty, simply ignore the request.
                                                -- Don't change this text without changing the JS file.
     upd lookupId (Just (nazwa, url)) = do
-        mNast <- runDB $ getBy $ UniqueIntProp "wydawca"
+        mNast <- runDB $ getBy $ UniqueIntProp dbPropWydawca
         case mNast of
             Just (Entity _ nast) -> do
                 mKopalnia <- runDB $ getBy $ UniqueKopalnia lookupId
@@ -103,7 +104,7 @@ editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
         where 
             updateKopalniaWyd nast kopalniaId = do
                 wydawcaId <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
-                runDB $ updateWhere [IntPropKey ==. "wydawca"] [IntPropValue =. ((intPropValue nast) + 1)]
+                runDB $ updateWhere [IntPropKey ==. dbPropWydawca] [IntPropValue =. ((intPropValue nast) + 1)]
                 _ <- runDB $ insert $ KopalniaWyd wydawcaId kopalniaId
                 -- Important: we need to return the inserted publisher's ID as plain text from the POST request.
                 -- See how onAdd() is called in editable-zk.js.
@@ -174,14 +175,14 @@ editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord proce
     delFilter hasloId = [KopalniaHasloKopalniaId ==. hasloId]
     insRecord = KopalniaHaslo
     processNewItem kopalniaId item = do
-        mNast <- runDB $ getBy $ UniqueIntProp "haslo"
+        mNast <- runDB $ getBy $ UniqueIntProp dbPropHaslo
         case mNast of
             Just (Entity _ nast) -> updateKopalniaWyd nast
             Nothing -> return Nothing
         where 
             updateKopalniaWyd nast = do
                 hasloId <- runDB $ insert $ HasloPrzedm (intPropValue nast) item
-                runDB $ updateWhere [IntPropKey ==. "haslo"] [IntPropValue =. ((intPropValue nast) + 1)]
+                runDB $ updateWhere [IntPropKey ==. dbPropHaslo] [IntPropValue =. ((intPropValue nast) + 1)]
                 _ <- runDB $ insert $ KopalniaHaslo hasloId kopalniaId
                 return $ Just hasloId
 

@@ -1,6 +1,12 @@
 {-# LANGUAGE ExtendedDefaultRules #-}  -- Required by MongoDB stuff
 
 module DbUtils (
+    dbPropKopalnia,
+    dbPropNkPub,
+    dbPropAutor,
+    dbPropWydawca,
+    dbPropSlowo,
+    dbPropHaslo,
     getMaybe,
     getListM,
     getListMany2ManyEx,
@@ -17,6 +23,24 @@ import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
 import Database.Persist.MongoDB (MongoRegex)
+
+dbPropKopalnia :: Text
+dbPropKopalnia = "kopalnia"
+
+dbPropNkPub :: Text
+dbPropNkPub = "nkPub"
+
+dbPropAutor :: Text
+dbPropAutor = "autor"
+
+dbPropWydawca :: Text
+dbPropWydawca = "wydawca"
+
+dbPropSlowo :: Text
+dbPropSlowo = "slowo"
+
+dbPropHaslo :: Text
+dbPropHaslo = "haslo"
 
 -- Turns a (Maybe <database id>) to a (Maybe <entity>).
 getMaybe :: (PersistEntity ent, PersistStore (YesodPersistBackend site),

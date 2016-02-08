@@ -61,12 +61,12 @@ getKopalniaInitR = do
     _ <- runDB $ insert $ KopalniaHaslo haslo2 item1
     _ <- runDB $ insert $ KopalniaHaslo haslo1 item2
     _ <- runDB $ insert $ KopalniaHaslo haslo2 item2
-    _ <- runDB $ insert $ IntProp "kopalnia" 4
-    _ <- runDB $ insert $ IntProp "nkPub" 2
-    _ <- runDB $ insert $ IntProp "autor" 5
-    _ <- runDB $ insert $ IntProp "wydawca" 3
-    _ <- runDB $ insert $ IntProp "slowo" 3
-    _ <- runDB $ insert $ IntProp "haslo" 3
+    _ <- runDB $ insert $ IntProp dbPropKopalnia 4
+    _ <- runDB $ insert $ IntProp dbPropNkPub 2
+    _ <- runDB $ insert $ IntProp dbPropAutor 5
+    _ <- runDB $ insert $ IntProp dbPropWydawca 3
+    _ <- runDB $ insert $ IntProp dbPropSlowo 3
+    _ <- runDB $ insert $ IntProp dbPropHaslo 3
     sendResponseStatus status200 ("Baza danych została zainicjalizowana." :: Text)
 
 getKopalniaItemR :: Int64 -> Handler Html
