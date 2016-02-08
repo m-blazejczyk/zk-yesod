@@ -7,7 +7,7 @@ import Enums
 import qualified Data.Text as T
 import Network.URI (isURI)
 import Utils
-import DbUtils (dbPropWydawca, dbPropHaslo, updateTagTable)
+import DbUtils (dbPropWydawca, dbPropHaslo, dbPropSlowo, updateTagTable)
 import Handler.XEditable
 
 fields :: [(KopalniaField, (Text, EditHandler))]
@@ -185,4 +185,19 @@ editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord proce
             Nothing -> return Nothing
 
 editSlowaKluczR :: EditHandler
-editSlowaKluczR _ = sendResponseStatus badRequest400 ("editSlowaKluczR nie zaimplementowany" :: Text)
+editSlowaKluczR = processXEditableMulti getUnique extractId delFilter insRecord processNewItem "SlowoKlucz" where
+    getUnique = UniqueSlowoKlucz
+    extractId (Just (Entity slowoId _)) = Just slowoId
+    extractId Nothing = Nothing
+    delFilter slowoId = [KopalniaSlowoKopalniaId ==. slowoId]
+    insRecord = KopalniaSlowo
+    processNewItem kopalniaId item = do
+        mNast <- runDB $ getBy $ UniqueIntProp dbPropSlowo
+        case mNast of
+            Just (Entity _ nast) -> do
+                slowoId <- updateTagTable nast
+                                          dbPropSlowo
+                                          (\lookupId -> SlowoKlucz lookupId item)
+                                          (\lookupId -> KopalniaSlowo lookupId kopalniaId)
+                return $ Just slowoId
+            Nothing -> return Nothing

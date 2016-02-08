@@ -16,6 +16,7 @@ import Handler.KopalniaEdit (fields)
 import Handler.KopalniaWidgets
 import Handler.XEditable
 import Handler.HasloPrzedm (haslaToFieldValue)
+import Handler.SlowoKlucz (slowaToFieldValue)
 
 defaultTitle :: Html
 defaultTitle = "Polska Bibliografia Wiedzy o Komiksie - Zeszyty Komiksowe"

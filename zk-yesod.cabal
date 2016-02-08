@@ -31,6 +31,7 @@ library
                      Handler.KopalniaEdit
                      Handler.Autor
                      Handler.HasloPrzedm
+                     Handler.SlowoKlucz
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT

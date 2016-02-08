@@ -116,11 +116,16 @@
           $forall haslo <- haslaPrzedm
             <a href="#" class="link1">#{hasloPrzedmHaslo haslo}
 
-    $if not $ null $ slowaKluczowe
+    $if isEdit
       <p class="inobtrusive">Słowa kluczowe:
       <p class="blockquote">
-        $forall slowo <- slowaKluczowe
-          <a href="#" class="link1">#{slowoKluczSlowo slowo}
+        <span id="#{lookupEditParam FldSlowaKlucz fields}" data-type="select2" data-value="#{slowaToFieldValue slowaKluczowe}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Słowa kluczowe">
+    $else
+      $if not $ null $ slowaKluczowe
+        <p class="inobtrusive">Słowa kluczowe:
+        <p class="blockquote">
+          $forall slowo <- slowaKluczowe
+            <a href="#" class="link1">#{slowoKluczSlowo slowo}
 
     <p class="inobtrusive">
       Linki:

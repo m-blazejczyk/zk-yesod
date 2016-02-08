@@ -172,37 +172,43 @@ if(#{isEdit}) {
     initAuthors('#{rawJS $ lookupEditParam FldWywiad fields}', 'wybierz osoby zadające pytania');
     initAuthors('#{rawJS $ lookupEditParam FldRedaktor fields}', 'wybierz redaktorów');
 
-    $('#' + '#{rawJS $ lookupEditParam FldHasla fields}').editableZK({
-      emptytext: "[brak]",
-      select2: {
-        multiple: true,
-        placeholder: "wybierz albo wpisz nowe",
-        allowClear: true,
-        width: '100%',
-        minimumInputLength: 2,
-        quietMillis: 250,
-        tags: true,
-        tokenSeparators: [','],
-        createSearchChoice: function (term) {
-          var tterm = $.trim(term);
-          return {
-            id: 'NEW:' + tterm,  // Don't change 'NEW:' here - see processXEditableMulti in XEditable.hs
-            text: tterm + ' (nowe hasło)'
-          };
-        },
-        ajax: {
-          url: '@{FindHasloR}',
-          dataType: 'json',
-          data: function(term, page) {
+    var initTags = function(ajaxUrl) {
+      return {
+        emptytext: "[brak]",
+        select2: {
+          multiple: true,
+          placeholder: "wybierz albo wpisz nowe",
+          allowClear: true,
+          width: '100%',
+          minimumInputLength: 2,
+          quietMillis: 250,
+          tags: true,
+          tokenSeparators: [';'],
+          createSearchChoice: function (term) {
+            var tterm = $.trim(term);
             return {
-              q: term
-            }
+              id: 'NEW:' + tterm,  // Don't change 'NEW:' here - see processXEditableMulti in XEditable.hs
+              text: tterm + ' (nowe)'
+            };
           },
-          results: function(data, page) {
-            return data
+          ajax: {
+            url: ajaxUrl,
+            dataType: 'json',
+            data: function(term, page) {
+              return {
+                q: term
+              }
+            },
+            results: function(data, page) {
+              return data
+            }
           }
         }
-      }
-    });
+      };
+    };
+
+    $('#' + '#{rawJS $ lookupEditParam FldHasla fields}').editableZK(initTags('@{FindHasloR}'));
+    $('#' + '#{rawJS $ lookupEditParam FldSlowaKlucz fields}').editableZK(initTags('@{FindSlowoR}'));
+
   });
 }
