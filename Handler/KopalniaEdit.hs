@@ -7,7 +7,7 @@ import Enums
 import qualified Data.Text as T
 import Network.URI (isURI)
 import Utils
-import DbUtils (dbPropWydawca, dbPropHaslo)
+import DbUtils (dbPropWydawca, dbPropHaslo, updateTagTable)
 import Handler.XEditable
 
 fields :: [(KopalniaField, (Text, EditHandler))]
@@ -97,18 +97,17 @@ editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
             Just (Entity _ nast) -> do
                 mKopalnia <- runDB $ getBy $ UniqueKopalnia lookupId
                 case mKopalnia of
-                    Just (Entity kopalniaId _) -> updateKopalniaWyd nast kopalniaId
+                    Just (Entity kopalniaId _) -> do
+                        wydawcaId <- updateTagTable nast
+                                                    dbPropWydawca 
+                                                    (\lid -> Wydawca lid nazwa url)
+                                                    (\lid -> KopalniaWyd lid kopalniaId)
+                        -- Important: we need to return the inserted publisher's ID as plain text from the POST request.
+                        -- See how onAdd() is called in editable-zk.js.
+                        return $ Success $ (T.pack . show) wydawcaId
                     -- This should NEVER happen!
                     Nothing -> return $ Error $ systemError "Niepoprawny identyfikator kopalni"
             Nothing -> return $ Error $ systemError "Brak ustawienia 'wydawca' w bazie danych"
-        where 
-            updateKopalniaWyd nast kopalniaId = do
-                wydawcaId <- runDB $ insert $ Wydawca (intPropValue nast) nazwa url
-                runDB $ updateWhere [IntPropKey ==. dbPropWydawca] [IntPropValue =. ((intPropValue nast) + 1)]
-                _ <- runDB $ insert $ KopalniaWyd wydawcaId kopalniaId
-                -- Important: we need to return the inserted publisher's ID as plain text from the POST request.
-                -- See how onAdd() is called in editable-zk.js.
-                return $ Success $ (T.pack . show) wydawcaId
 
 editDataWydaniaR :: EditHandler
 editDataWydaniaR = processXEditable (valdMap ["year", "month"] vald) upd where
@@ -177,14 +176,13 @@ editHaslaR = processXEditableMulti getUnique extractId delFilter insRecord proce
     processNewItem kopalniaId item = do
         mNast <- runDB $ getBy $ UniqueIntProp dbPropHaslo
         case mNast of
-            Just (Entity _ nast) -> updateKopalniaWyd nast
-            Nothing -> return Nothing
-        where 
-            updateKopalniaWyd nast = do
-                hasloId <- runDB $ insert $ HasloPrzedm (intPropValue nast) item
-                runDB $ updateWhere [IntPropKey ==. dbPropHaslo] [IntPropValue =. ((intPropValue nast) + 1)]
-                _ <- runDB $ insert $ KopalniaHaslo hasloId kopalniaId
+            Just (Entity _ nast) -> do
+                hasloId <- updateTagTable nast
+                                          dbPropHaslo 
+                                          (\lookupId -> HasloPrzedm lookupId item)
+                                          (\lookupId -> KopalniaHaslo lookupId kopalniaId)
                 return $ Just hasloId
+            Nothing -> return Nothing
 
 editSlowaKluczR :: EditHandler
 editSlowaKluczR _ = sendResponseStatus badRequest400 ("editSlowaKluczR nie zaimplementowany" :: Text)

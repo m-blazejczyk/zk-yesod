@@ -1,5 +1,3 @@
-{-# LANGUAGE ExtendedDefaultRules #-}  -- Required by MongoDB stuff
-
 module DbUtils (
     dbPropKopalnia,
     dbPropNkPub,
@@ -11,6 +9,7 @@ module DbUtils (
     getListM,
     getListMany2ManyEx,
     getListMany2Many,
+    updateTagTable,
     prefixRegex,
     wydawcyToJson,
     itemsToFieldValue,
@@ -23,7 +22,8 @@ import Data.ByteString.Lazy.Internal (ByteString)
 import Data.Aeson (encode)
 import Utils
 import Database.Persist.MongoDB (MongoRegex)
-
+import Database.MongoDB.Query (MongoContext)
+   
 dbPropKopalnia :: Text
 dbPropKopalnia = "kopalnia"
 
@@ -79,6 +79,25 @@ getListMany2Many :: (PersistEntity ki, PersistEntity i, YesodPersist site,
 getListMany2Many crit accessor = do
     (_, mItems) <- getListMany2ManyEx crit accessor
     return $ catMaybes mItems
+
+-- This function takes:
+-- * The already retrieved IntProp record;
+-- * The property name (from IntProp table);
+-- * Function that takes the new lookup id and returns the record;
+-- * Function that takes the the item's key and returns the many-to-many record;
+-- It returns the item's key.
+updateTagTable :: (PersistEntity item, PersistEntity m2m, YesodPersist site,
+                   PersistStore (YesodPersistBackend site),
+                   PersistStore (PersistEntityBackend m2m),
+                   YesodPersistBackend site ~ Database.MongoDB.Query.MongoContext,
+                   YesodPersistBackend site ~ PersistEntityBackend item,
+                   YesodPersistBackend site ~ PersistEntityBackend m2m) =>
+                  IntProp -> Text -> (Int64 -> item) -> (Key item -> m2m) -> HandlerT site IO (Key item)
+updateTagTable nast dbProp createItem createM2m = do
+    itemId <- runDB $ insert $ createItem (intPropValue nast)
+    runDB $ updateWhere [IntPropKey ==. dbProp] [IntPropValue =. ((intPropValue nast) + 1)]
+    _ <- runDB $ insert $ createM2m itemId
+    return itemId
 
 -- Helper function to create a Regex search term for MongoDB.
 prefixRegex :: Text -> MongoRegex -- i.e. (Text, Text)
