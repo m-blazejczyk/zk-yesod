@@ -32,6 +32,16 @@
 
     ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
+    $if isEdit
+      <p>
+        <span class="inobtrusive">Strony:
+        <span class="inobtrusive" id="#{lookupEditParam FldStrony fields}" data-type="text" data-value=#{maybe "" id (kopalniaStrony kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Strony, na których znajduje się publikacja">
+    $else
+      $maybe strony <- kopalniaStrony kopalnia
+        <p>
+          <span class="inobtrusive">Strony:
+          #{strony}
+
     ^{getAutorW isEdit lookupId (keepOnly AutorRed kopAuts allAut) (lookupEditParam FldRedaktor fields) "" "Redakcja:" "Redaktorzy"}
 
     $if isEdit
@@ -57,16 +67,6 @@
           $maybe miesiac <- getMiesiac $ kopalniaPubMiesiac kopalnia
             #{miesiac} #
           \#{rok}
-
-    $if isEdit
-      <p>
-        <span class="inobtrusive">Strony:
-        <span class="inobtrusive" id="#{lookupEditParam FldStrony fields}" data-type="text" data-value=#{maybe "" id (kopalniaStrony kopalnia)} data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Strony, na których znajduje się publikacja">
-    $else
-      $maybe strony <- kopalniaStrony kopalnia
-        <p>
-          <span class="inobtrusive">Strony:
-          #{strony}
 
     $if isEdit
       <p>
