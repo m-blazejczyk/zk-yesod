@@ -30,7 +30,13 @@
 
     ^{getAutorW isEdit lookupId (keepOnly AutorWyw kopAuts allAut) (lookupEditParam FldWywiad fields) "" "Pytania zadawane przez:" "Osoby zadające pytania"}
 
-    ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
+    $if isEdit
+      <p>
+        <span class="inobtrusive">W:
+      <p class="blockquote">
+        <span class="inobtrusive" id="#{lookupEditParam FldRodzic fields}" data-pk="#{lookupId}" data-url=@{KopalniaItemUpdateR} data-title="Publikacja zawierająca">
+    $else
+      ^{getRodzicW (kopalniaRodzicOpis kopalnia) mRodzic mDzial mNkRodzic}
 
     $if isEdit
       <p>

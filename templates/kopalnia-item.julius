@@ -1,6 +1,21 @@
 if(#{isEdit}) {
   $(document).ready(function() {
 
+    var initAjax = function(ajaxUrl) {
+      return {
+        url: ajaxUrl,
+        dataType: 'json',
+        data: function(term, page) {
+          return {
+            q: term
+          }
+        },
+        results: function(data, page) {
+          return data
+        }
+      }
+    };
+
     $('#' + '#{rawJS $ lookupEditParam FldTytul fields}').editableZK();
 
     $('#' + '#{rawJS $ lookupEditParam FldRodzaj fields}').editableZK(
@@ -152,18 +167,7 @@ if(#{isEdit}) {
           width: '100%',
           minimumInputLength: 2,
           quietMillis: 250,
-          ajax: {
-            url: '@{FindAutorR}',
-            dataType: 'json',
-            data: function(term, page) {
-              return {
-                q: term
-              }
-            },
-            results: function(data, page) {
-              return data
-            }
-          }
+          ajax: initAjax('@{FindAutorR}')
         }
       })
     };
@@ -191,24 +195,58 @@ if(#{isEdit}) {
               text: tterm + ' (nowe)'
             };
           },
-          ajax: {
-            url: ajaxUrl,
-            dataType: 'json',
-            data: function(term, page) {
-              return {
-                q: term
-              }
-            },
-            results: function(data, page) {
-              return data
-            }
-          }
+          ajax: initAjax(ajaxUrl)
         }
       };
     };
 
     $('#' + '#{rawJS $ lookupEditParam FldHasla fields}').editableZK(initTags('@{FindHasloR}'));
     $('#' + '#{rawJS $ lookupEditParam FldSlowaKlucz fields}').editableZK(initTags('@{FindSlowoR}'));
+
+    $('#' + '#{rawJS $ lookupEditParam FldRodzic fields}').editableZK({
+      fields: {
+        rodzic: {
+          type: 'select2',
+          label: 'Rodzic',
+          emptytext: "[brak]",
+          select2: {
+            multiple: false,
+            placeholder: 'wybierz publikację',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            quietMillis: 250,
+            ajax: initAjax('@{FindAutorR}')
+          }
+        },
+        dzial: {
+          type: 'text',
+          label: 'Dział',
+          placeholder: 'wybierz publikację'
+        },
+        nkRodzic: {
+          type: 'text',
+          label: 'Rodzic niekomiksowy',
+          placeholder: 'wybierz albo dodaj publikację'
+        },
+        opis: {
+          type: 'text',
+          label: 'Opis rodzica',
+          placeholder: 'opis'
+        }
+      },
+      value: {
+        rodzic:   '#{rawJS $ maybe "" kopalniaToFieldValue mRodzic}',  // e.g. "2||Zeszyty Komiksowe"
+        dzial:    '#{rawJS $ maybe "[brak]" kopalniaTytul mDzial}',
+        nkRodzic: '#{rawJS $ maybe "[brak]" nkPubTytul mNkRodzic}',
+        opis:     '#{rawJS $ maybe "" id (kopalniaRodzicOpis kopalnia)}'
+      },
+      validate: function(value) {
+      },
+      display: function(value, response) {
+        return "Display";
+      }
+    });
 
   });
 }

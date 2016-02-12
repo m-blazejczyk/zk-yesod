@@ -116,3 +116,6 @@ postKopalniaItemUpdateR = do
     case mHandler of
         Just handler -> handler params
         Nothing -> sendResponseStatus badRequest400 (systemError "Brak funkcji obsługującej albo parametru 'name'")
+
+kopalniaToFieldValue :: Kopalnia -> T.Text
+kopalniaToFieldValue k = itemsToFieldValue kopalniaLookupId kopalniaTytul [k]
