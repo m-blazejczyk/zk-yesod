@@ -29,6 +29,7 @@ library
                      Handler.KopalniaWidgets
                      Handler.Kopalnia
                      Handler.KopalniaEdit
+                     Handler.NkPub
                      Handler.Autor
                      Handler.HasloPrzedm
                      Handler.SlowoKlucz

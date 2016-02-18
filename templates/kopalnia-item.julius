@@ -238,7 +238,7 @@ if(#{isEdit}) {
       value: {
         rodzic:   '#{rawJS $ maybe "" kopalniaToFieldValue mRodzic}',  // e.g. "2||Zeszyty Komiksowe"
         dzial:    '#{rawJS $ maybe "" kopalniaToFieldValue mDzial}',
-        nkRodzic: '#{rawJS $ maybe "" nkPubTytul mNkRodzic}',
+        nkRodzic: '#{rawJS $ maybe "" nkPubToFieldValue mNkRodzic}',
         opis:     '#{rawJS $ maybe "" id (kopalniaRodzicOpis kopalnia)}'
       },
       validate: function(value) {

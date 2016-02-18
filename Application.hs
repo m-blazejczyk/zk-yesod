@@ -32,6 +32,7 @@ import System.Log.FastLogger                (defaultBufSize, newStdoutLoggerSet,
 import Handler.Common
 import Handler.Home
 import Handler.Kopalnia
+import Handler.NkPub
 import Handler.Autor
 import Handler.HasloPrzedm
 import Handler.SlowoKlucz

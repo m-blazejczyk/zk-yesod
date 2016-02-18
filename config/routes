@@ -11,5 +11,6 @@
 /autor/szukaj FindAutorR GET
 /haslo/szukaj FindHasloR GET
 /slowo-kluczowe/szukaj FindSlowoR GET
+/pub-nk/szukaj FindNkPubR GET
 /auth AuthR Auth getAuth
 /static StaticR Static appStatic

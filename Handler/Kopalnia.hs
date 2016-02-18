@@ -15,6 +15,7 @@ import DbUtils
 import Handler.KopalniaEdit (fields)
 import Handler.KopalniaWidgets
 import Handler.XEditable
+import Handler.NkPub (nkPubToFieldValue)
 import Handler.HasloPrzedm (haslaToFieldValue)
 import Handler.SlowoKlucz (slowaToFieldValue)
 
