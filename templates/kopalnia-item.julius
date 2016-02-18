@@ -237,14 +237,42 @@ if(#{isEdit}) {
       },
       value: {
         rodzic:   '#{rawJS $ maybe "" kopalniaToFieldValue mRodzic}',  // e.g. "2||Zeszyty Komiksowe"
-        dzial:    '#{rawJS $ maybe "[brak]" kopalniaTytul mDzial}',
-        nkRodzic: '#{rawJS $ maybe "[brak]" nkPubTytul mNkRodzic}',
+        dzial:    '#{rawJS $ maybe "" kopalniaToFieldValue mDzial}',
+        nkRodzic: '#{rawJS $ maybe "" nkPubTytul mNkRodzic}',
         opis:     '#{rawJS $ maybe "" id (kopalniaRodzicOpis kopalnia)}'
       },
       validate: function(value) {
       },
       display: function(value, response) {
-        return "Display";
+        var retVal = "[brak]";
+        if(value.rodzic != "") {
+          var rodzicV = value.rodzic.split("||");
+          if(rodzicV.length == 2) {
+            retVal = rodzicV[1];
+
+            if(value.dzial != "") {
+              var dzialV = value.dzial.split("||");
+              if(dzialV.length == 2) {
+                retVal = retVal + " (dział: " + dzialV[1] + ")";
+              }
+            }
+
+            if(value.opis != "") {
+              retVal = retVal + "; " + value.opis;
+            }
+          }
+        } else if(value.nkRodzic != "") {
+          var rodzicV = value.nkRodzic.split("||");
+          if(rodzicV.length == 2) {
+            retVal = rodzicV[1];
+
+            if(value.opis != "") {
+              retVal = retVal + "; " + value.opis;
+            }
+          }
+        }
+
+        return retVal;
       }
     });
 
