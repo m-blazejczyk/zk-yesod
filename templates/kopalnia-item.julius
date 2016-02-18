@@ -208,7 +208,6 @@ if(#{isEdit}) {
         rodzic: {
           type: 'select2',
           label: 'Rodzic',
-          emptytext: "[brak]",
           select2: {
             multiple: false,
             placeholder: 'wybierz publikację',
@@ -216,18 +215,34 @@ if(#{isEdit}) {
             width: '100%',
             minimumInputLength: 2,
             quietMillis: 250,
-            ajax: initAjax('@{FindAutorR}')
+            ajax: initAjax('@{FindKopalniaR}')
           }
         },
         dzial: {
-          type: 'text',
+          type: 'select2',
           label: 'Dział',
-          placeholder: 'wybierz publikację'
+          select2: {
+            multiple: false,
+            placeholder: 'wybierz publikację',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            quietMillis: 250,
+            ajax: initAjax('@{FindKopalniaR}')
+          }
         },
         nkRodzic: {
-          type: 'text',
+          type: 'select2',
           label: 'Rodzic niekomiksowy',
-          placeholder: 'wybierz albo dodaj publikację'
+          select2: {
+            multiple: false,
+            placeholder: 'wybierz albo dodaj publikację',
+            allowClear: true,
+            width: '100%',
+            minimumInputLength: 2,
+            quietMillis: 250,
+            ajax: initAjax('@{FindNkPubR}')
+          }
         },
         opis: {
           type: 'text',

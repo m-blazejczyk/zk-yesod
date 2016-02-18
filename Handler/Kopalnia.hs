@@ -3,15 +3,18 @@ module Handler.Kopalnia (
     getKopalniaInitR,
     getKopalniaItemR,
     getKopalniaItemEditR,
-    postKopalniaItemUpdateR
+    postKopalniaItemUpdateR,
+    getFindKopalniaR
     ) where
 
 import Import
 import Enums
 import qualified Data.Text as T
 import Text.Julius (rawJS)
+import Database.Persist.MongoDB ((=~.))
 import Utils
 import DbUtils
+import Handler.Common (processSearchQuery)
 import Handler.KopalniaEdit (fields)
 import Handler.KopalniaWidgets
 import Handler.XEditable
@@ -117,6 +120,12 @@ postKopalniaItemUpdateR = do
     case mHandler of
         Just handler -> handler params
         Nothing -> sendResponseStatus badRequest400 (systemError "Brak funkcji obsługującej albo parametru 'name'")
+
+getFindKopalniaR :: Handler Value
+getFindKopalniaR = processSearchQuery crit transform
+    where
+        crit regex = [KopalniaTytul =~. regex]
+        transform (Entity _ kop) = object ["id" .= kopalniaLookupId kop, "text" .= kopalniaTytul kop]
 
 kopalniaToFieldValue :: Kopalnia -> T.Text
 kopalniaToFieldValue k = itemsToFieldValue kopalniaLookupId kopalniaTytul [k]

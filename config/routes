@@ -7,6 +7,7 @@
 /bibliografia/#Int64/zmien KopalniaItemEditR GET
 /bibliografia/zmien KopalniaItemUpdateR POST
 /bibliografia/init KopalniaInitR GET
+/bibliografia/szukaj FindKopalniaR GET
 !/autor/#Int64 AutorR GET
 /autor/szukaj FindAutorR GET
 /haslo/szukaj FindHasloR GET
