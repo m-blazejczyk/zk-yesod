@@ -257,6 +257,17 @@ if(#{isEdit}) {
         opis:     '#{rawJS $ maybe "" id (kopalniaRodzicOpis kopalnia)}'
       },
       validate: function(value) {
+        if(value) {
+          if(value.dzial && !value.rodzic) {
+            return 'Jeśli podajesz dział, musisz podać też rodzica komiksowego';
+          } else if(value.rodzic && value.nkRodzic) {
+            return 'Nie możesz jednocześnie podać rodzica komiksowego i niekomiksowego';
+          } else if(value.dzial && value.nkRodzic) {
+            return 'Nie możesz podać działu publikacji niekomiksowej';
+          } else if(value.rodzic === value.dzial) {
+            return 'Rodzic i dział nie mogą być tą samą publikacją';
+          }
+        }
       },
       display: function(value, response) {
         var retVal = "[brak]";
