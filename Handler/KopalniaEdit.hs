@@ -68,14 +68,6 @@ editAutorGenericR typAutora = processXEditableMulti getUnique extractId delFilte
     delFilter kopalniaId = [KopalniaAutorKopalniaId ==. kopalniaId, KopalniaAutorTyp ==. typAutora]
     insRecord autorId kopalniaId = KopalniaAutor autorId kopalniaId typAutora
 
-editWydawcyR :: EditHandler
-editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord undefined "Wydawca" where
-    getUnique = UniqueWydawca
-    extractId (Just (Entity wydawcaId _)) = Just wydawcaId
-    extractId Nothing = Nothing
-    delFilter kopalniaId = [KopalniaWydKopalniaId ==. kopalniaId]
-    insRecord = KopalniaWyd
-
 editRodzicR :: EditHandler
 editRodzicR = processXEditable (valdMap ["rodzic", "dzial", "nkRodzic", "opis"] vald) upd where
     vald [Just tRodz, Just tDzial, Just tNk, Just tOpis]
@@ -86,6 +78,14 @@ editRodzicR = processXEditable (valdMap ["rodzic", "dzial", "nkRodzic", "opis"] 
         | otherwise = return $ Success ("All good" :: T.Text)
     vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
     upd _ _ = return $ Error $ systemError "Not implemented yet"
+
+editWydawcyR :: EditHandler
+editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord undefined "Wydawca" where
+    getUnique = UniqueWydawca
+    extractId (Just (Entity wydawcaId _)) = Just wydawcaId
+    extractId Nothing = Nothing
+    delFilter kopalniaId = [KopalniaWydKopalniaId ==. kopalniaId]
+    insRecord = KopalniaWyd
 
 editAddWydawcaR :: EditHandler
 editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
