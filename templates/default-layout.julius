@@ -273,7 +273,7 @@
           if (fieldInfo.length > 1) {
             var rawVal = {};
             for (var i = fieldInfo.length - 1; i >= 0; i--) {
-              rawVal[fieldInfo[i].name] = $('#' + fieldInfo[i].id).val();
+              rawVal[fieldInfo[i].name] = $('#' + fieldInfo[i].id).val();  // rodzic-modal-rodzic
             }
           } else {
             var rawVal = $('#' + fieldInfo[0].id).val();
@@ -296,12 +296,16 @@
                 var arrText = [];
                 var arrPost = [];
                 var selData = $('#' + fieldInfo.id).select2('data');
-                for (var i = 0; i < selData.length; i++) {
-                  arrText.push(selData[i].text);
-                  arrPost.push(selData[i].id);
+                if(selData != null) {
+                  for (var i = selData.length - 1; i >= 0; i--) {
+                    arrText.push(selData[i].text);
+                    arrPost.push(selData[i].id);
+                  }
+                } else {
+                  selData = [];  // Added so that the code below works.
                 }
                 var textVal = arrText.join(', ');
-                // Sometimes the raw value is an empty array.  The POST request then doe not contain
+                // Sometimes the raw value is an empty array.  The POST request then does not contain
                 // the 'value' parameter.
                 var postVal = { value: (selData.length > 0 ? arrPost : ['']) };
               } else if (fieldInfo.type == 'textarea') {

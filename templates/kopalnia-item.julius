@@ -233,7 +233,7 @@ if(#{isEdit}) {
         },
         nkRodzic: {
           type: 'select2',
-          label: 'Rodzic niekomiksowy',
+          label: 'Rodzic niekom.',
           select2: {
             multiple: false,
             placeholder: 'wybierz albo dodaj publikację',
