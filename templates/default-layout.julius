@@ -252,6 +252,7 @@
           if ($('#' + modalId).data('okFlag') === false) {
             // Popup was canceled - push saved data back into the controls.
             pushDataZK($('#' + modalId).data('data'));
+            $('#' + errorId).hide();
           }
 
           $('#' + modalId).data('okFlag', false);
