@@ -264,7 +264,7 @@ if(#{isEdit}) {
             return 'Nie możesz jednocześnie podać rodzica komiksowego i niekomiksowego';
           } else if(value.dzial && value.nkRodzic) {
             return 'Nie możesz podać działu publikacji niekomiksowej';
-          } else if(value.rodzic === value.dzial) {
+          } else if(value.rodzic && value.rodzic === value.dzial) {
             return 'Rodzic i dział nie mogą być tą samą publikacją';
           }
         }
