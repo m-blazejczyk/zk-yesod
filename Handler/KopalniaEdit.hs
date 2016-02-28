@@ -77,7 +77,15 @@ editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord und
     insRecord = KopalniaWyd
 
 editRodzicR :: EditHandler
-editRodzicR _ = sendResponseStatus badRequest400 ("editRodzicR nie zaimplementowany" :: Text)
+editRodzicR = processXEditable (valdMap ["rodzic", "dzial", "nkRodzic", "opis"] vald) upd where
+    vald [Just tRodz, Just tDzial, Just tNk, Just tOpis]
+        | T.length tDzial > 0 && T.length tRodz == 0 = return $ Error "Jeśli podajesz dział, musisz podać też rodzica komiksowego"
+        | T.length tRodz > 0 && T.length tNk > 0 = return $ Error "Nie możesz jednocześnie podać rodzica komiksowego i niekomiksowego"
+        | T.length tDzial > 0 && T.length tNk > 0 = return $ Error "Nie możesz podać działu publikacji niekomiksowej"
+        | T.length tRodz > 0 && tRodz == tDzial = return $ Error "Rodzic i dział nie mogą być tą samą publikacją"
+        | otherwise = return $ Success ("All good" :: T.Text)
+    vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
+    upd _ _ = return $ Error $ systemError "Not implemented yet"
 
 editAddWydawcaR :: EditHandler
 editAddWydawcaR = processXEditable (valdMap ["nazwa", "url"] vald) upd where
