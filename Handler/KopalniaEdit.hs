@@ -75,8 +75,27 @@ editRodzicR = processXEditable (valdMap ["rodzic", "dzial", "nkRodzic", "opis"] 
         | T.length tRodz > 0 && T.length tNk > 0 = return $ Error "Nie możesz jednocześnie podać rodzica komiksowego i niekomiksowego"
         | T.length tDzial > 0 && T.length tNk > 0 = return $ Error "Nie możesz podać działu publikacji niekomiksowej"
         | T.length tRodz > 0 && tRodz == tDzial = return $ Error "Rodzic i dział nie mogą być tą samą publikacją"
-        | otherwise = return $ Success ("All good" :: T.Text)
+        | otherwise = return $ Success $ valDb
+            (maybeRead tRodz) (maybeRead tDzial) (maybeRead tNk) (if T.length tOpis > 0 then Just tOpis else Nothing)
+            -- Here we need to pass Just lookupId if the parameter corresponds to a valid integer,
+            -- Nothing if the parameter is empty, and return an error otherwise.
     vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
+    valPar "" = Nothing
+    valPar tLookup = 
+        where 
+    valDb mRodzL mDzialL mNkL mOpis = do
+        mRodz <- runDB $ getBy $ UniqueKopalnia mRodzL
+        rodz <- case mRodz of
+            Just (Entity rodzId _) -> do
+            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator działu"
+        mDzial <- runDB $ getBy $ UniqueKopalnia mDzialL
+        case mDzial of
+            Just (Entity dzialId _) -> do
+            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator komiksowej publikacji zawierającej"
+        mNk <- runDB $ getBy $ UniqueNkPub mNkL
+        case mNk of
+            Just (Entity nkId _) -> return $ Success []
+            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator niekomiksowej publikacji zawierającej"
     upd _ _ = return $ Error $ systemError "Not implemented yet"
 
 editWydawcyR :: EditHandler
