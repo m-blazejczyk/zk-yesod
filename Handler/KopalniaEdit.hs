@@ -76,27 +76,27 @@ editRodzicR = processXEditable (valdMap ["rodzic", "dzial", "nkRodzic", "opis"] 
         | T.length tDzial > 0 && T.length tNk > 0 = return $ Error "Nie możesz podać działu publikacji niekomiksowej"
         | T.length tRodz > 0 && tRodz == tDzial = return $ Error "Rodzic i dział nie mogą być tą samą publikacją"
         | otherwise = return $ Success $ valDb
-            (maybeRead tRodz) (maybeRead tDzial) (maybeRead tNk) (if T.length tOpis > 0 then Just tOpis else Nothing)
-            -- Here we need to pass Just lookupId if the parameter corresponds to a valid integer,
-            -- Nothing if the parameter is empty, and return an error otherwise.
+            tRodz tDzial tNk (if T.length tOpis > 0 then Just tOpis else Nothing)
     vald _ = return $ Error $ systemError "Niepoprawna ilość parametrów"
-    valPar "" = Nothing
-    valPar tLookup = 
-        where 
-    valDb mRodzL mDzialL mNkL mOpis = do
-        mRodz <- runDB $ getBy $ UniqueKopalnia mRodzL
-        rodz <- case mRodz of
-            Just (Entity rodzId _) -> do
-            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator działu"
-        mDzial <- runDB $ getBy $ UniqueKopalnia mDzialL
-        case mDzial of
-            Just (Entity dzialId _) -> do
-            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator komiksowej publikacji zawierającej"
-        mNk <- runDB $ getBy $ UniqueNkPub mNkL
-        case mNk of
-            Just (Entity nkId _) -> return $ Success []
-            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator niekomiksowej publikacji zawierającej"
+    valDb tRodzL tDzialL tNkL mOpis = do
+        dzialS <- valPar tDzialL UniqueKopalnia "działu"
+        rodzS <- valPar tRodzL UniqueKopalnia "komiksowej publikacji zawierającej"
+        nkS <- valPar tNkL UniqueNkPub "niekomiksowej publikacji zawierającej"
+        errors <- return $ catMaybes [getError dzialS, getError rodzS, getError nkS]
+        return if length errors == 0
+            then (...)
+            else return $ T.intercalate "<br>" errors
+    valPar tLookup unique name = if T.length tLookup == 0
+        then return $ Success Nothing
+        else case (maybeRead tLookup) of
+            Just mLookup -> do
+                mItem <- runDB $ getBy $ unique mLookup
+                item <- case mItem of
+                    Just (Entity itemId _) -> return $ Success itemId
+                    Nothing -> return $ Error $ systemError "Niepoprawny identyfikator" name
+            Nothing -> return $ Error $ systemError "Niepoprawny identyfikator" name
     upd _ _ = return $ Error $ systemError "Not implemented yet"
+
 
 editWydawcyR :: EditHandler
 editWydawcyR = processXEditableMulti getUnique extractId delFilter insRecord undefined "Wydawca" where
