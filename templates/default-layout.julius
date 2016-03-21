@@ -98,8 +98,12 @@
                 for (var i = values.length - 1; i >= 0; i -= 2) {
                   data.push({id: values[i-1], text: values[i]});
                 }
-                element.val('');
-                callback (data);
+
+                if((sel2Opts.multiple === undefined || sel2Opts.multiple === false) && data.length == 1) {
+                  callback(data[0]);
+                } else {
+                  callback(data);
+                }
               };
 
               select2Fields.push({ id: id, options: sel2Opts });
